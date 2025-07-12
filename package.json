@@ -1,0 +1,28 @@
+{
+  "name": "galletoon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "type": "module",
+  "scripts": {
+    "dev": ""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.12.1",
+  "dependencies": {
+    "@fastify/cors": "^11.0.1",
+    "@fastify/static": "^8.2.0",
+    "@types/node": "^24.0.13",
+    "dotenv": "^17.2.0",
+    "fastify": "^5.4.0",
+    "mongoose": "^8.16.3",
+    "path": "^0.12.7",
+    "stripe": "^18.3.0",
+    "url": "^0.11.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
