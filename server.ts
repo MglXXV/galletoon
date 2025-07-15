@@ -1,24 +1,39 @@
 import Fastify from "fastify";
+import path, { dirname } from "path";
+import fastifyStatic from "@fastify/static";
+import { fileURLToPath } from "url";
+import "dotenv/config";
+import Stripe from "stripe";
 
-// Constructor : Fastify
+//STRIPE URL
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
+
+//FASTIFY SETUP
 const fastify = Fastify({
   logger: true,
 });
 
-//Objeto : Iniciar Servidor
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+fastify.register(fastifyStatic, {
+  root: path.join(__dirname, "public"),
+  prefix: "/",
+});
+
+//API ROUTES
+fastify.get("/", async (req, res) => {
+  return res.sendFile("index.html");
+});
+
+//SERVER
 const start = async () => {
   try {
-    await fastify.listen({
-      port: 3000,
-      host: "0.0.0.0",
-    });
-
-    console.log("Iniciando Servidor....");
-  } catch (error) {
-    fastify.log.error(error);
+    await fastify.listen({ port: 3000, host: "0.0.0.0" });
+  } catch (err) {
+    fastify.log.error(err);
     process.exit(1);
   }
 };
 
-// Entry Point : Iniciando el servidor en http://localhost:3000/
 start();
