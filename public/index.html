@@ -1,55 +1,43 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>GalleToon - Inicio</title>
-    </head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GalleToon</title>
+    <script type="module" src="/js/router.ts"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  </head>
 
-    <body>
-        <header class="main-header">
-            <nav class="main-nav">
-                <a href="/" class="main-nav__logo nav-link" id="logo"
-                    >GALLETOON</a
-                >
-                <div class="search-bar">
-                    <input
-                        type="text"
-                        placeholder="Buscar..."
-                        class="search-bar__input"
-                    />
-                    <button type="submit" class="search-bar__button">X</button>
-                </div>
-                <ul class="main-nav__list">
-                    <li class="main-nav__item">
-                        <a href="/categorias" class="main-nav__link nav-link"
-                            >Categorías</a
-                        >
-                    </li>
-                    <li class="main-nav__item">
-                        <a href="/login" class="main-nav__link nav-link"
-                            >Iniciar Sesión</a
-                        >
-                    </li>
-                    <li class="main-nav__item">
-                        <a href="/register" class="main-nav__link nav-link"
-                            >Registrarse</a
-                        >
-                    </li>
-                </ul>
-            </nav>
-        </header>
+  <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-pink-700 text-white shadow-md sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        <a href="/" class="text-2xl font-bold nav-link hover:text-yellow-300 transition">GALLETOON</a>
 
-        <main id="app-root" class="main-content-area">
-            <p class="loading-message">Cargando contenido...</p>
-        </main>
+        <div class="flex-1 mx-20">
+          <input
+            type="text"
+            placeholder="Buscar..."
+            class="w-full px-4 py-2 rounded-md shadow-inner focus:outline-none focus:ring focus:ring-yellow-300 text-black"
+          />
+        </div>
 
-        <footer class="main-footer">
-            <div class="footer-content">
-                <p class="footer-text">
-                    &copy; 2025 GalleToon. Todos los derechos reservados.
-                </p>
-            </div>
-        </footer>
-    </body>
+        <nav class="space-x-4 text-sm hidden md:block">
+          <a href="/categorias" class="nav-link">Categorías</a>
+          <a href="/gallecoins" class="nav-link">GalleCoins</a>
+          <a href="/register" class="nav-link">Registrarse</a>
+          <a href="/login" class="nav-link">Iniciar Sesión</a>
+        </nav>
+    </header>
+
+    <!-- Contenido SPA -->
+    <main id="app-root" class="flex-1 max-w-7xl mx-auto w-full p-4">
+      <p class="text-center text-gray-500">Cargando contenido...</p>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white text-center py-4 mt-auto">
+      <p>&copy; 2025 GalleToon. Todos los derechos reservados.</p>
+    </footer>
+  </body>
 </html>
