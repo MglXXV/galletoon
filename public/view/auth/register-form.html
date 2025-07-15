@@ -1,0 +1,129 @@
+<div class="auth-container">
+	<div class="auth-form">
+		<h2 class="auth-title">Crear Cuenta</h2>
+		<form
+			class="register-form"
+			id="registerForm">
+			<div class="form-group">
+				<label
+					for="username"
+					class="form-label"
+					>Nombre de Usuario</label
+				>
+				<input
+					type="text"
+					id="username"
+					name="username"
+					class="form-input"
+					required />
+			</div>
+
+			<div class="form-group">
+				<label
+					for="email"
+					class="form-label"
+					>Correo Electrónico</label
+				>
+				<input
+					type="email"
+					id="email"
+					name="email"
+					class="form-input"
+					required />
+			</div>
+
+			<div class="form-group">
+				<label
+					for="password"
+					class="form-label"
+					>Contraseña</label
+				>
+				<input
+					type="password"
+					id="password"
+					name="password"
+					class="form-input"
+					required />
+			</div>
+
+			<div class="form-group">
+				<label
+					for="confirmPassword"
+					class="form-label"
+					>Confirmar Contraseña</label
+				>
+				<input
+					type="password"
+					id="confirmPassword"
+					name="confirmPassword"
+					class="form-input"
+					required />
+			</div>
+
+			<div class="form-group">
+				<label class="checkbox-label">
+					<input
+						type="checkbox"
+						name="terms"
+						class="form-checkbox"
+						required />
+					<span class="checkmark"></span>
+					Acepto los términos y condiciones
+				</label>
+			</div>
+
+			<div class="form-group">
+				<label class="checkbox-label">
+					<input
+						type="checkbox"
+						name="newsletter"
+						class="form-checkbox" />
+					<span class="checkmark"></span>
+					Recibir notificaciones por email
+				</label>
+			</div>
+
+			<button
+				type="submit"
+				class="btn btn-primary btn-full">
+				Crear Cuenta
+			</button>
+		</form>
+
+		<div class="auth-links">
+			<a
+				href="/login"
+				class="nav-link"
+				>¿Ya tienes cuenta? Inicia sesión</a
+			>
+		</div>
+	</div>
+</div>
+
+<script>
+	document
+		.getElementById("registerForm")
+		?.addEventListener("submit", function (e) {
+			e.preventDefault();
+
+			const formData = new FormData(this);
+			const password = formData.get("password");
+			const confirmPassword = formData.get("confirmPassword");
+
+			if (password !== confirmPassword) {
+				alert("Las contraseñas no coinciden");
+				return;
+			}
+
+			// Aquí iría la lógica de registro
+			console.log("Register attempt:", {
+				username: formData.get("username"),
+				email: formData.get("email"),
+				password: password,
+			});
+
+			// Simular registro exitoso
+			alert("Cuenta creada exitosamente");
+			window.location.href = "/login";
+		});
+</script>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0" />
+		<title>GalleToon - Inicio</title>
+	</head>
+
+	<body>
+		<header class="main-header">
+			<nav class="main-nav">
+				<a
+					href="/"
+					class="main-nav__logo nav-link"
+					id="logo"
+					>GALLETOON</a
+				>
+				<div class="search-bar">
+					<input
+						type="text"
+						placeholder="Buscar..."
+						class="search-bar__input" />
+					<button
+						type="submit"
+						class="search-bar__button">
+						X
+					</button>
+				</div>
+				<ul class="main-nav__list">
+					<li class="main-nav__item">
+						<a
+							href="/categorias"
+							class="main-nav__link nav-link"
+							>Categorías</a
+						>
+					</li>
+					<li class="main-nav__item">
+						<a
+							href="/login"
+							class="main-nav__link nav-link"
+							>Iniciar Sesión</a
+						>
+					</li>
+					<li class="main-nav__item">
+						<a
+							href="/register"
+							class="main-nav__link nav-link"
+							>Registrarse</a
+						>
+					</li>
+				</ul>
+			</nav>
+		</header>
+
+		<main
+			id="app-root"
+			class="main-content-area">
+			<p class="loading-message">Cargando contenido...</p>
+		</main>
+
+		<footer class="main-footer">
+			<div class="footer-content">
+				<p class="footer-text">
+					&copy; 2025 GalleToon. Todos los derechos reservados.
+				</p>
+			</div>
+		</footer>
+
+		<script src="js/router.ts"></script>
+	</body>
+</html>
