@@ -1,207 +1,27 @@
 <div class="category-page">
-	<div class="category-header">
-		<h1 class="page-title">Manga de Aventura</h1>
-		<p class="page-description">
-			Explora mundos fantásticos y vive increíbles aventuras
+  <div class="category-header">
+	<h1 class="page-title">Manga de Aventura</h1>
+	<p class="page-description">
+	  Explora mundos fantásticos y vive increíbles aventuras
+	</p>
+  </div>
+
+  <div class="manga-grid">
+	<!-- Card de referencia para renderizado dinámico -->
+	<a href="#" class="manga-card" style="text-decoration: none; color: inherit;">
+	  <div class="manga-cover">
+		<img
+		  src="assets/images/portada-ejemplo.jpg"
+		  alt="Nombre del manga"
+		  class="manga-img" />
+	  </div>
+	  <div class="manga-info">
+		<h3 class="manga-title">Nombre del Manga</h3>
+		<p class="manga-synopsis">
+		  Sinopsis breve del manga para mostrar como referencia.
 		</p>
-		<div class="category-filters">
-			<button class="filter-btn active">Todos</button>
-			<button class="filter-btn">Más populares</button>
-			<button class="filter-btn">Más recientes</button>
-		</div>
-	</div>
-
-	<div class="manga-grid">
-		<div class="manga-card">
-			<div class="manga-cover">
-				<img
-					src="assets/images/one-piece.jpg"
-					alt="One Piece"
-					class="manga-img" />
-				<div class="manga-overlay">
-					<span class="manga-status">En emisión</span>
-				</div>
-			</div>
-			<div class="manga-info">
-				<h3 class="manga-title">One Piece</h3>
-				<p class="manga-author">Eiichiro Oda</p>
-				<div class="manga-stats">
-					<span class="manga-chapters">1000+ capítulos</span>
-					<span class="manga-rating">⭐ 9.5</span>
-				</div>
-				<p class="manga-synopsis">
-					La búsqueda del tesoro más grande del mundo en el Grand Line.
-				</p>
-				<div class="manga-actions">
-					<a
-						href="/manga"
-						class="btn btn-primary nav-link"
-						>Leer</a
-					>
-					<button class="btn btn-secondary">Favorito</button>
-				</div>
-			</div>
-		</div>
-
-		<div class="manga-card">
-			<div class="manga-cover">
-				<img
-					src="assets/images/hunter-x-hunter.jpg"
-					alt="Hunter x Hunter"
-					class="manga-img" />
-				<div class="manga-overlay">
-					<span class="manga-status">En emisión</span>
-				</div>
-			</div>
-			<div class="manga-info">
-				<h3 class="manga-title">Hunter x Hunter</h3>
-				<p class="manga-author">Yoshihiro Togashi</p>
-				<div class="manga-stats">
-					<span class="manga-chapters">400+ capítulos</span>
-					<span class="manga-rating">⭐ 9.3</span>
-				</div>
-				<p class="manga-synopsis">
-					Gon Freecss busca convertirse en Hunter para encontrar a su padre.
-				</p>
-				<div class="manga-actions">
-					<a
-						href="/manga"
-						class="btn btn-primary nav-link"
-						>Leer</a
-					>
-					<button class="btn btn-secondary">Favorito</button>
-				</div>
-			</div>
-		</div>
-
-		<div class="manga-card">
-			<div class="manga-cover">
-				<img
-					src="assets/images/fairy-tail.jpg"
-					alt="Fairy Tail"
-					class="manga-img" />
-				<div class="manga-overlay">
-					<span class="manga-status">Completado</span>
-				</div>
-			</div>
-			<div class="manga-info">
-				<h3 class="manga-title">Fairy Tail</h3>
-				<p class="manga-author">Hiro Mashima</p>
-				<div class="manga-stats">
-					<span class="manga-chapters">545 capítulos</span>
-					<span class="manga-rating">⭐ 8.7</span>
-				</div>
-				<p class="manga-synopsis">
-					Natsu y Lucy forman parte del gremio de magos más famoso de Fiore.
-				</p>
-				<div class="manga-actions">
-					<a
-						href="/manga"
-						class="btn btn-primary nav-link"
-						>Leer</a
-					>
-					<button class="btn btn-secondary">Favorito</button>
-				</div>
-			</div>
-		</div>
-
-		<div class="manga-card">
-			<div class="manga-cover">
-				<img
-					src="assets/images/black-clover.jpg"
-					alt="Black Clover"
-					class="manga-img" />
-				<div class="manga-overlay">
-					<span class="manga-status">En emisión</span>
-				</div>
-			</div>
-			<div class="manga-info">
-				<h3 class="manga-title">Black Clover</h3>
-				<p class="manga-author">Yūki Tabata</p>
-				<div class="manga-stats">
-					<span class="manga-chapters">350+ capítulos</span>
-					<span class="manga-rating">⭐ 8.5</span>
-				</div>
-				<p class="manga-synopsis">
-					Asta lucha por convertirse en el Rey Mago sin tener magia.
-				</p>
-				<div class="manga-actions">
-					<a
-						href="/manga"
-						class="btn btn-primary nav-link"
-						>Leer</a
-					>
-					<button class="btn btn-secondary">Favorito</button>
-				</div>
-			</div>
-		</div>
-
-		<div class="manga-card">
-			<div class="manga-cover">
-				<img
-					src="assets/images/seven-deadly-sins.jpg"
-					alt="Seven Deadly Sins"
-					class="manga-img" />
-				<div class="manga-overlay">
-					<span class="manga-status">Completado</span>
-				</div>
-			</div>
-			<div class="manga-info">
-				<h3 class="manga-title">Seven Deadly Sins</h3>
-				<p class="manga-author">Nakaba Suzuki</p>
-				<div class="manga-stats">
-					<span class="manga-chapters">346 capítulos</span>
-					<span class="manga-rating">⭐ 8.6</span>
-				</div>
-				<p class="manga-synopsis">
-					Los Siete Pecados Capitales protegen el reino de Britannia.
-				</p>
-				<div class="manga-actions">
-					<a
-						href="/manga"
-						class="btn btn-primary nav-link"
-						>Leer</a
-					>
-					<button class="btn btn-secondary">Favorito</button>
-				</div>
-			</div>
-		</div>
-
-		<div class="manga-card">
-			<div class="manga-cover">
-				<img
-					src="assets/images/magi.jpg"
-					alt="Magi"
-					class="manga-img" />
-				<div class="manga-overlay">
-					<span class="manga-status">Completado</span>
-				</div>
-			</div>
-			<div class="manga-info">
-				<h3 class="manga-title">Magi</h3>
-				<p class="manga-author">Shinobu Ohtaka</p>
-				<div class="manga-stats">
-					<span class="manga-chapters">369 capítulos</span>
-					<span class="manga-rating">⭐ 8.4</span>
-				</div>
-				<p class="manga-synopsis">
-					Aladdin explora dungeons mágicos para convertirse en un gran mago.
-				</p>
-				<div class="manga-actions">
-					<a
-						href="/manga"
-						class="btn btn-primary nav-link"
-						>Leer</a
-					>
-					<button class="btn btn-secondary">Favorito</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="pagination">
-		<button class="pagination-btn">Anterior</button>
-		<span class="pagination-current">Página 1 de 4</span>
-		<button class="pagination-btn">Siguiente</button>
-	</div>
+	  </div>
+	</a>
+	<!-- Fin de card de referencia -->
+  </div>
 </div>

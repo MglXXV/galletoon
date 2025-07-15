@@ -1,212 +1,25 @@
 <div class="category-page">
-	<div class="category-header">
-		<h1 class="page-title">Manga de Acción</h1>
-		<p class="page-description">
-			Descubre los mejores manga de acción con batallas épicas y superpoderes
+  <div class="category-header">
+	<h1 class="page-title">Manga de Acción</h1>
+	<p class="page-description">
+	  Descubre los mejores manga de acción con batallas épicas y superpoderes
+	</p>
+
+  <div class="manga-grid">
+	<!-- Card de referencia para renderizado dinámico -->
+	<a href="#" class="manga-card" ">
+	  <div class="manga-cover">
+		<img
+		  src="assets/images/portada-ejemplo.jpg"
+		  alt="Nombre del manga"
+		  class="manga-img" />
+	  </div>
+	  <div class="manga-info">
+		<h3 class="manga-title">Nombre del Manga</h3>
+		<p class="manga-synopsis">
+		  Sinopsis breve del manga para mostrar como referencia.
 		</p>
-		<div class="category-filters">
-			<button class="filter-btn active">Todos</button>
-			<button class="filter-btn">Más populares</button>
-			<button class="filter-btn">Más recientes</button>
-		</div>
-	</div>
-
-	<div class="manga-grid">
-		<div class="manga-card">
-			<div class="manga-cover">
-				<img
-					src="assets/images/one-piece.jpg"
-					alt="One Piece"
-					class="manga-img" />
-				<div class="manga-overlay">
-					<span class="manga-status">En emisión</span>
-				</div>
-			</div>
-			<div class="manga-info">
-				<h3 class="manga-title">One Piece</h3>
-				<p class="manga-author">Eiichiro Oda</p>
-				<div class="manga-stats">
-					<span class="manga-chapters">1000+ capítulos</span>
-					<span class="manga-rating">⭐ 9.5</span>
-				</div>
-				<p class="manga-synopsis">
-					La historia de Monkey D. Luffy y su tripulación en busca del tesoro
-					más grande del mundo.
-				</p>
-				<div class="manga-actions">
-					<a
-						href="/manga"
-						class="btn btn-primary nav-link"
-						>Leer</a
-					>
-					<button class="btn btn-secondary">Favorito</button>
-				</div>
-			</div>
-		</div>
-
-		<div class="manga-card">
-			<div class="manga-cover">
-				<img
-					src="assets/images/naruto.jpg"
-					alt="Naruto"
-					class="manga-img" />
-				<div class="manga-overlay">
-					<span class="manga-status">Completado</span>
-				</div>
-			</div>
-			<div class="manga-info">
-				<h3 class="manga-title">Naruto</h3>
-				<p class="manga-author">Masashi Kishimoto</p>
-				<div class="manga-stats">
-					<span class="manga-chapters">700 capítulos</span>
-					<span class="manga-rating">⭐ 9.2</span>
-				</div>
-				<p class="manga-synopsis">
-					La historia de Naruto Uzumaki, un ninja que busca convertirse en
-					Hokage.
-				</p>
-				<div class="manga-actions">
-					<a
-						href="/manga"
-						class="btn btn-primary nav-link"
-						>Leer</a
-					>
-					<button class="btn btn-secondary">Favorito</button>
-				</div>
-			</div>
-		</div>
-
-		<div class="manga-card">
-			<div class="manga-cover">
-				<img
-					src="assets/images/dragon-ball.jpg"
-					alt="Dragon Ball"
-					class="manga-img" />
-				<div class="manga-overlay">
-					<span class="manga-status">Completado</span>
-				</div>
-			</div>
-			<div class="manga-info">
-				<h3 class="manga-title">Dragon Ball</h3>
-				<p class="manga-author">Akira Toriyama</p>
-				<div class="manga-stats">
-					<span class="manga-chapters">519 capítulos</span>
-					<span class="manga-rating">⭐ 9.0</span>
-				</div>
-				<p class="manga-synopsis">
-					Las aventuras de Goku y sus amigos en busca de las esferas del dragón.
-				</p>
-				<div class="manga-actions">
-					<a
-						href="/manga"
-						class="btn btn-primary nav-link"
-						>Leer</a
-					>
-					<button class="btn btn-secondary">Favorito</button>
-				</div>
-			</div>
-		</div>
-
-		<div class="manga-card">
-			<div class="manga-cover">
-				<img
-					src="assets/images/bleach.jpg"
-					alt="Bleach"
-					class="manga-img" />
-				<div class="manga-overlay">
-					<span class="manga-status">Completado</span>
-				</div>
-			</div>
-			<div class="manga-info">
-				<h3 class="manga-title">Bleach</h3>
-				<p class="manga-author">Tite Kubo</p>
-				<div class="manga-stats">
-					<span class="manga-chapters">686 capítulos</span>
-					<span class="manga-rating">⭐ 8.8</span>
-				</div>
-				<p class="manga-synopsis">
-					Ichigo Kurosaki obtiene poderes de Shinigami para proteger a los
-					humanos de los Hollows.
-				</p>
-				<div class="manga-actions">
-					<a
-						href="/manga"
-						class="btn btn-primary nav-link"
-						>Leer</a
-					>
-					<button class="btn btn-secondary">Favorito</button>
-				</div>
-			</div>
-		</div>
-
-		<div class="manga-card">
-			<div class="manga-cover">
-				<img
-					src="assets/images/my-hero-academia.jpg"
-					alt="My Hero Academia"
-					class="manga-img" />
-				<div class="manga-overlay">
-					<span class="manga-status">En emisión</span>
-				</div>
-			</div>
-			<div class="manga-info">
-				<h3 class="manga-title">My Hero Academia</h3>
-				<p class="manga-author">Kōhei Horikoshi</p>
-				<div class="manga-stats">
-					<span class="manga-chapters">400+ capítulos</span>
-					<span class="manga-rating">⭐ 8.9</span>
-				</div>
-				<p class="manga-synopsis">
-					En un mundo donde la mayoría tiene superpoderes, Izuku Midoriya lucha
-					por convertirse en héroe.
-				</p>
-				<div class="manga-actions">
-					<a
-						href="/manga"
-						class="btn btn-primary nav-link"
-						>Leer</a
-					>
-					<button class="btn btn-secondary">Favorito</button>
-				</div>
-			</div>
-		</div>
-
-		<div class="manga-card">
-			<div class="manga-cover">
-				<img
-					src="assets/images/demon-slayer.jpg"
-					alt="Demon Slayer"
-					class="manga-img" />
-				<div class="manga-overlay">
-					<span class="manga-status">Completado</span>
-				</div>
-			</div>
-			<div class="manga-info">
-				<h3 class="manga-title">Demon Slayer</h3>
-				<p class="manga-author">Koyoharu Gotouge</p>
-				<div class="manga-stats">
-					<span class="manga-chapters">205 capítulos</span>
-					<span class="manga-rating">⭐ 9.1</span>
-				</div>
-				<p class="manga-synopsis">
-					Tanjiro Kamado se convierte en cazador de demonios para salvar a su
-					hermana.
-				</p>
-				<div class="manga-actions">
-					<a
-						href="/manga"
-						class="btn btn-primary nav-link"
-						>Leer</a
-					>
-					<button class="btn btn-secondary">Favorito</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="pagination">
-		<button class="pagination-btn">Anterior</button>
-		<span class="pagination-current">Página 1 de 5</span>
-		<button class="pagination-btn">Siguiente</button>
-	</div>
-</div>
+	  </div>
+	</a>
+	<!-- Fin de card de referencia -->
+  </div>

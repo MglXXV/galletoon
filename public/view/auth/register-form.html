@@ -60,29 +60,6 @@
 					required />
 			</div>
 
-			<div class="form-group">
-				<label class="checkbox-label">
-					<input
-						type="checkbox"
-						name="terms"
-						class="form-checkbox"
-						required />
-					<span class="checkmark"></span>
-					Acepto los términos y condiciones
-				</label>
-			</div>
-
-			<div class="form-group">
-				<label class="checkbox-label">
-					<input
-						type="checkbox"
-						name="newsletter"
-						class="form-checkbox" />
-					<span class="checkmark"></span>
-					Recibir notificaciones por email
-				</label>
-			</div>
-
 			<button
 				type="submit"
 				class="btn btn-primary btn-full">
@@ -99,31 +76,3 @@
 		</div>
 	</div>
 </div>
-
-<script>
-	document
-		.getElementById("registerForm")
-		?.addEventListener("submit", function (e) {
-			e.preventDefault();
-
-			const formData = new FormData(this);
-			const password = formData.get("password");
-			const confirmPassword = formData.get("confirmPassword");
-
-			if (password !== confirmPassword) {
-				alert("Las contraseñas no coinciden");
-				return;
-			}
-
-			// Aquí iría la lógica de registro
-			console.log("Register attempt:", {
-				username: formData.get("username"),
-				email: formData.get("email"),
-				password: password,
-			});
-
-			// Simular registro exitoso
-			alert("Cuenta creada exitosamente");
-			window.location.href = "/login";
-		});
-</script>

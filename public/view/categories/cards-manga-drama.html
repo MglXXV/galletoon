@@ -1,213 +1,26 @@
 <div class="category-page">
-	<div class="category-header">
-		<h1 class="page-title">Manga de Drama</h1>
-		<p class="page-description">
-			Historias profundas con personajes complejos y situaciones emotivas
+  <div class="category-header">
+	<h1 class="page-title">Manga de Drama</h1>
+	<p class="page-description">
+	  Historias profundas con personajes complejos y situaciones emotivas
+	</p>
+
+  <div class="manga-grid">
+	<!-- Card de referencia para renderizado dinámico -->
+	<a href="#" class="manga-card" style="text-decoration: none; color: inherit;">
+	  <div class="manga-cover">
+		<img
+		  src="assets/images/portada-ejemplo.jpg"
+		  alt="Nombre del manga"
+		  class="manga-img" />
+	  </div>
+	  <div class="manga-info">
+		<h3 class="manga-title">Nombre del Manga</h3>
+		<p class="manga-synopsis">
+		  Sinopsis breve del manga para mostrar como referencia.
 		</p>
-		<div class="category-filters">
-			<button class="filter-btn active">Todos</button>
-			<button class="filter-btn">Más populares</button>
-			<button class="filter-btn">Más recientes</button>
-		</div>
-	</div>
-
-	<div class="manga-grid">
-		<div class="manga-card">
-			<div class="manga-cover">
-				<img
-					src="assets/images/death-note.jpg"
-					alt="Death Note"
-					class="manga-img" />
-				<div class="manga-overlay">
-					<span class="manga-status">Completado</span>
-				</div>
-			</div>
-			<div class="manga-info">
-				<h3 class="manga-title">Death Note</h3>
-				<p class="manga-author">Tsugumi Ohba</p>
-				<div class="manga-stats">
-					<span class="manga-chapters">108 capítulos</span>
-					<span class="manga-rating">⭐ 9.4</span>
-				</div>
-				<p class="manga-synopsis">
-					Light Yagami encuentra un cuaderno que le permite matar personas
-					escribiendo sus nombres.
-				</p>
-				<div class="manga-actions">
-					<a
-						href="/manga"
-						class="btn btn-primary nav-link"
-						>Leer</a
-					>
-					<button class="btn btn-secondary">Favorito</button>
-				</div>
-			</div>
-		</div>
-
-		<div class="manga-card">
-			<div class="manga-cover">
-				<img
-					src="assets/images/attack-on-titan.jpg"
-					alt="Attack on Titan"
-					class="manga-img" />
-				<div class="manga-overlay">
-					<span class="manga-status">Completado</span>
-				</div>
-			</div>
-			<div class="manga-info">
-				<h3 class="manga-title">Attack on Titan</h3>
-				<p class="manga-author">Hajime Isayama</p>
-				<div class="manga-stats">
-					<span class="manga-chapters">139 capítulos</span>
-					<span class="manga-rating">⭐ 9.2</span>
-				</div>
-				<p class="manga-synopsis">
-					La humanidad lucha por sobrevivir contra gigantes titanes que devoran
-					humanos.
-				</p>
-				<div class="manga-actions">
-					<a
-						href="/manga"
-						class="btn btn-primary nav-link"
-						>Leer</a
-					>
-					<button class="btn btn-secondary">Favorito</button>
-				</div>
-			</div>
-		</div>
-
-		<div class="manga-card">
-			<div class="manga-cover">
-				<img
-					src="assets/images/tokyo-ghoul.jpg"
-					alt="Tokyo Ghoul"
-					class="manga-img" />
-				<div class="manga-overlay">
-					<span class="manga-status">Completado</span>
-				</div>
-			</div>
-			<div class="manga-info">
-				<h3 class="manga-title">Tokyo Ghoul</h3>
-				<p class="manga-author">Sui Ishida</p>
-				<div class="manga-stats">
-					<span class="manga-chapters">143 capítulos</span>
-					<span class="manga-rating">⭐ 8.8</span>
-				</div>
-				<p class="manga-synopsis">
-					Kaneki Ken se convierte en ghoul después de un encuentro con una de
-					estas criaturas.
-				</p>
-				<div class="manga-actions">
-					<a
-						href="/manga"
-						class="btn btn-primary nav-link"
-						>Leer</a
-					>
-					<button class="btn btn-secondary">Favorito</button>
-				</div>
-			</div>
-		</div>
-
-		<div class="manga-card">
-			<div class="manga-cover">
-				<img
-					src="assets/images/parasyte.jpg"
-					alt="Parasyte"
-					class="manga-img" />
-				<div class="manga-overlay">
-					<span class="manga-status">Completado</span>
-				</div>
-			</div>
-			<div class="manga-info">
-				<h3 class="manga-title">Parasyte</h3>
-				<p class="manga-author">Hitoshi Iwaaki</p>
-				<div class="manga-stats">
-					<span class="manga-chapters">64 capítulos</span>
-					<span class="manga-rating">⭐ 8.9</span>
-				</div>
-				<p class="manga-synopsis">
-					Shinichi Izumi debe coexistir con un parásito que ha tomado control de
-					su mano derecha.
-				</p>
-				<div class="manga-actions">
-					<a
-						href="/manga"
-						class="btn btn-primary nav-link"
-						>Leer</a
-					>
-					<button class="btn btn-secondary">Favorito</button>
-				</div>
-			</div>
-		</div>
-
-		<div class="manga-card">
-			<div class="manga-cover">
-				<img
-					src="assets/images/psycho-pass.jpg"
-					alt="Psycho-Pass"
-					class="manga-img" />
-				<div class="manga-overlay">
-					<span class="manga-status">Completado</span>
-				</div>
-			</div>
-			<div class="manga-info">
-				<h3 class="manga-title">Psycho-Pass</h3>
-				<p class="manga-author">Hikaru Miyoshi</p>
-				<div class="manga-stats">
-					<span class="manga-chapters">15 volúmenes</span>
-					<span class="manga-rating">⭐ 8.7</span>
-				</div>
-				<p class="manga-synopsis">
-					En un futuro distópico, el sistema Sibyl determina el potencial
-					criminal de cada persona.
-				</p>
-				<div class="manga-actions">
-					<a
-						href="/manga"
-						class="btn btn-primary nav-link"
-						>Leer</a
-					>
-					<button class="btn btn-secondary">Favorito</button>
-				</div>
-			</div>
-		</div>
-
-		<div class="manga-card">
-			<div class="manga-cover">
-				<img
-					src="assets/images/monster.jpg"
-					alt="Monster"
-					class="manga-img" />
-				<div class="manga-overlay">
-					<span class="manga-status">Completado</span>
-				</div>
-			</div>
-			<div class="manga-info">
-				<h3 class="manga-title">Monster</h3>
-				<p class="manga-author">Naoki Urasawa</p>
-				<div class="manga-stats">
-					<span class="manga-chapters">162 capítulos</span>
-					<span class="manga-rating">⭐ 9.1</span>
-				</div>
-				<p class="manga-synopsis">
-					El Dr. Tenma persigue a un paciente que salvó y que ahora es un
-					asesino en serie.
-				</p>
-				<div class="manga-actions">
-					<a
-						href="/manga"
-						class="btn btn-primary nav-link"
-						>Leer</a
-					>
-					<button class="btn btn-secondary">Favorito</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="pagination">
-		<button class="pagination-btn">Anterior</button>
-		<span class="pagination-current">Página 1 de 3</span>
-		<button class="pagination-btn">Siguiente</button>
-	</div>
+	  </div>
+	</a>
+	<!-- Fin de card de referencia -->
+  </div>
 </div>

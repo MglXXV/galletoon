@@ -1,170 +1,43 @@
 <div class="manga-reader">
-	<div class="manga-header">
-		<div class="manga-info-header">
-			<div class="manga-cover-large">
-				<img
-					src="assets/images/one-piece.jpg"
-					alt="One Piece"
-					class="manga-cover-img" />
-			</div>
-			<div class="manga-details">
-				<h1 class="manga-title">One Piece</h1>
-				<p class="manga-author">Por Eiichiro Oda</p>
-				<div class="manga-stats">
-					<span class="stat">⭐ 9.5</span>
-					<span class="stat">1000+ capítulos</span>
-					<span class="stat">En emisión</span>
-				</div>
-				<div class="manga-genres">
-					<span class="genre-tag">Acción</span>
-					<span class="genre-tag">Aventura</span>
-					<span class="genre-tag">Comedia</span>
-					<span class="genre-tag">Drama</span>
-				</div>
-				<p class="manga-synopsis">
-					La historia sigue a Monkey D. Luffy, un joven pirata que
-					accidentalmente come una fruta del diablo que le da el poder de
-					estirar su cuerpo como goma. Luffy y su tripulación, los Piratas del
-					Sombrero de Paja, navegan por el Grand Line en busca del tesoro más
-					grande del mundo, el "One Piece".
-				</p>
-				<div class="manga-actions">
-					<button class="btn btn-primary">Comenzar a leer</button>
-					<button class="btn btn-secondary">Agregar a favoritos</button>
-					<button class="btn btn-outline">Compartir</button>
-				</div>
-			</div>
-		</div>
+  <!-- Hero principal -->
+  <div class="manga-hero">
+	<div class="manga-hero-bg">
+	  <img src="assets/images/portada-ejemplo.jpg" alt="Portada del manga" class="manga-hero-img" />
 	</div>
-
-	<div class="manga-content">
-		<div class="chapters-section">
-			<h2 class="section-title">Capítulos</h2>
-			<div class="chapters-filters">
-				<button class="filter-btn active">Todos</button>
-				<button class="filter-btn">Leídos</button>
-				<button class="filter-btn">No leídos</button>
-			</div>
-
-			<div class="chapters-list">
-				<div class="chapter-item">
-					<div class="chapter-info">
-						<h3 class="chapter-title">Capítulo 1000: El Rey de los Piratas</h3>
-						<span class="chapter-date">Hace 2 días</span>
-					</div>
-					<div class="chapter-actions">
-						<button class="btn btn-small">Leer</button>
-						<span class="chapter-status new">Nuevo</span>
-					</div>
-				</div>
-
-				<div class="chapter-item">
-					<div class="chapter-info">
-						<h3 class="chapter-title">Capítulo 999: La Batalla Final</h3>
-						<span class="chapter-date">Hace 1 semana</span>
-					</div>
-					<div class="chapter-actions">
-						<button class="btn btn-small">Leer</button>
-						<span class="chapter-status read">Leído</span>
-					</div>
-				</div>
-
-				<div class="chapter-item">
-					<div class="chapter-info">
-						<h3 class="chapter-title">Capítulo 998: El Despertar</h3>
-						<span class="chapter-date">Hace 2 semanas</span>
-					</div>
-					<div class="chapter-actions">
-						<button class="btn btn-small">Leer</button>
-						<span class="chapter-status read">Leído</span>
-					</div>
-				</div>
-
-				<div class="chapter-item">
-					<div class="chapter-info">
-						<h3 class="chapter-title">Capítulo 997: La Revelación</h3>
-						<span class="chapter-date">Hace 3 semanas</span>
-					</div>
-					<div class="chapter-actions">
-						<button class="btn btn-small">Leer</button>
-						<span class="chapter-status read">Leído</span>
-					</div>
-				</div>
-
-				<div class="chapter-item">
-					<div class="chapter-info">
-						<h3 class="chapter-title">Capítulo 996: El Conflicto</h3>
-						<span class="chapter-date">Hace 1 mes</span>
-					</div>
-					<div class="chapter-actions">
-						<button class="btn btn-small">Leer</button>
-						<span class="chapter-status read">Leído</span>
-					</div>
-				</div>
-			</div>
-
-			<div class="load-more">
-				<button class="btn btn-outline">Cargar más capítulos</button>
-			</div>
-		</div>
-
-		<div class="related-manga">
-			<h2 class="section-title">Manga Similar</h2>
-			<div class="related-grid">
-				<div class="related-item">
-					<img
-						src="assets/images/naruto.jpg"
-						alt="Naruto"
-						class="related-cover" />
-					<h3 class="related-title">Naruto</h3>
-					<span class="related-genre">Acción</span>
-				</div>
-				<div class="related-item">
-					<img
-						src="assets/images/dragon-ball.jpg"
-						alt="Dragon Ball"
-						class="related-cover" />
-					<h3 class="related-title">Dragon Ball</h3>
-					<span class="related-genre">Acción</span>
-				</div>
-				<div class="related-item">
-					<img
-						src="assets/images/bleach.jpg"
-						alt="Bleach"
-						class="related-cover" />
-					<h3 class="related-title">Bleach</h3>
-					<span class="related-genre">Acción</span>
-				</div>
-			</div>
-		</div>
+	<div class="manga-hero-info">
+	  <h1 class="manga-title">Título del Manga</h1>
+	  <span class="manga-category">Categoría</span>
+	  <p class="manga-synopsis">
+		Sinopsis breve del manga seleccionada por el usuario.
+	  </p>
 	</div>
+  </div>
+
+  <!-- Lista de capítulos -->
+  <div class="manga-chapters-section">
+	<h2 class="section-title">Capítulos</h2>
+	<div class="chapters-list">
+	  <!-- Ejemplo de capítulo bloqueado -->
+	  <div class="chapter-item">
+		<div class="chapter-info">
+		  <h3 class="chapter-title">Capítulo 1: El Comienzo</h3>
+		  <span class="chapter-date">Publicado: 2025-01-01</span>
+		</div>
+		<div class="chapter-actions">
+		  <button class="btn btn-primary">Comprar</button>
+		</div>
+	  </div>
+	  <!-- Ejemplo de capítulo comprado -->
+	  <div class="chapter-item">
+		<div class="chapter-info">
+		  <h3 class="chapter-title">Capítulo 2: La Aventura</h3>
+		  <span class="chapter-date">Publicado: 2025-01-08</span>
+		</div>
+		<div class="chapter-actions">
+		  <button class="btn btn-success">Leer</button>
+		</div>
+	  </div>
+	  <!-- Más capítulos se renderizarán dinámicamente -->
+	</div>
+  </div>
 </div>
-
-<script>
-	// Funcionalidad para los botones de capítulos
-	document.querySelectorAll(".chapter-item .btn").forEach((button) => {
-		button.addEventListener("click", function () {
-			const chapterTitle =
-				this.closest(".chapter-item").querySelector(
-					".chapter-title",
-				).textContent;
-			alert(`Abriendo: ${chapterTitle}`);
-			// Aquí iría la lógica para abrir el capítulo
-		});
-	});
-
-	// Funcionalidad para los botones de acción
-	document.querySelectorAll(".manga-actions .btn").forEach((button) => {
-		button.addEventListener("click", function () {
-			const action = this.textContent;
-			if (action === "Comenzar a leer") {
-				alert("Abriendo el primer capítulo...");
-			} else if (action === "Agregar a favoritos") {
-				this.textContent = "En favoritos";
-				this.classList.add("btn-success");
-			} else if (action === "Compartir") {
-				alert("Compartiendo manga...");
-			}
-		});
-	});
-</script>
