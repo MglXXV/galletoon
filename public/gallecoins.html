@@ -1,40 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galletons - Coins</title>
-</head>
-<body>
-    <main class="main-content-area gallecoins-page">
-        <section class="gallecoins-section">
-            <h1 class="gallecoins-section__title">GalleCoins</h1>
-            <p class="gallecoins-section__description">Recarga tu saldo para desbloquear nuevos capítulos y disfrutar de tus mangas favoritos.</p>
+    <title>GalleCoins - GalleToon</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Cargar módulos TypeScript -->
+    <script type="module">
+      import BaseModule from '/ts/modules/BaseModule.ts';
+      import GalleCoinsModule from '/ts/modules/GalleCoinsModule.ts';
+      // Inicializar módulo de GalleCoins
+      const galleCoinsModule = new GalleCoinsModule();
 
-            <div class="gallecoins-options">
-                <div class="gallecoins-card">
-                    <h2 class="gallecoins-card__amount">50 GC</h2>
-                    <p class="gallecoins-card__price">$5</p>
-                    <button class="gallecoins-card__button button--primary">Comprar Ahora</button>
+      // Hacer disponibles globalmente para compatibilidad
+      window.BaseModule = BaseModule;
+      window.GalleCoinsModule = GalleCoinsModule;
+      window.galleCoinsModule = galleCoinsModule;
+    </script>
+</head>
+<body class="bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 min-h-screen">
+    <!-- Contenido Principal -->
+    <main id="gallecoins-content" class="max-w-7xl mx-auto p-6">
+        <!-- Vista de Comprar Coins -->
+        <div id="comprar-view" class="gc-view">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-shopping-cart text-green-500 mr-3"></i>Comprar GalleCoins
+                </h1>
+                <p class="text-gray-600">Elige el paquete que mejor se adapte a tus necesidades</p>
+            </div>
+
+            <!-- Paquetes de Coins -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-coins text-yellow-500 text-xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">50 GalleCoins</h3>
+                    <div class="text-3xl font-bold text-green-600 mb-4">$5</div>
+                    <button class="w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition">
+                        Comprar ahora
+                    </button>
                 </div>
-                <div class="gallecoins-card">
-                    <h2 class="gallecoins-card__amount">100 GC</h2>
-                    <p class="gallecoins-card__price">$10</p>
-                    <button class="gallecoins-card__button button--primary">Comprar Ahora</button>
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-coins text-yellow-500 text-xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">100 GalleCoins</h3>
+                    <div class="text-3xl font-bold text-green-600 mb-4">$10</div>
+                    <button class="w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition">
+                        Comprar ahora
+                    </button>
                 </div>
-                <div class="gallecoins-card">
-                    <h2 class="gallecoins-card__amount">200 GC</h2>
-                    <p class="gallecoins-card__price">$20</p>
-                    <button class="gallecoins-card__button button--primary">Comprar Ahora</button>
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-coins text-yellow-500 text-xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">200 GalleCoins</h3>
+                    <div class="text-3xl font-bold text-green-600 mb-4">$2</div>
+                    <button class="w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition">
+                        Comprar ahora
+                    </button>
                 </div>
             </div>
-        </section>
+        </div>
     </main>
 
-    <footer class="main-footer">
-        <div class="footer-content">
-            <p class="footer-text">&copy; 2025 GalleToon. Todos los derechos reservados.</p>
-        </div>
-    </footer>
+    <!-- Notificaciones -->
+    <div id="notifications-container" class="fixed top-4 right-4 z-50"></div>
 </body>
 </html>

@@ -1,0 +1,54 @@
+<!-- Modal para Agregar/Editar Capítulo -->
+<div id="modal-capitulo" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center p-6 border-b">
+                <h3 id="modal-capitulo-title" class="text-xl font-semibold">Agregar Nuevo Capítulo</h3>
+                <button id="btn-cerrar-modal-capitulo" class="text-gray-400 hover:text-gray-600" aria-label="Cerrar modal">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="form-capitulo" class="p-6 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Número de Capítulo</label>
+                        <input type="number" id="capitulo-numero-input" name="numero" min="1" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               placeholder="Ej: 1">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Título del Capítulo</label>
+                        <input type="text" id="capitulo-titulo-input" name="titulo" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               placeholder="Ej: El comienzo">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
+                    <textarea id="capitulo-descripcion-input" name="descripcion" rows="3" 
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              placeholder="Descripción opcional del capítulo"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Archivo del Capítulo (PDF/Imágenes)</label>
+                    <input type="file" id="capitulo-archivo-input" name="archivo" accept=".pdf,image/*" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <p class="text-sm text-gray-500 mt-1">Acepta archivos PDF o imágenes (JPG, PNG, etc.)</p>
+                </div>
+                
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" id="btn-cancelar-capitulo" 
+                            class="px-4 py-2 text-gray-600 hover:text-gray-800 transition">Cancelar</button>
+                    <button type="submit" id="btn-guardar-capitulo" 
+                            class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                        Guardar Capítulo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> 

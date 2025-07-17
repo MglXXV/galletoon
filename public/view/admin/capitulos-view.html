@@ -1,0 +1,35 @@
+<!-- Vista de Gestión de Capítulos -->
+<div id="capitulos-view" class="admin-view hidden">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">
+                <i class="fas fa-list mr-3"></i>Gestión de Capítulos
+            </h1>
+            <p id="manga-seleccionado-info" class="text-gray-600 mt-2">Selecciona un manga para gestionar sus capítulos</p>
+        </div>
+        <button id="btn-agregar-capitulo" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition flex items-center">
+            <i class="fas fa-plus mr-2"></i>Agregar Capítulo
+        </button>
+    </div>
+
+    <!-- Lista de Capítulos -->
+    <div id="capitulos-container" class="bg-white rounded-lg shadow-md p-6">
+        <div id="no-manga-seleccionado" class="text-center py-12">
+            <i class="fas fa-book-open text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">No hay manga seleccionado</h3>
+            <p class="text-gray-500">Selecciona un manga de la lista para gestionar sus capítulos</p>
+        </div>
+        
+        <div id="capitulos-list" class="hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">Capítulos del manga: <span id="manga-nombre"></span></h3>
+                <button id="btn-volver-mangas" class="text-gray-600 hover:text-gray-800 transition">
+                    <i class="fas fa-arrow-left mr-2"></i>Volver a Mangas
+                </button>
+            </div>
+            <div id="capitulos-table-container">
+                <!-- Los capítulos se cargarán dinámicamente aquí -->
+            </div>
+        </div>
+    </div>
+</div> 

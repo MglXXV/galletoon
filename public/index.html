@@ -4,7 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GalleToon</title>
-    <script type="module" src="/js/router.ts"></script>
+    <!-- Cargar módulos TypeScript -->
+    <script type="module">
+      import BaseModule from '/ts/modules/BaseModule.ts';
+      import RouterModule from '/ts/modules/RouterModule.ts';
+      import AppModule from '/ts/modules/AppModule.ts';      
+      // Inicializar la aplicación
+      const app = new AppModule();
+      
+      // Hacer disponibles globalmente para compatibilidad
+      window.BaseModule = BaseModule;
+      window.RouterModule = RouterModule;
+      window.AppModule = AppModule;
+      window.appModule = app;
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   </head>
 
@@ -22,17 +35,17 @@
           />
         </div>
 
-        <nav class="space-x-4 text-sm hidden md:block">
-          <a href="/categorias" class="nav-link">Categorías</a>
-          <a href="/gallecoins" class="nav-link">GalleCoins</a>
-          <a href="/register" class="nav-link">Registrarse</a>
-          <a href="/login" class="nav-link">Iniciar Sesión</a>
+        <nav class=space-x-4 text-sm md:block">
+          <a href="/categorias" class=nav-link>Categorías</a>
+          <a href="/gallecoins" class=nav-link>GalleCoins</a>
+          <a href="/auth" class=nav-link>Registrarse</a>
+          <a href="/auth" class=nav-link>Iniciar Sesión</a>
         </nav>
     </header>
 
     <!-- Contenido SPA -->
     <main id="app-root" class="flex-1 max-w-7xl mx-auto w-full p-4">
-      <p class="text-center text-gray-500">Cargando contenido...</p>
+
     </main>
 
     <!-- Footer -->
