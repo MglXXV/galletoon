@@ -17,9 +17,9 @@ const buyGallecoinsSchema = new Schema<BuyGallecoins>(
   { collection: "BuyGallecoins" },
 );
 
-const BuyGallecoins = model<BuyGallecoins>(
+const BuyGallecoinsModel = model<BuyGallecoins>(
   "BuyGallecoins",
   buyGallecoinsSchema,
 );
 
-export default BuyGallecoins;
+export default BuyGallecoinsModel;
