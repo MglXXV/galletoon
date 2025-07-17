@@ -4,9 +4,11 @@ import fastifyStatic from "@fastify/static";
 import { fileURLToPath } from "url";
 import "dotenv/config";
 import Stripe from "stripe";
+import { connect } from "./mongoSchema/database.ts";
 
 //STRIPE URL
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
+const MONGO_URI = process.env.MONGO_URI as string;
 
 //FASTIFY SETUP
 const fastify = Fastify({
@@ -71,6 +73,7 @@ fastify.get("/gallecoins", async (req, res) => {
 //SERVER
 const start = async () => {
   try {
+    await connect(MONGO_URI);
     await fastify.listen({ port: 3000, host: "0.0.0.0" });
   } catch (err) {
     fastify.log.error(err);

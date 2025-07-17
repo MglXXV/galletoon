@@ -5,9 +5,7 @@
   "main": "server.ts",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch server.ts | pino-pretty",
-    "build": "tsc",
-    "start": "node build/server.js"
+    "dev": "tsx watch server.ts | pino-pretty"
   },
   "keywords": [],
   "author": "",
