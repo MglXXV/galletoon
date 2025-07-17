@@ -1,11 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autenticación - GalleToon</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Autenticación - GalleToon</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+        />
+        <!--
     <script type="module">
       import BaseModule from '/ts/modules/BaseModule.ts';
       import AuthModule from '/ts/modules/AuthModule.ts';
@@ -17,26 +24,42 @@
       window.AuthModule = AuthModule;
       window.authModule = authModule;
     </script>
-</head>
-<body class="bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 min-h-screen">
-    <!-- Header de Autenticación -->
-    <header class="bg-white/80 backdrop-blur-sm shadow-sm">
-        <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-            <a href="/" class="text-2xl font-bold text-gray-800 hover:text-pink-600 transition">
-                <i class="fas fa-book-open mr-2"></i>GalleToon
-            </a>
-            <a href="/" class="text-gray-600 hover:text-gray-800 transition">
-                <i class="fas fa-arrow-left mr-2"></i>Volver al Sitio
-            </a>
-        </div>
-    </header>
+    --></head>
+    <body
+        class="bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 min-h-screen"
+    >
+        <!-- Header de Autenticación -->
+        <header class="bg-white/80 backdrop-blur-sm shadow-sm">
+            <div
+                class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between"
+            >
+                <a
+                    href="/"
+                    class="text-2xl font-bold text-gray-800 hover:text-pink-600 transition"
+                >
+                    <i class="fas fa-book-open mr-2"></i>GalleToon
+                </a>
+                <a
+                    href="/"
+                    class="text-gray-600 hover:text-gray-800 transition"
+                >
+                    <i class="fas fa-arrow-left mr-2"></i>Volver al Sitio
+                </a>
+            </div>
+        </header>
 
-    <!-- Contenido Principal - Se renderizará dinámicamente -->
-    <main id="auth-content" class="flex items-center justify-center min-h-screen py-12">
-        <!-- El contenido se cargará dinámicamente aquí -->
-    </main>
+        <!-- Contenido Principal - Se renderizará dinámicamente -->
+        <main
+            id="auth-content"
+            class="flex items-center justify-center min-h-screen py-12"
+        >
+            <!-- El contenido se cargará dinámicamente aquí -->
+        </main>
 
-    <!-- Notificaciones -->
-    <div id="notifications-container" class="fixed top-4 right-4 z-50"></div>
-</body>
-</html> 
+        <!-- Notificaciones -->
+        <div
+            id="notifications-container"
+            class="fixed top-4 right-4 z-50"
+        ></div>
+    </body>
+</html>

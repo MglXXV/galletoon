@@ -1,12 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GalleCoins - GalleToon</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Cargar módulos TypeScript -->
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>GalleCoins - GalleToon</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+        />
+        <!-- Cargar módulos TypeScript
     <script type="module">
       import BaseModule from '/ts/modules/BaseModule.ts';
       import GalleCoinsModule from '/ts/modules/GalleCoinsModule.ts';
@@ -18,56 +24,94 @@
       window.GalleCoinsModule = GalleCoinsModule;
       window.galleCoinsModule = galleCoinsModule;
     </script>
-</head>
-<body class="bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 min-h-screen">
-    <!-- Contenido Principal -->
-    <main id="gallecoins-content" class="max-w-7xl mx-auto p-6">
-        <!-- Vista de Comprar Coins -->
-        <div id="comprar-view" class="gc-view">
-            <div class="text-center mb-8">
-                <h1 class="text-4xl font-bold text-gray-800 mb-4">
-                    <i class="fas fa-shopping-cart text-green-500 mr-3"></i>Comprar GalleCoins
-                </h1>
-                <p class="text-gray-600">Elige el paquete que mejor se adapte a tus necesidades</p>
-            </div>
+    --></head>
+    <body
+        class="bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 min-h-screen"
+    >
+        <!-- Contenido Principal -->
+        <main id="gallecoins-content" class="max-w-7xl mx-auto p-6">
+            <!-- Vista de Comprar Coins -->
+            <div id="comprar-view" class="gc-view">
+                <div class="text-center mb-8">
+                    <h1 class="text-4xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-shopping-cart text-green-500 mr-3"></i
+                        >Comprar GalleCoins
+                    </h1>
+                    <p class="text-gray-600">
+                        Elige el paquete que mejor se adapte a tus necesidades
+                    </p>
+                </div>
 
-            <!-- Paquetes de Coins -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
-                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-coins text-yellow-500 text-xl"></i>
+                <!-- Paquetes de Coins -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div
+                        class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow"
+                    >
+                        <div
+                            class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4"
+                        >
+                            <i class="fas fa-coins text-yellow-500 text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">
+                            50 GalleCoins
+                        </h3>
+                        <div class="text-3xl font-bold text-green-600 mb-4">
+                            $5
+                        </div>
+                        <button
+                            class="w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition"
+                        >
+                            Comprar ahora
+                        </button>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-2">50 GalleCoins</h3>
-                    <div class="text-3xl font-bold text-green-600 mb-4">$5</div>
-                    <button class="w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition">
-                        Comprar ahora
-                    </button>
-                </div>
-                <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
-                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-coins text-yellow-500 text-xl"></i>
+                    <div
+                        class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow"
+                    >
+                        <div
+                            class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4"
+                        >
+                            <i class="fas fa-coins text-yellow-500 text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">
+                            100 GalleCoins
+                        </h3>
+                        <div class="text-3xl font-bold text-green-600 mb-4">
+                            $10
+                        </div>
+                        <button
+                            class="w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition"
+                        >
+                            Comprar ahora
+                        </button>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-2">100 GalleCoins</h3>
-                    <div class="text-3xl font-bold text-green-600 mb-4">$10</div>
-                    <button class="w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition">
-                        Comprar ahora
-                    </button>
-                </div>
-                <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
-                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-coins text-yellow-500 text-xl"></i>
+                    <div
+                        class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow"
+                    >
+                        <div
+                            class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4"
+                        >
+                            <i class="fas fa-coins text-yellow-500 text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">
+                            200 GalleCoins
+                        </h3>
+                        <div class="text-3xl font-bold text-green-600 mb-4">
+                            $2
+                        </div>
+                        <button
+                            class="w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition"
+                        >
+                            Comprar ahora
+                        </button>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-2">200 GalleCoins</h3>
-                    <div class="text-3xl font-bold text-green-600 mb-4">$2</div>
-                    <button class="w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition">
-                        Comprar ahora
-                    </button>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
 
-    <!-- Notificaciones -->
-    <div id="notifications-container" class="fixed top-4 right-4 z-50"></div>
-</body>
+        <!-- Notificaciones -->
+        <div
+            id="notifications-container"
+            class="fixed top-4 right-4 z-50"
+        ></div>
+    </body>
 </html>
