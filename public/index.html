@@ -4,21 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GalleToon</title>
-    <!-- Cargar módulos TypeScript
-    <script type="module">
-      import BaseModule from '/ts/modules/BaseModule.ts';
-      import RouterModule from '/ts/modules/RouterModule.ts';
-      import AppModule from '/ts/modules/AppModule.ts';
-      // Inicializar la aplicación
-      const app = new AppModule();
-
-      // Hacer disponibles globalmente para compatibilidad
-      window.BaseModule = BaseModule;
-      window.RouterModule = RouterModule;
-      window.AppModule = AppModule;
-      window.appModule = app;
-    </script>
-    -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   </head>
 
@@ -44,9 +29,49 @@
         </nav>
     </header>
 
-    <!-- Contenido SPA -->
-    <main id="app-root" class="flex-1 max-w-7xl mx-auto w-full p-4">
-
+    <main  class="flex-1 max-w-7xl mx-auto w-full p-4">
+      <div class="w-full">
+        <section class="relative h-64 md:h-80 w-full bg-cover bg-center" style="background-image: url('https://wallpaperaccess.com/full/4131921.jpg');">
+            <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <h1 class="text-white text-4xl md:text-6xl font-bold">GALLETOON</h1>
+            </div>
+        </section>
+    
+        <section class="container mx-auto px-4 py-8">
+            <h2 class="text-2xl font-bold mb-6">Nuevos Mangas</h2>
+    
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+                
+                <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
+                    <a href="/manga/id-del-manga" class="nav-link">
+                        <img src="https://tse4.mm.bing.net/th/id/OIP.n6EjsiXTX3kCy_ZV_jlMSQHaKY?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Portada del Manga" class="w-full h-48 sm:h-56 md:h-64 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-md truncate">Banana Fish</h3>
+                            <p class="text-gray-600 text-sm mt-1">El mundo esta en peligro</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
+                    <a href="/manga/id-del-manga" class="nav-link">
+                        <img src="https://tse1.mm.bing.net/th/id/OIP.rl3gr4K8IjD51mde7mtN6QHaLh?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Portada del Manga" class="w-full h-48 sm:h-56 md:h-64 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-md truncate">Jujutsu Kaisen</h3>
+                            <p class="text-gray-600 text-sm mt-1">El mundo esta en peligro</p>
+                        </div>
+                    </a>
+                </div>
+                 <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
+                    <a href="/manga/id-del-manga" class="nav-link">
+                        <img src="https://www.anmosugoi.com/wp-content/uploads/2020/12/Shingeki-no-Kyojin-nueva-imagen-visual.jpg" alt="Portada del Manga" class="w-full h-48 sm:h-56 md:h-64 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-md truncate">Shingeki No Kyojin</h3>
+                            <p class="text-gray-600 text-sm mt-1">La paz de la tierra esta en peligro</p>
+                        </div>
+                    </a>
+                </div>
+                </div>
+        </section>
+    </div>
     </main>
 
     <!-- Footer -->

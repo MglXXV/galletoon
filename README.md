@@ -1,10 +1,10 @@
-# GalleToon
+# GalleToon 🎭
 
-GalleToon es una aplicación web de lectura de mangas basada en monedas virtuales (GalleCoins). Cada manga requiere canjear GalleCoins para continuar la lectura. Las monedas se recargan automáticamente con el tiempo o se pueden comprar para recargas instantáneas.
+GalleToon es una aplicación web moderna de lectura de mangas basada en monedas virtuales (GalleCoins). Cada manga requiere canjear GalleCoins para continuar la lectura. Las monedas se recargan automáticamente con el tiempo o se pueden comprar para recargas instantáneas.
 
 ## 🏗️ Arquitectura del Proyecto
 
-El proyecto utiliza **TypeScript Vanilla** con un **patrón de módulos** para una arquitectura limpia, mantenible y escalable.
+El proyecto utiliza **TypeScript Vanilla** con una **arquitectura modular avanzada** para una estructura limpia, mantenible y escalable.
 
 ### Estructura del Proyecto
 
@@ -14,6 +14,20 @@ galletoon/
 ├── package.json                 # Dependencias y scripts
 ├── tsconfig.json               # Configuración TypeScript
 ├── docker-compose.yml          # Configuración Docker
+├── .env                        # Variables de entorno
+├── mongoSchema/                # Esquemas de MongoDB
+│   ├── database.ts             # Conexión a MongoDB
+│   ├── user/                   # Esquemas de usuario
+│   │   ├── userSchema.ts       # Esquema de usuario
+│   │   ├── gallecoinsSchema.ts # Esquema de GalleCoins
+│   │   └── librarySchema.ts    # Esquema de biblioteca
+│   ├── manga/                  # Esquemas de manga
+│   │   ├── mangaSchema.ts      # Esquema de manga
+│   │   ├── chapterSchema.ts    # Esquema de capítulos
+│   │   └── categorySchema.ts   # Esquema de categorías
+│   └── stripe/                 # Esquemas de pagos
+│       ├── buyChaptersSchema.ts # Compras de capítulos
+│       └── buyGallecoinsSchema.ts # Compras de GalleCoins
 ├── public/                     # Archivos estáticos
 │   ├── index.html              # Página principal (SPA)
 │   ├── auth.html               # Página de autenticación (SPA)
@@ -21,20 +35,12 @@ galletoon/
 │   ├── gallecoins.html         # Sistema de GalleCoins (SPA)
 │   ├── ts/                     # Módulos TypeScript
 │   │   └── modules/
-│   │       ├── BaseModule.ts           # Módulo base con funcionalidades comunes
-│   │       ├── RouterModule.ts         # Navegación SPA
-│   │       ├── AdminModule.ts          # Gestión de mangas y capítulos
-│   │       ├── AuthModule.ts           # Autenticación y registro
-│   │       ├── GalleCoinsModule.ts     # Sistema de monedas virtuales
-│   │       └── AppModule.ts            # Orquestador principal
+│   │       └── app.ts          # Aplicación principal modular
 │   ├── view/                   # Vistas dinámicas
 │   │   ├── home.html           # Contenido de la página de inicio
 │   │   ├── manga.html          # Página del lector de manga
 │   │   ├── profile.html        # Página de perfil
-│   │   ├── 44.html            # Página de error
-│   │   ├── auth/
-│   │   │   ├── login-form.html # Formulario de inicio de sesión
-│   │   │   └── register-form.html # Formulario de registro
+│   │   ├── 404.html           # Página de error
 │   │   ├── categories/
 │   │   │   ├── category.html   # Página principal de categorías
 │   │   │   ├── cards-manga-action.html    # Manga de acción
@@ -43,37 +49,40 @@ galletoon/
 │   │   │   ├── cards-manga-romance.html   # Manga de romance
 │   │   │   └── cards-manga-sport.html     # Manga de deportes
 │   │   └── admin/
-│   │       ├── mangas-view.html    # Vista de gestión de mangas
-│   │       ├── capitulos-view.html # Vista de gestión de capítulos
-│   │       ├── modal-manga.html    # Modal para agregar/editar manga
-│   │       └── modal-capitulo.html # Modal para agregar/editar capítulo
+│   │       ├── admin.html      # Panel de administración
+│   │       ├── manga-settings.html # Configuración de mangas
+│   │       └── chapter-settings.html # Configuración de capítulos
 │   └── assets/                 # Recursos estáticos
 │       └── Hero.jpg            # Imagen de hero
-└── docs/                       # Documentación
-    └── MODULE_PATTERN_IMPLEMENTATION.md
+└── data/                       # Datos de MongoDB (Docker)
 ```
 
-## 🧩 Sistema de Módulos TypeScript
+## 🧩 Sistema de Módulos TypeScript Avanzado
 
-### Módulos Implementados
+### Arquitectura Modular Implementada
+
+El proyecto utiliza un **sistema de módulos singleton** con las siguientes características:
 
 | Módulo | Propósito | Características |
 |--------|-----------|-----------------|
-| **BaseModule** | Funcionalidades comunes | Event listeners, notificaciones, formularios, utilidades |
-| **RouterModule** | Navegación SPA | Enrutamiento, carga dinámica, historial del navegador |
-| **AdminModule** | Panel de administración | CRUD de mangas y capítulos, modales, validación |
-| **AuthModule** | Autenticación | Login, registro, validación, gestión de sesiones |
-| **GalleCoinsModule** | Sistema de monedas | Balance, transacciones, historial, compras |
-| **AppModule** | Orquestador principal | Inicialización, gestión de módulos, errores globales |
+| **ConfigModule** | Configuración global | Variables de entorno, configuración de la app |
+| **StateModule** | Estado global | Gestión de estado con suscripciones |
+| **AuthModule** | Autenticación | Login, registro, gestión de usuarios |
+| **MangaModule** | Gestión de mangas | CRUD de mangas y capítulos |
+| **GallecoinsModule** | Sistema de monedas | Balance, transacciones, compras |
+| **NavigationModule** | Navegación | Rutas, historial, navegación SPA |
+| **UtilsModule** | Utilidades | Formateo, debounce, throttle |
+| **ApiModule** | Cliente HTTP | Requests, manejo de errores |
 
-### Ventajas de la Arquitectura Modular
+### Ventajas de la Nueva Arquitectura
 
-✅ **Separación de responsabilidades** - Cada módulo tiene una función específica
-✅ **Reutilización de código** - BaseModule proporciona funcionalidades comunes
-✅ **Mantenibilidad** - Código organizado y fácil de mantener
-✅ **Escalabilidad** - Fácil agregar nuevos módulos
-✅ **TypeScript** - Tipado estático para mayor robustez
-✅ **Testing** - Módulos pueden probarse independientemente
+✅ **Patrón Singleton** - Instancia única por módulo
+✅ **Separación de responsabilidades** - Cada módulo tiene función específica
+✅ **Sistema de eventos** - StateModule con suscripciones
+✅ **TypeScript completo** - Tipado estático en toda la aplicación
+✅ **Manejo de errores** - Try-catch en operaciones críticas
+✅ **Inicialización automática** - Se inicializa al cargar el DOM
+✅ **Limpieza de recursos** - Método destroy para cleanup
 
 ## 🚀 Características Principales
 
@@ -83,7 +92,7 @@ galletoon/
 - Soporte para historial del navegador
 - Estados de carga visuales
 
-###2 Sistema de Autenticación
+### 2. Sistema de Autenticación
 - Login y registro de usuarios
 - Validación de formularios
 - Gestión de sesiones
@@ -107,6 +116,12 @@ galletoon/
 - Interfaz responsive
 - Integración con GalleCoins
 
+### 6. Base de Datos MongoDB
+- Esquemas bien definidos
+- Relaciones entre entidades
+- Integración con Stripe para pagos
+- Persistencia de datos
+
 ## 🛠️ Tecnologías Utilizadas
 
 ### Frontend
@@ -120,12 +135,14 @@ galletoon/
 - **Node.js** - Runtime de JavaScript
 - **Fastify** - Framework web rápido y eficiente
 - **TypeScript** - Tipado estático en el servidor
+- **MongoDB** - Base de datos NoSQL
 - **Stripe** - Integración de pagos (preparado)
 
 ### Herramientas de Desarrollo
 - **pnpm** - Gestor de paquetes rápido
 - **tsx** - Ejecutor de TypeScript
-- **Docker** - Containerización (opcional)
+- **Docker** - Containerización con MongoDB
+- **Mongo Express** - Interfaz web para MongoDB
 
 ## 📋 Rutas Configuradas
 
@@ -146,8 +163,9 @@ galletoon/
 ## 🚀 Instalación y Uso
 
 ### Prerrequisitos
-- Node.js (v18o superior)
+- Node.js (v18 o superior)
 - pnpm (recomendado) o npm
+- Docker (para MongoDB)
 
 ### Instalación
 ```bash
@@ -158,8 +176,30 @@ cd galletoon
 # Instalar dependencias
 pnpm install
 
+# Crear archivo .env
+cp .env.example .env
+# Editar .env con tus configuraciones
+
+# Iniciar MongoDB con Docker
+docker-compose up -d
+
 # Iniciar el servidor de desarrollo
 pnpm dev
+```
+
+### Variables de Entorno (.env)
+```env
+# MongoDB Configuration
+MONGO_URI=mongodb://localhost:27017/galletoon
+MONGO_ROOT_USERNAME=root
+MONGO_ROOT_PASSWORD=example
+
+# Stripe Configuration
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
+
+# Server Configuration
+PORT=3000
+NODE_ENV=development
 ```
 
 ### Estructura de Comandos
@@ -170,62 +210,90 @@ pnpm start        # Iniciar servidor de producción
 ```
 
 ### Acceso a la Aplicación
-- **Desarrollo**: http://localhost:30
+- **Desarrollo**: http://localhost:3000
+- **Mongo Express**: http://localhost:8081
 - **Producción**: Configurar según el entorno
 
-## 📚 Documentación
+## 🧩 Uso de Módulos
 
-- **MODULE_PATTERN_IMPLEMENTATION.md** - Guía completa del patrón de módulos
-- **README.md** - Este archivo con información general
+### Importar la Aplicación
+```typescript
+import { app } from './modules/app';
+
+// Usar módulos específicos
+const mangaList = await app.manga.getMangaList();
+const userBalance = await app.gallecoins.getBalance();
+app.navigation.navigateTo('/manga/123');
+```
+
+### Acceso Directo a Módulos
+```typescript
+import { AuthModule, MangaModule, GallecoinsModule } from './modules/app';
+
+const auth = AuthModule.getInstance();
+const manga = MangaModule.getInstance();
+const gallecoins = GallecoinsModule.getInstance();
+```
+
+## 🐳 Docker
+
+### Servicios Disponibles
+- **MongoDB**: Base de datos principal
+- **Mongo Express**: Interfaz web para MongoDB
+
+### Comandos Docker
+```bash
+# Iniciar servicios
+docker-compose up -d
+
+# Ver logs
+docker-compose logs
+
+# Parar servicios
+docker-compose down
+
+# Reiniciar servicios
+docker-compose restart
+```
 
 ## 🔧 Desarrollo
 
-### Agregar Nuevo Módulo TypeScript
+### Agregar Nuevo Módulo
 ```typescript
-// Crear nuevo módulo
-class CustomModule extends BaseModule [object Object]private customData: string[] = ;
-
-  constructor() {
-    super();
+class CustomModule {
+  private static instance: CustomModule;
+  
+  static getInstance(): CustomModule {
+    if (!CustomModule.instance) {
+      CustomModule.instance = new CustomModule();
+    }
+    return CustomModule.instance;
   }
-
-  protected onInit(): void {
-    // Inicialización específica
-  }
-
-  public customMethod(): void {
-    // Método específico del módulo
-  }
+  
+  // Métodos del módulo
 }
-
-// Agregar a la aplicación
-appModule.addModule('custom', new CustomModule());
 ```
 
-### Acceso a Módulos
+### Implementar Métodos
 ```typescript
-// Acceder a un módulo específico
-const router = appModule.getModule('router) as RouterModule;
-const admin = appModule.getModule('admin') as AdminModule;
-
-// Ejecutar método en todos los módulos
-appModule.executeOnAllModules('showNotification', 'Mensaje',success');
+// En cualquier módulo
+async customMethod(): Promise<void> {
+  // TODO: Implementar lógica específica
+  throw new Error('Método no implementado');
+}
 ```
 
-## 🐳 Docker (Opcional)
+## 📚 Documentación
 
-```bash
-# Construir imagen
-docker-compose build
-
-# Ejecutar con Docker
-docker-compose up
-```
+- **README.md** - Este archivo con información general
+- **app.ts** - Documentación inline de la arquitectura modular
 
 ## 🤝 Contribución
 
-1. Fork el proyecto2rear una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -mAdd some AmazingFeature'`)4 Push a la rama (`git push origin feature/AmazingFeature`)
+1. Fork el proyecto
+2. Crear una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
 5. Abrir un Pull Request
 
 ## 📄 Licencia
@@ -242,3 +310,30 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 - Font Awesome por los iconos
 - Fastify por el servidor web
 - TypeScript por el sistema de tipos
+- MongoDB por la base de datos
+- Docker por la containerización
+
+## 🎯 Estado del Proyecto
+
+### ✅ Completado
+- [x] Arquitectura modular TypeScript
+- [x] Configuración de MongoDB con Docker
+- [x] Sistema de autenticación básico
+- [x] Panel de administración
+- [x] Sistema de GalleCoins
+- [x] Interfaz de usuario moderna
+- [x] Navegación SPA
+
+### 🚧 En Desarrollo
+- [ ] Integración completa con Stripe
+- [ ] Sistema de pagos
+- [ ] Lector de manga avanzado
+- [ ] Sistema de notificaciones
+- [ ] Optimización de rendimiento
+
+### 📋 Pendiente
+- [ ] Tests unitarios
+- [ ] Documentación API
+- [ ] Despliegue en producción
+- [ ] Sistema de caché
+- [ ] Analytics y métricas
