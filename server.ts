@@ -59,7 +59,7 @@ fastify.get("/categorias/*", async (req, res) => {
 
 // Rutas para SPAs independientes
 fastify.get("/admin", async (req, res) => {
-  return res.sendFile("admin.html");
+  return res.sendFile("./view/admin/admin.html");
 });
 
 fastify.get("/auth", async (req, res) => {
