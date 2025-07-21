@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrador GalleToon</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        principal: '#F23054',
+                        secundario: '#F26699',
+                        terciario: '#F2CE1B',
+                        cuarto: '#D97218',
+                        quinto: '#8C3E3E'
+                    },
+                    fontFamily: {
+                        'lilita': ['Lilita One', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Lilita One', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-principal text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <a href="/" class="text-2xl font-lilita text-white no-underline">
+                    <h1>GalleToon Admin</h1>
+                </a>
+                <nav class="flex space-x-4">
+                    <button id="btn-manga-view" class="bg-secundario hover:bg-terciario hover:text-principal text-white px-6 py-3 rounded-lg font-lilita transition-colors duration-300">
+                        Gestión de Mangas
+                    </button>
+                    <button id="btn-capitulos-view" class="bg-secundario hover:bg-terciario hover:text-principal text-white px-6 py-3 rounded-lg font-lilita transition-colors duration-300">
+                        Gestión de Capítulos
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Vista de Mangas -->
+        <div id="manga-view" class="block">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-lilita text-principal">Gestión de Mangas</h2>
+                <button id="btn-agregar-manga" class="bg-principal hover:bg-secundario text-white px-6 py-3 rounded-lg font-lilita transition-colors duration-300">
+                    + Agregar Manga
+                </button>
+            </div>
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-principal text-white">
+                            <tr>
+                                <th class="px-6 py-4 text-left font-lilita">Portada</th>
+                                <th class="px-6 py-4 text-left font-lilita">Nombre</th>
+                                <th class="px-6 py-4 text-left font-lilita">Género</th>
+                                <th class="px-6 py-4 text-left font-lilita">Sinopsis</th>
+                                <th class="px-6 py-4 text-left font-lilita">Capítulos</th>
+                                <th class="px-6 py-4 text-left font-lilita">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="manga-list-body" class="divide-y divide-gray-200">
+                            <!-- Los mangas se cargarán dinámicamente aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vista de Capítulos -->
+        <div id="capitulos-view" class="hidden">
+            <h2 class="text-3xl font-lilita text-principal text-center mb-8">Gestión de Capítulos</h2>
+            
+            <div class="space-y-8">
+                <!-- Tabla de Mangas -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <h3 class="text-xl font-lilita text-principal p-6 border-b border-gray-200">Selecciona un Manga para ver sus Capítulos</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-principal text-white">
+                                <tr>
+                                    <th class="px-6 py-4 text-left font-lilita">Nombre del Manga</th>
+                                    <th class="px-6 py-4 text-left font-lilita">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mangas-capitulos-list" class="divide-y divide-gray-200">
+                                <!-- Los mangas se cargarán dinámicamente aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tabla de Capítulos -->
+                <div id="capitulos-table" class="bg-white rounded-lg shadow-lg overflow-hidden hidden">
+                    <div class="flex justify-between items-center p-6 border-b border-gray-200">
+                        <h3 class="text-xl font-lilita text-principal">
+                            Capítulos del Manga: <span id="manga-seleccionado" class="text-secundario"></span>
+                        </h3>
+                        <button id="btn-agregar-capitulo" class="bg-principal hover:bg-secundario text-white px-4 py-2 rounded-lg font-lilita transition-colors duration-300">
+                            + Agregar Capítulo
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-principal text-white">
+                                <tr>
+                                    <th class="px-6 py-4 text-left font-lilita">Número</th>
+                                    <th class="px-6 py-4 text-left font-lilita">Nombre del Capítulo</th>
+                                    <th class="px-6 py-4 text-left font-lilita">Precio del Capítulo</th>
+                                    <th class="px-6 py-4 text-left font-lilita">Sinopsis del Capítulo</th>
+                                    <th class="px-6 py-4 text-left font-lilita">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="capitulos-list" class="divide-y divide-gray-200">
+                                <!-- Los capítulos se cargarán dinámicamente aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para Agregar Manga -->
+    <div id="modal-agregar-manga" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center p-6 border-b border-gray-200">
+                <h2 class="text-2xl font-lilita text-principal">Agregar Nuevo Manga</h2>
+                <button id="close-modal-agregar-manga" class="text-gray-400 hover:text-principal text-2xl font-bold">&times;</button>
+            </div>
+            <form id="form-agregar-manga" class="p-6 space-y-4">
+                <div>
+                    <label for="agregar-manga-nombre" class="block text-sm font-lilita text-principal mb-2">Nombre del Manga:</label>
+                    <input type="text" id="agregar-manga-nombre" name="nombre" required 
+                           class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-principal font-lilita">
+                </div>
+                <div>
+                    <label for="agregar-manga-genero" class="block text-sm font-lilita text-principal mb-2">Género:</label>
+                    <select id="agregar-manga-genero" name="genero" required 
+                            class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-principal font-lilita">
+                        <option value="">Selecciona un género</option>
+                        <option value="action">Action</option>
+                        <option value="adventure">Adventure</option>
+                        <option value="drama">Drama</option>
+                        <option value="romance">Romance</option>
+                        <option value="sport">Sport</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="agregar-manga-sinopsis" class="block text-sm font-lilita text-principal mb-2">Sinopsis:</label>
+                    <textarea id="agregar-manga-sinopsis" name="sinopsis" rows="4" required 
+                              class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-principal font-lilita"></textarea>
+                </div>
+                <div>
+                    <label for="agregar-manga-portada" class="block text-sm font-lilita text-principal mb-2">Portada (URL):</label>
+                    <input type="url" id="agregar-manga-portada" name="portada" required 
+                           class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-principal font-lilita">
+                </div>
+                <div class="flex space-x-4 pt-4">
+                    <button type="submit" class="flex-1 bg-principal hover:bg-secundario text-white py-2 px-4 rounded-lg font-lilita transition-colors duration-300">
+                        Agregar Manga
+                    </button>
+                    <button type="button" id="cancelar-agregar-manga" class="flex-1 bg-terciario hover:bg-cuarto text-principal py-2 px-4 rounded-lg font-lilita transition-colors duration-300">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Manga -->
+    <div id="modal-editar-manga" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center p-6 border-b border-gray-200">
+                <h2 class="text-2xl font-lilita text-principal">Editar Manga</h2>
+                <button id="close-modal-manga" class="text-gray-400 hover:text-principal text-2xl font-bold">&times;</button>
+            </div>
+            <form id="form-editar-manga" class="p-6 space-y-4">
+                <div>
+                    <label for="edit-manga-nombre" class="block text-sm font-lilita text-principal mb-2">Nombre del Manga:</label>
+                    <input type="text" id="edit-manga-nombre" name="nombre" required 
+                           class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-principal font-lilita">
+                </div>
+                <div>
+                    <label for="edit-manga-genero" class="block text-sm font-lilita text-principal mb-2">Género:</label>
+                    <select id="edit-manga-genero" name="genero" required 
+                            class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-principal font-lilita">
+                        <option value="">Selecciona un género</option>
+                        <option value="action">Action</option>
+                        <option value="adventure">Adventure</option>
+                        <option value="drama">Drama</option>
+                        <option value="romance">Romance</option>
+                        <option value="sport">Sport</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="edit-manga-sinopsis" class="block text-sm font-lilita text-principal mb-2">Sinopsis:</label>
+                    <textarea id="edit-manga-sinopsis" name="sinopsis" rows="4" required 
+                              class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-principal font-lilita"></textarea>
+                </div>
+                <div>
+                    <label for="edit-manga-portada" class="block text-sm font-lilita text-principal mb-2">Portada (URL):</label>
+                    <input type="url" id="edit-manga-portada" name="portada" required 
+                           class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-principal font-lilita">
+                </div>
+                <div class="flex space-x-4 pt-4">
+                    <button type="submit" class="flex-1 bg-principal hover:bg-secundario text-white py-2 px-4 rounded-lg font-lilita transition-colors duration-300">
+                        Guardar Cambios
+                    </button>
+                    <button type="button" id="cancelar-editar-manga" class="flex-1 bg-terciario hover:bg-cuarto text-principal py-2 px-4 rounded-lg font-lilita transition-colors duration-300">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar Capítulo -->
+    <div id="modal-agregar-capitulo" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center p-6 border-b border-gray-200">
+                <h2 class="text-2xl font-lilita text-principal">Agregar Nuevo Capítulo</h2>
+                <button id="close-modal-agregar-capitulo" class="text-gray-400 hover:text-principal text-2xl font-bold">&times;</button>
+            </div>
+            <form id="form-agregar-capitulo" class="p-6 space-y-4">
+                <div>
+                    <label for="agregar-capitulo-numero" class="block text-sm font-lilita text-principal mb-2">Número del Capítulo:</label>
+                    <input type="number" id="agregar-capitulo-numero" name="numero" min="1" required 
+                           class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-principal font-lilita">
+                </div>
+                <div>
+                    <label for="agregar-capitulo-nombre" class="block text-sm font-lilita text-principal mb-2">Nombre del Capítulo:</label>
+                    <input type="text" id="agregar-capitulo-nombre" name="nombre" required 
+                           class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-principal font-lilita">
+                </div>
+                <div>
+                    <label for="agregar-capitulo-precio" class="block text-sm font-lilita text-principal mb-2">Precio del Capítulo:</label>
+                    <input type="number" id="agregar-capitulo-precio" name="precio" min="0" step="0.01" required 
+                           class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-principal font-lilita">
+                </div>
+                <div>
+                    <label for="agregar-capitulo-sinopsis" class="block text-sm font-lilita text-principal mb-2">Sinopsis del Capítulo:</label>
+                    <textarea id="agregar-capitulo-sinopsis" name="sinopsis" rows="4" required 
+                              class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-principal font-lilita"></textarea>
+                </div>
+                <div class="flex space-x-4 pt-4">
+                    <button type="submit" class="flex-1 bg-principal hover:bg-secundario text-white py-2 px-4 rounded-lg font-lilita transition-colors duration-300">
+                        Agregar Capítulo
+                    </button>
+                    <button type="button" id="cancelar-agregar-capitulo" class="flex-1 bg-terciario hover:bg-cuarto text-principal py-2 px-4 rounded-lg font-lilita transition-colors duration-300">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Capítulo -->
+    <div id="modal-editar-capitulo" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center p-6 border-b border-gray-200">
+                <h2 class="text-2xl font-lilita text-principal">Editar Capítulo</h2>
+                <button id="close-modal-capitulo" class="text-gray-400 hover:text-principal text-2xl font-bold">&times;</button>
+            </div>
+            <form id="form-editar-capitulo" class="p-6 space-y-4">
+                <div>
+                    <label for="edit-capitulo-numero" class="block text-sm font-lilita text-principal mb-2">Número del Capítulo:</label>
+                    <input type="number" id="edit-capitulo-numero" name="numero" min="1" required 
+                           class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-principal font-lilita">
+                </div>
+                <div>
+                    <label for="edit-capitulo-nombre" class="block text-sm font-lilita text-principal mb-2">Nombre del Capítulo:</label>
+                    <input type="text" id="edit-capitulo-nombre" name="nombre" required 
+                           class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-principal font-lilita">
+                </div>
+                <div>
+                    <label for="edit-capitulo-precio" class="block text-sm font-lilita text-principal mb-2">Precio del Capítulo:</label>
+                    <input type="number" id="edit-capitulo-precio" name="precio" min="0" step="0.01" required 
+                           class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-principal font-lilita">
+                </div>
+                <div>
+                    <label for="edit-capitulo-sinopsis" class="block text-sm font-lilita text-principal mb-2">Sinopsis del Capítulo:</label>
+                    <textarea id="edit-capitulo-sinopsis" name="sinopsis" rows="4" required 
+                              class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-principal font-lilita"></textarea>
+                </div>
+                <div class="flex space-x-4 pt-4">
+                    <button type="submit" class="flex-1 bg-principal hover:bg-secundario text-white py-2 px-4 rounded-lg font-lilita transition-colors duration-300">
+                        Guardar Cambios
+                    </button>
+                    <button type="button" id="cancelar-editar-capitulo" class="flex-1 bg-terciario hover:bg-cuarto text-principal py-2 px-4 rounded-lg font-lilita transition-colors duration-300">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

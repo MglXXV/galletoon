@@ -111,6 +111,6 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
-  "include": ["server.ts", "public/ts/**/*.ts"],
+  "include": ["server.ts", "public/ts/**/*.ts", "public/view/admin/adminModule.ts"],
   "exclude": ["node_modules", "build"]
 }

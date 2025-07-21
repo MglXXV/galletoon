@@ -23,43 +23,14 @@ fastify.register(fastifyStatic, {
   prefix: "/",
 });
 
-//API ROUTES
+// Rutas principales
 fastify.get("/", async (req, res) => {
   return res.sendFile("index.html");
 });
 
-// SPA Routes - todas las rutas del frontend deben servir index.html
-fastify.get("/home", async (req, res) => {
-  return res.sendFile("index.html");
-});
-
-fastify.get("/login", async (req, res) => {
-  return res.sendFile("index.html");
-});
-
-fastify.get("/register", async (req, res) => {
-  return res.sendFile("index.html");
-});
-
-fastify.get("/profile", async (req, res) => {
-  return res.sendFile("index.html");
-});
-
-fastify.get("/manga", async (req, res) => {
-  return res.sendFile("index.html");
-});
-
-fastify.get("/categorias", async (req, res) => {
-  return res.sendFile("index.html");
-});
-
-fastify.get("/categorias/*", async (req, res) => {
-  return res.sendFile("index.html");
-});
-
-// Rutas para SPAs independientes
+// Rutas para páginas independientes
 fastify.get("/admin", async (req, res) => {
-  return res.sendFile("./view/admin/admin.html");
+  return res.sendFile("admin.html");
 });
 
 fastify.get("/auth", async (req, res) => {
@@ -68,6 +39,23 @@ fastify.get("/auth", async (req, res) => {
 
 fastify.get("/gallecoins", async (req, res) => {
   return res.sendFile("gallecoins.html");
+});
+
+fastify.get("/profile", async (req, res) => {
+  return res.sendFile("profile.html");
+});
+
+fastify.get("/categorias", async (req, res) => {
+  return res.sendFile("category.html");
+});
+
+// Rutas adicionales para archivos estáticos
+fastify.get("/app.js", async (req, res) => {
+  return res.sendFile("app.js");
+});
+
+fastify.get("/utils.css", async (req, res) => {
+  return res.sendFile("utils.css");
 });
 
 //SERVER
