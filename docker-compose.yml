@@ -10,7 +10,9 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
     volumes:
-      - ./data/db:/data/db
+      - mongo-data:/data/db
+
+      
 
   mongo-express:
     image: mongo-express
@@ -22,9 +24,14 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
       ME_CONFIG_BASICAUTH: false
+    depends_on:
+      - mongo
     networks:
       - development
 
 networks:
   development:
     driver: bridge
+
+volumes:
+  mongo-data:
