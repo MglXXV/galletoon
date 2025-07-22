@@ -54,10 +54,6 @@ fastify.get("/app.js", async (req, res) => {
   return res.sendFile("app.js");
 });
 
-fastify.get("/utils.css", async (req, res) => {
-  return res.sendFile("utils.css");
-});
-
 //SERVER
 const start = async () => {
   try {
