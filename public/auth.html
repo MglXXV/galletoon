@@ -8,10 +8,6 @@
             href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
             rel="stylesheet"
         />
-        <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-            rel="stylesheet"
-        />
     </head>
     <body
         class="min-h-screen relative"
@@ -53,7 +49,27 @@
                         <input type="password" id="password" class="mt-1 block w-full rounded-md border-2 border-black shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                     </div>
                     <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition">Iniciar Sesión</button>
-                    <p class="text-sm text-gray-600 mt-4">¿No tienes una cuenta? <a href="/register" class="text-indigo-600 hover:text-indigo-700">Registrate</a></p>
+                    <p class="text-sm text-gray-600 mt-4">¿No tienes una cuenta? <a href="#" id="link-to-register" class="text-indigo-600 hover:text-indigo-700">Registrate</a></p>
+                </form>
+            </div>
+            <!-- Formulario de Registro -->
+            <div class="bg-white rounded-lg shadow-md p-8 w-full max-w-md mt-8 hidden">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Registrarse</h2>
+                <form id="register-form">
+                    <div class="mb-4">
+                        <label for="nickname" class="block text-sm font-medium text-gray-700">Nickname</label>
+                        <input type="text" id="nickname" class="mt-1 block w-full rounded-md border-2 border-black shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    </div>
+                    <div class="mb-4">
+                        <label for="register-email" class="block text-sm font-medium text-gray-700">Correo</label>
+                        <input type="email" id="register-email" class="mt-1 block w-full rounded-md border-2 border-black shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    </div>
+                    <div class="mb-4">
+                        <label for="register-password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+                        <input type="password" id="register-password" class="mt-1 block w-full rounded-md border-2 border-black shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    </div>
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition">Registrarse</button>
+                    <p class="text-sm text-gray-600 mt-4">¿Ya tienes cuenta? <a href="#" id="link-to-login" class="text-green-600 hover:text-green-700">Inicia sesión</a></p>
                 </form>
             </div>
         </main>
@@ -63,5 +79,6 @@
             id="notifications-container"
             class="fixed top-4 right-4 z-50"
         ></div>
+        <script src="js/auth.js"></script>
     </body>
 </html>

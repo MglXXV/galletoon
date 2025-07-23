@@ -49,6 +49,25 @@ fastify.get("/categorias", async (req, res) => {
   return res.sendFile("category.html");
 });
 
+fastify.get("/categories/category-action", async (req, res) => {
+  return res.sendFile("categories/category-action.html");
+});
+fastify.get("/categories/category-adventure", async (req, res) => {
+  return res.sendFile("categories/category-adventure.html");
+});
+fastify.get("/categories/category-drama", async (req, res) => {
+  return res.sendFile("categories/category-drama.html");
+});
+fastify.get("/categories/category-romance", async (req, res) => {
+  return res.sendFile("categories/category-romance.html");
+});
+fastify.get("/categories/category-horror", async (req, res) => {
+  return res.sendFile("categories/category-horror.html");
+});
+fastify.get("/categories/category-sport", async (req, res) => {
+  return res.sendFile("categories/category-sport.html");
+});
+
 // Rutas adicionales para archivos estáticos
 fastify.get("/app.js", async (req, res) => {
   return res.sendFile("app.js");

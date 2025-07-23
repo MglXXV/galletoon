@@ -33,27 +33,20 @@ galletoon/
 │   ├── auth.html               # Página de autenticación (SPA)
 │   ├── admin.html              # Panel de administración (SPA)
 │   ├── gallecoins.html         # Sistema de GalleCoins (SPA)
-│   ├── ts/                     # Módulos TypeScript
-│   │   └── modules/
-│   │       └── app.ts          # Aplicación principal modular
-│   ├── view/                   # Vistas dinámicas
-│   │   ├── home.html           # Contenido de la página de inicio
-│   │   ├── manga.html          # Página del lector de manga
-│   │   ├── profile.html        # Página de perfil
-│   │   ├── 404.html           # Página de error
-│   │   ├── categories/
-│   │   │   ├── category.html   # Página principal de categorías
-│   │   │   ├── cards-manga-action.html    # Manga de acción
-│   │   │   ├── cards-manga-adventure.html # Manga de aventura
-│   │   │   ├── cards-manga-drama.html     # Manga de drama
-│   │   │   ├── cards-manga-romance.html   # Manga de romance
-│   │   │   └── cards-manga-sport.html     # Manga de deportes
-│   │   └── admin/
-│   │       ├── admin.html      # Panel de administración
-│   │       ├── manga-settings.html # Configuración de mangas
-│   │       └── chapter-settings.html # Configuración de capítulos
-│   └── assets/                 # Recursos estáticos
-│       └── Hero.jpg            # Imagen de hero
+│   ├── profile.html            # Página de perfil
+│   ├── category.html           # Página principal de categorías
+│   ├── categories/             # Páginas de categorías individuales
+│   │   ├── category-action.html
+│   │   ├── category-adventure.html
+│   │   ├── category-drama.html
+│   │   ├── category-romance.html
+│   │   ├── category-horror.html
+│   │   └── category-sport.html
+│   ├── js/                     # Scripts JavaScript
+│   │   ├── admin.js
+│   │   ├── auth.js
+│   │   └── category.js
+│   └── utils.css               # Estilos globales
 └── data/                       # Datos de MongoDB (Docker)
 ```
 
@@ -158,7 +151,12 @@ El proyecto utiliza un **sistema de módulos singleton** con las siguientes cara
 | `/profile` | Perfil | Página de perfil de usuario |
 | `/manga` | Lector | Lector de manga |
 | `/categorias` | Categorías | Lista de categorías |
-| `/categorias/*` | Categorías específicas | Mangas por categoría |
+| `/categorias/category-action` | Categoría Acción | Mangas de acción |
+| `/categorias/category-adventure` | Categoría Aventura | Mangas de aventura |
+| `/categorias/category-drama` | Categoría Drama | Mangas de drama |
+| `/categorias/category-romance` | Categoría Romance | Mangas de romance |
+| `/categorias/category-horror` | Categoría Terror | Mangas de terror |
+| `/categorias/category-sport` | Categoría Deportes | Mangas de deportes |
 
 ## 🚀 Instalación y Uso
 

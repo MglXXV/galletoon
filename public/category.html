@@ -1,134 +1,88 @@
-<div class="categories-page">
-	<h1 class="page-title">Categorías de Manga</h1>
-	<p class="page-description">
-		Explora manga por género y encuentra tu próxima lectura favorita
-	</p>
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Categorías - GalleToon</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  </head>
+  <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-pink-700 text-white shadow-md sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        <a href="/" class="text-2xl font-bold nav-link hover:text-yellow-300 transition">GALLETOON</a>
+        <div class="flex-1 mx-20">
+          <input
+            type="text"
+            placeholder="Buscar..."
+            class="w-full px-4 py-2 rounded-md shadow-inner focus:outline-none focus:ring focus:ring-yellow-300 text-black"
+          />
+        </div>
+        <nav class="space-x-4 text-sm md:block">
+          <a href="/categorias" class="nav-link">Categorías</a>
+          <a href="/gallecoins" class="nav-link">GalleCoins</a>
+          <a href="/auth" class="nav-link">Iniciar Sesión</a>
+        </nav>
+      </div>
+    </header>
 
-	<div class="categories-grid">
-		<div class="category-item">
-			<div class="category-header">
-				<div class="category-icon">⚔️</div>
-				<h3 class="category-name">Acción</h3>
-			</div>
-			<p class="category-description">
-				Manga lleno de batallas épicas, superpoderes y aventuras emocionantes.
-			</p>
-			<div class="category-stats">
-				<span class="stat">150+ títulos</span>
-				<span class="stat">Muy popular</span>
-			</div>
-			<a
-				href="/categorias/action"
-				class="btn btn-primary nav-link"
-				>Explorar Acción</a
-			>
-		</div>
+    <main class="flex-1 max-w-7xl mx-auto w-full p-4">
+      <!-- Hero de Categorías -->
+      <section class="relative h-56 md:h-72 w-full bg-cover bg-center mb-8" style="background-image: url('https://wallpaperaccess.com/full/4131921.jpg');">
+        <div class="absolute inset-0 bg-gray-800 bg-opacity-60 flex items-center justify-center">
+          <h1 class="text-white text-4xl md:text-5xl font-bold">Categorías de Manga</h1>
+        </div>
+      </section>
 
-		<div class="category-item">
-			<div class="category-header">
-				<div class="category-icon">💕</div>
-				<h3 class="category-name">Romance</h3>
-			</div>
-			<p class="category-description">
-				Historias de amor, relaciones y emociones que tocan el corazón.
-			</p>
-			<div class="category-stats">
-				<span class="stat">200+ títulos</span>
-				<span class="stat">Muy popular</span>
-			</div>
-			<a
-				href="/categorias/romance"
-				class="btn btn-primary nav-link"
-				>Explorar Romance</a
-			>
-		</div>
+      <!-- Botones de categorías -->
+      <div class="flex flex-wrap justify-center gap-4 mb-10">
+        <button class="px-6 py-2 rounded-full bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition">Acción</button>
+        <button class="px-6 py-2 rounded-full bg-pink-600 text-white font-semibold hover:bg-pink-700 transition">Aventura</button>
+        <button class="px-6 py-2 rounded-full bg-yellow-500 text-white font-semibold hover:bg-yellow-600 transition">Drama</button>
+        <button class="px-6 py-2 rounded-full bg-red-500 text-white font-semibold hover:bg-red-600 transition">Romance</button>
+        <button class="px-6 py-2 rounded-full bg-green-600 text-white font-semibold hover:bg-green-700 transition">Deportes</button>
+        <button class="px-6 py-2 rounded-full bg-gray-800 text-white font-semibold hover:bg-gray-900 transition">Terror</button>
+      </div>
 
-		<div class="category-item">
-			<div class="category-header">
-				<div class="category-icon">🗺️</div>
-				<h3 class="category-name">Aventura</h3>
-			</div>
-			<p class="category-description">
-				Viajes increíbles, exploración de mundos fantásticos y descubrimientos.
-			</p>
-			<div class="category-stats">
-				<span class="stat">120+ títulos</span>
-				<span class="stat">Popular</span>
-			</div>
-			<a
-				href="/categorias/adventure"
-				class="btn btn-primary nav-link"
-				>Explorar Aventura</a
-			>
-		</div>
+      <!-- Todos los mangas juntos -->
+      <section class="container mx-auto px-4 py-8">
+        <h2 class="text-2xl font-bold mb-6">Todos los Mangas</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+          <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
+            <a href="/manga/id-del-manga" class="nav-link">
+              <img src="https://tse4.mm.bing.net/th/id/OIP.n6EjsiXTX3kCy_ZV_jlMSQHaKY?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Portada del Manga" class="w-full h-48 sm:h-56 md:h-64 object-cover">
+              <div class="p-4">
+                <h3 class="font-bold text-md truncate">Banana Fish</h3>
+                <p class="text-gray-600 text-sm mt-1">El mundo está en peligro</p>
+              </div>
+            </a>
+          </div>
+          <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
+            <a href="/manga/id-del-manga" class="nav-link">
+              <img src="https://tse1.mm.bing.net/th/id/OIP.rl3gr4K8IjD51mde7mtN6QHaLh?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Portada del Manga" class="w-full h-48 sm:h-56 md:h-64 object-cover">
+              <div class="p-4">
+                <h3 class="font-bold text-md truncate">Jujutsu Kaisen</h3>
+                <p class="text-gray-600 text-sm mt-1">El mundo está en peligro</p>
+              </div>
+            </a>
+          </div>
+          <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
+            <a href="/manga/id-del-manga" class="nav-link">
+              <img src="https://www.anmosugoi.com/wp-content/uploads/2020/12/Shingeki-no-Kyojin-nueva-imagen-visual.jpg" alt="Portada del Manga" class="w-full h-48 sm:h-56 md:h-64 object-cover">
+              <div class="p-4">
+                <h3 class="font-bold text-md truncate">Shingeki No Kyojin</h3>
+                <p class="text-gray-600 text-sm mt-1">La paz de la tierra está en peligro</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
 
-		<div class="category-item">
-			<div class="category-header">
-				<div class="category-icon">🎭</div>
-				<h3 class="category-name">Drama</h3>
-			</div>
-			<p class="category-description">
-				Historias profundas con personajes complejos y situaciones emotivas.
-			</p>
-			<div class="category-stats">
-				<span class="stat">180+ títulos</span>
-				<span class="stat">Popular</span>
-			</div>
-			<a
-				href="/categorias/drama"
-				class="btn btn-primary nav-link"
-				>Explorar Drama</a
-			>
-		</div>
-
-		<div class="category-item">
-			<div class="category-header">
-				<div class="category-icon">⚽</div>
-				<h3 class="category-name">Deportes</h3>
-			</div>
-			<p class="category-description">
-				Manga deportivo con competencia, superación personal y trabajo en
-				equipo.
-			</p>
-			<div class="category-stats">
-				<span class="stat">90+ títulos</span>
-				<span class="stat">Especializado</span>
-			</div>
-			<a
-				href="/categorias/sport"
-				class="btn btn-primary nav-link"
-				>Explorar Deportes</a
-			>
-		</div>
-
-		<div class="category-item">
-			<div class="category-header">
-				<div class="category-icon">🎮</div>
-				<h3 class="category-name">Fantasía</h3>
-			</div>
-			<p class="category-description">
-				Mundos mágicos, criaturas fantásticas y poderes sobrenaturales.
-			</p>
-			<div class="category-stats">
-				<span class="stat">160+ títulos</span>
-				<span class="stat">Muy popular</span>
-			</div>
-			<a
-				href="/categorias/fantasy"
-				class="btn btn-primary nav-link"
-				>Explorar Fantasía</a
-			>
-		</div>
-	</div>
-
-	<div class="categories-footer">
-		<p>
-			¿No encuentras lo que buscas?
-			<a
-				href="/"
-				class="nav-link"
-				>Volver al inicio</a
-			>
-		</p>
-	</div>
-</div>
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white text-center py-4 mt-auto">
+      <p>&copy; 2025 GalleToon. Todos los derechos reservados.</p>
+    </footer>
+    <script src="js/category.js"></script>
+  </body>
+</html>
