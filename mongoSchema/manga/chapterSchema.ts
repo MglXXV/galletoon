@@ -1,23 +1,37 @@
 import { Schema, model } from "mongoose";
 
 interface Chapter {
-  idManga: number;
+  mangaId: Schema.Types.ObjectId;
+  chapterNumber: number;
   chapterTitle: string;
-  pages: number;
-  url: string;
-  amountGallecoins: number;
+  description?: string;
+  pages: string[];
+  price: number;
+  isPublished: boolean;
+  publishDate?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const chapterSchema = new Schema<Chapter>(
   {
-    idManga: { type: Number, required: true },
+    mangaId: { type: Schema.Types.ObjectId, ref: "Manga", required: true },
+    chapterNumber: { type: Number, required: true },
     chapterTitle: { type: String, required: true },
-    pages: { type: Number, required: true },
-    url: { type: String, required: true },
-    amountGallecoins: { type: Number, required: true },
+    description: { type: String, default: "" },
+    pages: [{ type: String }],
+    price: { type: Number, required: true, min: 0 },
+    isPublished: { type: Boolean, default: false },
+    publishDate: { type: Date },
   },
-  { collection: "Chapter" },
+  {
+    collection: "Chapter",
+    timestamps: true,
+  },
 );
+
+// Índice compuesto para evitar capítulos duplicados por manga
+chapterSchema.index({ mangaId: 1, chapterNumber: 1 }, { unique: true });
 
 const Chapter = model<Chapter>("Chapter", chapterSchema);
 

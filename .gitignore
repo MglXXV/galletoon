@@ -1,3 +1,5 @@
 node_modules
 .env
 data/db
+public/uploads/manga-covers/
+public/uploads/chapters/
