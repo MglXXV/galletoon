@@ -1,88 +1,164 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Categorías - GalleToon</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  </head>
-  <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="bg-pink-700 text-white shadow-md sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <a href="/" class="text-2xl font-bold nav-link hover:text-yellow-300 transition">GALLETOON</a>
-        <div class="flex-1 mx-20">
-          <input
-            type="text"
-            placeholder="Buscar..."
-            class="w-full px-4 py-2 rounded-md shadow-inner focus:outline-none focus:ring focus:ring-yellow-300 text-black"
-          />
-        </div>
-        <nav class="space-x-4 text-sm md:block">
-          <a href="/categorias" class="nav-link">Categorías</a>
-          <a href="/gallecoins" class="nav-link">GalleCoins</a>
-          <a href="/auth" class="nav-link">Iniciar Sesión</a>
-        </nav>
-      </div>
-    </header>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Categorías - GalleToon</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
+        />
+    </head>
+    <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-pink-700 text-white shadow-md sticky top-0 z-50">
+            <div
+                class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between"
+            >
+                <a
+                    href="/"
+                    class="text-2xl font-bold nav-link hover:text-yellow-300 transition"
+                    >GALLETOON</a
+                >
+                <div class="flex-1 mx-20">
+                    <input
+                        type="text"
+                        placeholder="Buscar..."
+                        class="w-full px-4 py-2 rounded-md shadow-inner focus:outline-none focus:ring focus:ring-yellow-300 text-black"
+                    />
+                </div>
+                <nav class="space-x-4 text-sm md:block">
+                    <a href="/api/categorias" class="nav-link">Categorías</a>
+                    <a href="/api/gallecoins" class="nav-link">GalleCoins</a>
+                    <a href="/api/auth/login" class="nav-link"
+                        >Iniciar Sesión</a
+                    >
+                </nav>
+            </div>
+        </header>
 
-    <main class="flex-1 max-w-7xl mx-auto w-full p-4">
-      <!-- Hero de Categorías -->
-      <section class="relative h-56 md:h-72 w-full bg-cover bg-center mb-8" style="background-image: url('https://wallpaperaccess.com/full/4131921.jpg');">
-        <div class="absolute inset-0 bg-gray-800 bg-opacity-60 flex items-center justify-center">
-          <h1 class="text-white text-4xl md:text-5xl font-bold">Categorías de Manga</h1>
-        </div>
-      </section>
+        <main class="flex-1 max-w-7xl mx-auto w-full p-4">
+            <!-- Hero de Categorías -->
+            <section
+                class="relative h-56 md:h-72 w-full bg-cover bg-center mb-8"
+                style="
+                    background-image: url(&quot;https://wallpaperaccess.com/full/4131921.jpg&quot;);
+                "
+            >
+                <div
+                    class="absolute inset-0 bg-gray-800 bg-opacity-60 flex items-center justify-center"
+                >
+                    <h1 class="text-white text-4xl md:text-5xl font-bold">
+                        Categorías de Manga
+                    </h1>
+                </div>
+            </section>
 
-      <!-- Botones de categorías -->
-      <div class="flex flex-wrap justify-center gap-4 mb-10">
-        <button class="px-6 py-2 rounded-full bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition">Acción</button>
-        <button class="px-6 py-2 rounded-full bg-pink-600 text-white font-semibold hover:bg-pink-700 transition">Aventura</button>
-        <button class="px-6 py-2 rounded-full bg-yellow-500 text-white font-semibold hover:bg-yellow-600 transition">Drama</button>
-        <button class="px-6 py-2 rounded-full bg-red-500 text-white font-semibold hover:bg-red-600 transition">Romance</button>
-        <button class="px-6 py-2 rounded-full bg-green-600 text-white font-semibold hover:bg-green-700 transition">Deportes</button>
-        <button class="px-6 py-2 rounded-full bg-gray-800 text-white font-semibold hover:bg-gray-900 transition">Terror</button>
-      </div>
+            <!-- Botones de categorías -->
+            <div class="flex flex-wrap justify-center gap-4 mb-10">
+                <button
+                    class="px-6 py-2 rounded-full bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition"
+                >
+                    Acción
+                </button>
+                <button
+                    class="px-6 py-2 rounded-full bg-pink-600 text-white font-semibold hover:bg-pink-700 transition"
+                >
+                    Aventura
+                </button>
+                <button
+                    class="px-6 py-2 rounded-full bg-yellow-500 text-white font-semibold hover:bg-yellow-600 transition"
+                >
+                    Drama
+                </button>
+                <button
+                    class="px-6 py-2 rounded-full bg-red-500 text-white font-semibold hover:bg-red-600 transition"
+                >
+                    Romance
+                </button>
+                <button
+                    class="px-6 py-2 rounded-full bg-green-600 text-white font-semibold hover:bg-green-700 transition"
+                >
+                    Deportes
+                </button>
+                <button
+                    class="px-6 py-2 rounded-full bg-gray-800 text-white font-semibold hover:bg-gray-900 transition"
+                >
+                    Terror
+                </button>
+            </div>
 
-      <!-- Todos los mangas juntos -->
-      <section class="container mx-auto px-4 py-8">
-        <h2 class="text-2xl font-bold mb-6">Todos los Mangas</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
-          <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
-            <a href="/manga/id-del-manga" class="nav-link">
-              <img src="https://tse4.mm.bing.net/th/id/OIP.n6EjsiXTX3kCy_ZV_jlMSQHaKY?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Portada del Manga" class="w-full h-48 sm:h-56 md:h-64 object-cover">
-              <div class="p-4">
-                <h3 class="font-bold text-md truncate">Banana Fish</h3>
-                <p class="text-gray-600 text-sm mt-1">El mundo está en peligro</p>
-              </div>
-            </a>
-          </div>
-          <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
-            <a href="/manga/id-del-manga" class="nav-link">
-              <img src="https://tse1.mm.bing.net/th/id/OIP.rl3gr4K8IjD51mde7mtN6QHaLh?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Portada del Manga" class="w-full h-48 sm:h-56 md:h-64 object-cover">
-              <div class="p-4">
-                <h3 class="font-bold text-md truncate">Jujutsu Kaisen</h3>
-                <p class="text-gray-600 text-sm mt-1">El mundo está en peligro</p>
-              </div>
-            </a>
-          </div>
-          <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
-            <a href="/manga/id-del-manga" class="nav-link">
-              <img src="https://www.anmosugoi.com/wp-content/uploads/2020/12/Shingeki-no-Kyojin-nueva-imagen-visual.jpg" alt="Portada del Manga" class="w-full h-48 sm:h-56 md:h-64 object-cover">
-              <div class="p-4">
-                <h3 class="font-bold text-md truncate">Shingeki No Kyojin</h3>
-                <p class="text-gray-600 text-sm mt-1">La paz de la tierra está en peligro</p>
-              </div>
-            </a>
-          </div>
-        </div>
-      </section>
-    </main>
+            <!-- Todos los mangas juntos -->
+            <section class="container mx-auto px-4 py-8">
+                <h2 class="text-2xl font-bold mb-6">Todos los Mangas</h2>
+                <div
+                    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6"
+                >
+                    <div
+                        class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300"
+                    >
+                        <a href="/manga/id-del-manga" class="nav-link">
+                            <img
+                                src="https://tse4.mm.bing.net/th/id/OIP.n6EjsiXTX3kCy_ZV_jlMSQHaKY?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
+                                alt="Portada del Manga"
+                                class="w-full h-48 sm:h-56 md:h-64 object-cover"
+                            />
+                            <div class="p-4">
+                                <h3 class="font-bold text-md truncate">
+                                    Banana Fish
+                                </h3>
+                                <p class="text-gray-600 text-sm mt-1">
+                                    El mundo está en peligro
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                    <div
+                        class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300"
+                    >
+                        <a href="/manga/id-del-manga" class="nav-link">
+                            <img
+                                src="https://tse1.mm.bing.net/th/id/OIP.rl3gr4K8IjD51mde7mtN6QHaLh?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
+                                alt="Portada del Manga"
+                                class="w-full h-48 sm:h-56 md:h-64 object-cover"
+                            />
+                            <div class="p-4">
+                                <h3 class="font-bold text-md truncate">
+                                    Jujutsu Kaisen
+                                </h3>
+                                <p class="text-gray-600 text-sm mt-1">
+                                    El mundo está en peligro
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                    <div
+                        class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300"
+                    >
+                        <a href="/manga/id-del-manga" class="nav-link">
+                            <img
+                                src="https://www.anmosugoi.com/wp-content/uploads/2020/12/Shingeki-no-Kyojin-nueva-imagen-visual.jpg"
+                                alt="Portada del Manga"
+                                class="w-full h-48 sm:h-56 md:h-64 object-cover"
+                            />
+                            <div class="p-4">
+                                <h3 class="font-bold text-md truncate">
+                                    Shingeki No Kyojin
+                                </h3>
+                                <p class="text-gray-600 text-sm mt-1">
+                                    La paz de la tierra está en peligro
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white text-center py-4 mt-auto">
-      <p>&copy; 2025 GalleToon. Todos los derechos reservados.</p>
-    </footer>
-    <script src="js/category.js"></script>
-  </body>
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white text-center py-4 mt-auto">
+            <p>&copy; 2025 GalleToon. Todos los derechos reservados.</p>
+        </footer>
+        <script src="js/category.js"></script>
+    </body>
 </html>

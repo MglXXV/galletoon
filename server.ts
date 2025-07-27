@@ -13,6 +13,7 @@ import Chapter from "./mongoSchema/manga/chapterSchema.ts";
 import User from "./mongoSchema/user/userSchema.ts";
 import multer from "multer";
 import fs from "fs";
+import { randomUUID } from "crypto";
 
 //STRIPE URL
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
@@ -22,19 +23,21 @@ const fastify = Fastify({
   logger: true,
 });
 
-fastify.register(fastifyCookie);
-fastify.register(fastifySession, {
-  secret: process.env.SESSION_KEY || "default_secret",
-  cookie: {
-    secure: process.env.NODE_ENV === "production",
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
-  },
-});
-
 const __filename = fileURLToPath(import.meta.url);
 
 const __dirname = dirname(__filename);
+
+fastify.register(fastifyCookie);
+
+fastify.register(fastifySession, {
+  secret: "m9V7rY2PxLq8DfHs3ZwaKbCnEjTu1GQv",
+  cookie: {
+    secure: false,
+    httpOnly: true,
+    maxAge: 3600 * 1000,
+  },
+  saveUninitialized: false,
+});
 
 fastify.register(fastifyStatic, {
   root: path.join(__dirname, "public"),
@@ -175,10 +178,6 @@ fastify.get("/", async (req, res) => {
 // Rutas para páginas independientes
 fastify.get("/api/admin", async (req, res) => {
   return res.sendFile("admin.html");
-});
-
-fastify.get("/api/auth", async (req, res) => {
-  return res.sendFile("auth.html");
 });
 
 fastify.get("/api/gallecoins", async (req, res) => {
@@ -995,7 +994,6 @@ fastify.post("/api/auth/register", async (req, res) => {
   }
 });
 
-// Ruta de login
 fastify.post("/api/auth/login", async (request, reply) => {
   const { email, password } = request.body as {
     email: string;
@@ -1019,16 +1017,125 @@ fastify.post("/api/auth/login", async (request, reply) => {
       return reply.status(401).send({ error: "Credenciales inválidas" });
     }
 
-    // Guardar información del usuario en la sesión
+    // ✅ Guardar datos en la sesión
     (request.session as any).user = {
-      id: user._id,
+      _id: user._id,
       username: user.username,
+      email: user.email,
       role: user.role,
+      gallecoins: user.galleCoins,
     };
 
-    reply.send({ message: "Login exitoso" });
+    // ✅ Guardar el ID de sesión como "token"
+    const sessionToken = request.session.sessionId;
+
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $set: {
+          activeSession: true,
+          lastLoginAt: new Date(),
+          sessionToken: sessionToken,
+        },
+      },
+    );
+
+    return reply.send({ message: "Login exitoso", sessionToken });
   } catch (error) {
-    reply.status(500).send({ error: "Error interno del servidor" });
+    console.error("Error en login:", error);
+    return reply.status(500).send({ error: "Error interno del servidor" });
+  }
+});
+
+fastify.post("/api/auth/logout", async (request, reply) => {
+  try {
+    const sessionUser = (request.session as any)?.user;
+    const sessionToken = request.session?.sessionId;
+
+    // Opción 2: permite enviar token en header Authorization: Bearer <token>
+    const bearerHeader = request.headers.authorization;
+    const tokenFromHeader = bearerHeader?.startsWith("Bearer ")
+      ? bearerHeader.slice(7)
+      : null;
+
+    // Si no hay sesión ni token en header, no autorizado
+    if (!sessionUser && !tokenFromHeader) {
+      return reply
+        .status(401)
+        .send({ error: "No hay sesión activa ni token proporcionado" });
+    }
+
+    // Usa sessionToken de sesión o el token recibido en header
+    const tokenToMatch = sessionToken || tokenFromHeader;
+
+    // Destruye sesión si existe
+    if (request.session) {
+      await request.session.destroy();
+    }
+
+    // Busca en DB y actualiza sesión a inactiva para el token que coincide
+    const result = await User.updateOne(
+      { sessionToken: tokenToMatch },
+      {
+        $set: {
+          activeSession: false,
+          sessionToken: null,
+        },
+      },
+    );
+
+    if (result.modifiedCount === 0) {
+      return reply
+        .status(404)
+        .send({ error: "Token de sesión no encontrado en base de datos" });
+    }
+
+    return reply.send({ message: "Logout exitoso" });
+  } catch (error) {
+    console.error("Error en logout:", error);
+    return reply.status(500).send({ error: "Error al cerrar sesión" });
+  }
+});
+
+//API DE PRUEBA DE SESSION
+fastify.get("/api/auth/me", (request, reply) => {
+  reply.send({
+    hasSession: !!request.session,
+    sessionUser: (request.session as any)?.user || null,
+  });
+});
+
+fastify.get("/api/auth/refresh", async (request, reply) => {
+  try {
+    const sessionUser = (request.session as any)?.user;
+
+    if (!sessionUser || !sessionUser._id) {
+      return reply.status(401).send({ error: "No hay sesión activa" });
+    }
+
+    const updatedUser = await User.findById(sessionUser._id).lean();
+
+    if (!updatedUser) {
+      return reply.status(404).send({ error: "Usuario no encontrado" });
+    }
+
+    // Actualiza solo los campos que necesitas en la sesión
+    (request.session as any).user = {
+      _id: updatedUser._id,
+      username: updatedUser.username,
+      gallecoins: updatedUser.galleCoins,
+    };
+
+    await request.session.save();
+
+    return reply.send({
+      success: true,
+      message: "Sesión actualizada",
+      user: (request.session as any)?.user || null,
+    });
+  } catch (error) {
+    console.error("Error al refrescar la sesión:", error);
+    return reply.status(500).send({ error: "Error interno del servidor" });
   }
 });
 
