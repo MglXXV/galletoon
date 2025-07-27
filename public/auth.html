@@ -8,69 +8,325 @@
             href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
             rel="stylesheet"
         />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+        <style>
+            .glass-morphism {
+                background: rgba(15, 23, 42, 0.8);
+                backdrop-filter: blur(20px);
+                border: 1px solid rgba(100, 116, 139, 0.3);
+            }
+
+            .dark-gradient-bg {
+                background: linear-gradient(
+                    135deg,
+                    #0f172a 0%,
+                    #1e293b 50%,
+                    #334155 100%
+                );
+            }
+
+            .input-glow:focus {
+                box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+                border-color: #3b82f6;
+            }
+
+            .btn-hover {
+                transition: all 0.3s ease;
+            }
+
+            .btn-hover:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            }
+
+            .floating-animation {
+                animation: float 6s ease-in-out infinite;
+            }
+
+            @keyframes float {
+                0% {
+                    transform: translatey(0px);
+                }
+                50% {
+                    transform: translatey(-20px);
+                }
+                100% {
+                    transform: translatey(0px);
+                }
+            }
+
+            .slide-in {
+                animation: slideIn 0.5s ease-out;
+            }
+
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(100px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .dark-card {
+                background: rgba(30, 41, 59, 0.9);
+                border: 1px solid rgba(71, 85, 105, 0.4);
+            }
+
+            .dark-input {
+                background: rgba(15, 23, 42, 0.6);
+                border: 1px solid rgba(71, 85, 105, 0.5);
+                color: #e2e8f0;
+            }
+
+            .dark-input::placeholder {
+                color: #94a3b8;
+            }
+
+            .dark-input:focus {
+                background: rgba(15, 23, 42, 0.8);
+                border-color: #3b82f6;
+                outline: none;
+            }
+        </style>
     </head>
-    <body
-        class="min-h-screen relative"
-        style="background-image: url('https://wallpaperaccess.com/full/4234037.png'); background-size: cover; background-position: center; background-repeat: no-repeat; backdrop-filter: blur(5px) brightness(0.4);" 
-    >
-        <!-- Header de Autenticación -->
-        <header class="bg-white/80 backdrop-blur-sm shadow-sm">
-            <div
-                class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between"
-            >
+    <body class="min-h-screen dark-gradient-bg relative overflow-hidden">
+        <!-- Decorative elements -->
+        <div
+            class="absolute top-10 left-10 w-20 h-20 bg-blue-500 rounded-full opacity-10 floating-animation"
+        ></div>
+        <div
+            class="absolute top-1/2 right-10 w-16 h-16 bg-purple-500 rounded-full opacity-10 floating-animation"
+            style="animation-delay: 2s"
+        ></div>
+        <div
+            class="absolute bottom-20 left-1/4 w-12 h-12 bg-cyan-500 rounded-full opacity-10 floating-animation"
+            style="animation-delay: 4s"
+        ></div>
+
+        <!-- Header -->
+        <header class="relative z-10 p-6">
+            <div class="max-w-7xl mx-auto flex items-center justify-between">
                 <a
                     href="/"
-                    class="text-2xl font-bold text-white hover:text-pink-600 transition"
+                    class="text-3xl font-bold text-white hover:text-blue-400 transition duration-300 flex items-center"
                 >
-                    <i class="fas fa-book-open mr-2"></i>GalleToon
+                    <i class="fas fa-book-open mr-3 text-blue-400"></i>
+                    GalleToon
                 </a>
-                <a
-                    href="/"
-                    class="text-white hover:text-yellow-500 transition"
-                >
-                    <i class="fas fa-arrow-left mr-2"></i>Volver al Sitio
-                </a>
+                <!-- Botón de volver al sitio eliminado -->
             </div>
         </header>
 
         <main
-            id="auth-content"
-            class="flex items-center justify-center min-h-screen py-12"
+            class="relative z-10 flex items-center justify-center min-h-screen -mt-20"
         >
-            <div class="bg-white rounded-lg shadow-md p-8 w-full max-w-md">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">Iniciar Sesión</h2>
-                <form id="login-form">
-                    <div class="mb-4">
-                        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" id="email" class="mt-1 block w-full rounded-md border-2 border-black shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+            <div class="w-full max-w-md px-6">
+                <!-- Login Form -->
+                <div
+                    id="login-container"
+                    class="glass-morphism rounded-3xl p-8 shadow-2xl slide-in"
+                >
+                    <div class="text-center mb-8">
+                        <div
+                            class="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-700 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"
+                        >
+                            <i class="fas fa-user text-white text-2xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white mb-2">
+                            ¡Bienvenido de Vuelta!
+                        </h2>
+                        <p class="text-gray-300">
+                            Inicia sesión para continuar tu aventura
+                        </p>
                     </div>
-                    <div class="mb-4">
-                        <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
-                        <input type="password" id="password" class="mt-1 block w-full rounded-md border-2 border-black shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+
+                    <form id="login-form" class="space-y-6">
+                        <div class="relative">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+                            >
+                                <i class="fas fa-envelope text-gray-400"></i>
+                            </div>
+                            <input
+                                type="email"
+                                id="email"
+                                placeholder="Correo electrónico"
+                                class="w-full pl-12 pr-4 py-4 dark-input rounded-xl input-glow transition duration-300"
+                                required
+                            />
+                        </div>
+
+                        <div class="relative">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+                            >
+                                <i class="fas fa-lock text-gray-400"></i>
+                            </div>
+                            <input
+                                type="password"
+                                id="password"
+                                placeholder="Contraseña"
+                                class="w-full pl-12 pr-4 py-4 dark-input rounded-xl input-glow transition duration-300"
+                                required
+                            />
+                        </div>
+
+                        <div class="flex items-center justify-between text-sm">
+                            <label class="flex items-center text-gray-300">
+                                <input
+                                    type="checkbox"
+                                    class="mr-2 rounded bg-slate-700 border-slate-600 text-blue-500 focus:ring-blue-500"
+                                />
+                                Recordarme
+                            </label>
+                            <a
+                                href="#"
+                                class="text-blue-400 hover:text-blue-300 transition duration-300"
+                            >
+                                ¿Olvidaste tu contraseña?
+                            </a>
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="w-full bg-gradient-to-r from-blue-600 to-purple-700 text-white font-semibold py-4 rounded-xl btn-hover focus:outline-none focus:ring-4 focus:ring-blue-500/30"
+                        >
+                            <i class="fas fa-sign-in-alt mr-2"></i>
+                            Iniciar Sesión
+                        </button>
+
+                        <div class="text-center">
+                            <p class="text-gray-300">
+                                ¿No tienes cuenta?
+                                <button
+                                    type="button"
+                                    id="link-to-register"
+                                    class="text-cyan-400 hover:text-cyan-300 font-semibold transition duration-300 underline"
+                                >
+                                    Regístrate aquí
+                                </button>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Register Form -->
+                <div
+                    id="register-container"
+                    class="glass-morphism rounded-3xl p-8 shadow-2xl slide-in hidden"
+                >
+                    <div class="text-center mb-8">
+                        <div
+                            class="w-20 h-20 bg-gradient-to-r from-emerald-600 to-cyan-700 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"
+                        >
+                            <i class="fas fa-user-plus text-white text-2xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white mb-2">
+                            Crear Cuenta
+                        </h2>
+                        <p class="text-gray-300">
+                            Únete a nuestra comunidad de manga
+                        </p>
                     </div>
-                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition">Iniciar Sesión</button>
-                    <p class="text-sm text-gray-600 mt-4">¿No tienes una cuenta? <a href="#" id="link-to-register" class="text-indigo-600 hover:text-indigo-700">Registrate</a></p>
-                </form>
-            </div>
-            <!-- Formulario de Registro -->
-            <div class="bg-white rounded-lg shadow-md p-8 w-full max-w-md mt-8 hidden">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">Registrarse</h2>
-                <form id="register-form">
-                    <div class="mb-4">
-                        <label for="nickname" class="block text-sm font-medium text-gray-700">Nickname</label>
-                        <input type="text" id="nickname" class="mt-1 block w-full rounded-md border-2 border-black shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                    </div>
-                    <div class="mb-4">
-                        <label for="register-email" class="block text-sm font-medium text-gray-700">Correo</label>
-                        <input type="email" id="register-email" class="mt-1 block w-full rounded-md border-2 border-black shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                    </div>
-                    <div class="mb-4">
-                        <label for="register-password" class="block text-sm font-medium text-gray-700">Contraseña</label>
-                        <input type="password" id="register-password" class="mt-1 block w-full rounded-md border-2 border-black shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                    </div>
-                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition">Registrarse</button>
-                    <p class="text-sm text-gray-600 mt-4">¿Ya tienes cuenta? <a href="#" id="link-to-login" class="text-green-600 hover:text-green-700">Inicia sesión</a></p>
-                </form>
+
+                    <form id="register-form" class="space-y-6">
+                        <div class="relative">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+                            >
+                                <i class="fas fa-user text-gray-400"></i>
+                            </div>
+                            <input
+                                type="text"
+                                id="username"
+                                placeholder="Nombre de usuario"
+                                class="w-full pl-12 pr-4 py-4 dark-input rounded-xl input-glow transition duration-300"
+                                required
+                            />
+                        </div>
+
+                        <div class="relative">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+                            >
+                                <i class="fas fa-envelope text-gray-400"></i>
+                            </div>
+                            <input
+                                type="email"
+                                id="register-email"
+                                placeholder="Correo electrónico"
+                                class="w-full pl-12 pr-4 py-4 dark-input rounded-xl input-glow transition duration-300"
+                                required
+                            />
+                        </div>
+
+                        <div class="relative">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+                            >
+                                <i class="fas fa-lock text-gray-400"></i>
+                            </div>
+                            <input
+                                type="password"
+                                id="register-password"
+                                placeholder="Contraseña"
+                                class="w-full pl-12 pr-4 py-4 dark-input rounded-xl input-glow transition duration-300"
+                                required
+                            />
+                        </div>
+
+                        <div class="relative">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+                            >
+                                <i class="fas fa-lock text-gray-400"></i>
+                            </div>
+                            <input
+                                type="password"
+                                id="confirm-password"
+                                placeholder="Confirmar contraseña"
+                                class="w-full pl-12 pr-4 py-4 dark-input rounded-xl input-glow transition duration-300"
+                                required
+                            />
+                        </div>
+
+                        <div
+                            class="text-xs text-gray-400 bg-slate-800/40 p-3 rounded-lg border border-slate-600/30"
+                        >
+                            <i
+                                class="fas fa-info-circle mr-2 text-blue-400"
+                            ></i>
+                            La contraseña debe tener al menos 8 caracteres
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="w-full bg-gradient-to-r from-emerald-600 to-cyan-700 text-white font-semibold py-4 rounded-xl btn-hover focus:outline-none focus:ring-4 focus:ring-emerald-500/30"
+                        >
+                            <i class="fas fa-user-plus mr-2"></i>
+                            Crear Cuenta
+                        </button>
+
+                        <div class="text-center">
+                            <p class="text-gray-300">
+                                ¿Ya tienes cuenta?
+                                <button
+                                    type="button"
+                                    id="link-to-login"
+                                    class="text-cyan-400 hover:text-cyan-300 font-semibold transition duration-300 underline"
+                                >
+                                    Inicia sesión
+                                </button>
+                            </p>
+                        </div>
+                    </form>
+                </div>
             </div>
         </main>
 
@@ -79,6 +335,18 @@
             id="notifications-container"
             class="fixed top-4 right-4 z-50"
         ></div>
-        <script src="js/auth.js"></script>
+
+        <!-- Botón flotante para volver al inicio -->
+        <button
+            type="button"
+            id="floating-back-home"
+            class="fixed top-6 right-6 z-50 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-full shadow-lg flex items-center gap-2 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-400/40"
+            aria-label="Volver al inicio"
+        >
+            <i class="fas fa-arrow-left"></i>
+            Volver al Sitio
+        </button>
+
+        <script src="/js/auth.js"></script>
     </body>
 </html>

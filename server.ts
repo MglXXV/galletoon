@@ -1,4 +1,6 @@
 import Fastify from "fastify";
+import fastifySession from "@fastify/session";
+import fastifyCookie from "@fastify/cookie";
 import path, { dirname } from "path";
 import fastifyStatic from "@fastify/static";
 import { fileURLToPath } from "url";
@@ -8,6 +10,7 @@ import { connect } from "./mongoSchema/database.ts";
 import Category from "./mongoSchema/manga/categorySchema.ts";
 import Manga from "./mongoSchema/manga/mangaSchema.ts";
 import Chapter from "./mongoSchema/manga/chapterSchema.ts";
+import User from "./mongoSchema/user/userSchema.ts";
 import multer from "multer";
 import fs from "fs";
 
@@ -15,12 +18,22 @@ import fs from "fs";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 const MONGO_URI = process.env.MONGO_URI as string;
 
-//FASTIFY SETUP
 const fastify = Fastify({
   logger: true,
 });
 
+fastify.register(fastifyCookie);
+fastify.register(fastifySession, {
+  secret: process.env.SESSION_KEY || "default_secret",
+  cookie: {
+    secure: process.env.NODE_ENV === "production",
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+  },
+});
+
 const __filename = fileURLToPath(import.meta.url);
+
 const __dirname = dirname(__filename);
 
 fastify.register(fastifyStatic, {
@@ -28,7 +41,6 @@ fastify.register(fastifyStatic, {
   prefix: "/",
 });
 
-// Configuración de multer para subida de archivos de manga
 const mangaStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = path.join(
@@ -148,49 +160,37 @@ async function countPDFPages(filePath: string): Promise<number> {
 // Registrar multipart con Fastify
 fastify.register(import("@fastify/multipart"));
 
+// Registrar soporte para JSON
+fastify.addContentTypeParser(
+  "application/json",
+  { parseAs: "string" },
+  fastify.getDefaultJsonParser("ignore", "ignore"),
+);
+
 // Rutas principales
 fastify.get("/", async (req, res) => {
   return res.sendFile("index.html");
 });
 
 // Rutas para páginas independientes
-fastify.get("/admin", async (req, res) => {
+fastify.get("/api/admin", async (req, res) => {
   return res.sendFile("admin.html");
 });
 
-fastify.get("/auth", async (req, res) => {
+fastify.get("/api/auth", async (req, res) => {
   return res.sendFile("auth.html");
 });
 
-fastify.get("/gallecoins", async (req, res) => {
+fastify.get("/api/gallecoins", async (req, res) => {
   return res.sendFile("gallecoins.html");
 });
 
-fastify.get("/profile", async (req, res) => {
+fastify.get("/api/profile", async (req, res) => {
   return res.sendFile("profile.html");
 });
 
-fastify.get("/categorias", async (req, res) => {
+fastify.get("/api/categorias", async (req, res) => {
   return res.sendFile("category.html");
-});
-
-fastify.get("/categories/category-action", async (req, res) => {
-  return res.sendFile("categories/category-action.html");
-});
-fastify.get("/categories/category-adventure", async (req, res) => {
-  return res.sendFile("categories/category-adventure.html");
-});
-fastify.get("/categories/category-drama", async (req, res) => {
-  return res.sendFile("categories/category-drama.html");
-});
-fastify.get("/categories/category-romance", async (req, res) => {
-  return res.sendFile("categories/category-romance.html");
-});
-fastify.get("/categories/category-horror", async (req, res) => {
-  return res.sendFile("categories/category-horror.html");
-});
-fastify.get("/categories/category-sport", async (req, res) => {
-  return res.sendFile("categories/category-sport.html");
 });
 
 // Rutas adicionales para archivos estáticos
@@ -910,15 +910,136 @@ fastify.delete("/api/chapters/:id", async (req, res) => {
   }
 });
 
-//SERVER
+fastify.get("/api/auth/login", async (req, res) => {
+  return res.sendFile("auth.html");
+});
+
+fastify.get("/api/auth/register", async (req, res) => {
+  return res.sendFile("auth.html");
+});
+
+// Endpoint de registro de usuario
+fastify.post("/api/auth/register", async (req, res) => {
+  try {
+    const { username, email, password } = req.body as {
+      username: string;
+      email: string;
+      password: string;
+    };
+
+    if (!username || !email || !password) {
+      return res.status(400).send({
+        success: false,
+        error: "Todos los campos son requeridos",
+      });
+    }
+
+    const normalizedUsername = username.trim().toLowerCase();
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const existingUser = await User.findOne({
+      $or: [{ email: normalizedEmail }, { username: normalizedUsername }],
+    });
+    if (existingUser) {
+      if (existingUser.email === normalizedEmail) {
+        return res.status(400).send({
+          success: false,
+          error: "El email ya está registrado. ¿Quieres iniciar sesión?",
+        });
+      }
+      if (existingUser.username === normalizedUsername) {
+        return res.status(400).send({
+          success: false,
+          error: "El username ya está registrado. ¿Quieres iniciar sesión?",
+        });
+      }
+      return res.status(400).send({
+        success: false,
+        error: "El email o username ya están registrados.",
+      });
+    }
+
+    const newUser = new User({
+      username: normalizedUsername,
+      email: normalizedEmail,
+      password,
+    });
+    await newUser.save();
+
+    return res.send({
+      success: true,
+      message: "Usuario registrado correctamente",
+      user: {
+        id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+      },
+    });
+  } catch (error: any) {
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
+      return res.status(400).send({
+        success: false,
+        error:
+          field === "username"
+            ? "El username ya está registrado. ¿Quieres iniciar sesión?"
+            : field === "email"
+              ? "El email ya está registrado. ¿Quieres iniciar sesión?"
+              : `El ${field} ya está registrado`,
+      });
+    }
+    return res.status(500).send({
+      success: false,
+      error: `Error interno del servidor: ${error.message}`,
+    });
+  }
+});
+
+// Ruta de login
+fastify.post("/api/auth/login", async (request, reply) => {
+  const { email, password } = request.body as {
+    email: string;
+    password: string;
+  };
+
+  if (!email || !password) {
+    return reply
+      .status(400)
+      .send({ error: "Email y contraseña son requeridos" });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return reply.status(401).send({ error: "Credenciales inválidas" });
+    }
+
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
+      return reply.status(401).send({ error: "Credenciales inválidas" });
+    }
+
+    // Guardar información del usuario en la sesión
+    (request.session as any).user = {
+      id: user._id,
+      username: user.username,
+      role: user.role,
+    };
+
+    reply.send({ message: "Login exitoso" });
+  } catch (error) {
+    reply.status(500).send({ error: "Error interno del servidor" });
+  }
+});
+
 const start = async () => {
   try {
     await connect(MONGO_URI);
     await fastify.listen({ port: 3000, host: "0.0.0.0" });
+    console.log("Servidor corriendo en http://localhost:3000");
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
   }
 };
-
 start();
