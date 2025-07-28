@@ -13,7 +13,6 @@ import Chapter from "./mongoSchema/manga/chapterSchema.ts";
 import User from "./mongoSchema/user/userSchema.ts";
 import multer from "multer";
 import fs from "fs";
-import { randomUUID } from "crypto";
 
 //STRIPE URL
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
@@ -43,6 +42,92 @@ fastify.register(fastifyStatic, {
   root: path.join(__dirname, "public"),
   prefix: "/",
 });
+
+// Middleware para verificar autenticación: USER
+const requireAuth = async (request: any, reply: any) => {
+  try {
+    const sessionUser = (request.session as any)?.user;
+
+    if (!sessionUser || !sessionUser._id) {
+      return reply.redirect("/");
+    }
+
+    // Verificar que la sesión sigue siendo válida en la base de datos
+    const user = await User.findById(sessionUser._id);
+    if (!user || !user.activeSession) {
+      // Destruir sesión local si no es válida
+      if (request.session) {
+        await request.session.destroy();
+      }
+      return reply.status(401).send({
+        success: false,
+        error: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.",
+        redirectTo: "/api/auth/login",
+      });
+    }
+
+    // Actualizar información de usuario en la sesión si es necesario
+    if (sessionUser.gallecoins !== user.galleCoins) {
+      (request.session as any).user.gallecoins = user.galleCoins;
+    }
+
+    // Continuar con la siguiente función
+  } catch (error) {
+    console.error("Error en middleware de autenticación:", error);
+    return reply.status(500).send({
+      success: false,
+      error: "Error interno del servidor",
+    });
+  }
+};
+
+// Middleware para verificar autenticación: admin
+
+const requireAdmin = async (request: any, reply: any) => {
+  try {
+    const sessionUser = (request.session as any)?.user;
+
+    // Verificar que hay sesión activa
+    if (!sessionUser || !sessionUser._id) {
+      return reply.redirect("/");
+    }
+
+    // Verificar que la sesión sigue siendo válida en la base de datos
+    const user = await User.findById(sessionUser._id);
+    if (!user || !user.activeSession) {
+      // Destruir sesión local si no es válida
+      if (request.session) {
+        await request.session.destroy();
+      }
+      return reply.status(401).send({
+        success: false,
+        error: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.",
+        redirectTo: "/api/auth/login",
+      });
+    }
+
+    // Verificar que el usuario tiene rol de administrador
+    if (user.role !== "admin") {
+      return reply.status(403).send({
+        success: false,
+        error:
+          "Acceso denegado. No tienes permisos de administrador para acceder a esta página.",
+        redirectTo: "/",
+      });
+    }
+
+    // Actualizar información de usuario en la sesión si es necesario
+    if (sessionUser.role !== user.role) {
+      (request.session as any).user.role = user.role;
+    }
+  } catch (error) {
+    console.error("Error en middleware de admin:", error);
+    return reply.status(500).send({
+      success: false,
+      error: "Error interno del servidor",
+    });
+  }
+};
 
 const mangaStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -176,7 +261,7 @@ fastify.get("/", async (req, res) => {
 });
 
 // Rutas para páginas independientes
-fastify.get("/api/admin", async (req, res) => {
+fastify.get("/api/admin", { preHandler: requireAdmin }, async (req, res) => {
   return res.sendFile("admin.html");
 });
 
@@ -184,7 +269,7 @@ fastify.get("/api/gallecoins", async (req, res) => {
   return res.sendFile("gallecoins.html");
 });
 
-fastify.get("/api/profile", async (req, res) => {
+fastify.get("/api/profile", { preHandler: requireAuth }, async (req, res) => {
   return res.sendFile("profile.html");
 });
 
@@ -209,112 +294,126 @@ fastify.get("/api/categories", async (req, res) => {
   }
 });
 
-fastify.post("/api/categories", async (req, res) => {
-  try {
-    const { categoryName, description } = req.body as {
-      categoryName: string;
-      description: string;
-    };
+fastify.post(
+  "/api/categories",
+  { preHandler: requireAdmin },
+  async (req, res) => {
+    try {
+      const { categoryName, description } = req.body as {
+        categoryName: string;
+        description: string;
+      };
 
-    if (!categoryName || !description) {
-      return res
-        .status(400)
-        .send({ success: false, error: "Nombre y descripción son requeridos" });
-    }
+      if (!categoryName || !description) {
+        return res.status(400).send({
+          success: false,
+          error: "Nombre y descripción son requeridos",
+        });
+      }
 
-    // Verificar si la categoría ya existe
-    const existingCategory = await Category.findOne({
-      categoryName: { $regex: new RegExp(categoryName, "i") },
-    });
-    if (existingCategory) {
-      return res.status(400).send({
-        success: false,
-        error: "Ya existe una categoría con ese nombre",
+      // Verificar si la categoría ya existe
+      const existingCategory = await Category.findOne({
+        categoryName: { $regex: new RegExp(categoryName, "i") },
       });
-    }
+      if (existingCategory) {
+        return res.status(400).send({
+          success: false,
+          error: "Ya existe una categoría con ese nombre",
+        });
+      }
 
-    const newCategory = new Category({
-      categoryName: categoryName.trim(),
-      description: description.trim(),
-    });
-
-    await newCategory.save();
-    return res.send({ success: true, data: newCategory });
-  } catch (error) {
-    return res
-      .status(500)
-      .send({ success: false, error: "Error al crear categoría" });
-  }
-});
-
-fastify.put("/api/categories/:id", async (req, res) => {
-  try {
-    const { id } = req.params as { id: string };
-    const { categoryName, description } = req.body as {
-      categoryName: string;
-      description: string;
-    };
-
-    if (!categoryName || !description) {
-      return res
-        .status(400)
-        .send({ success: false, error: "Nombre y descripción son requeridos" });
-    }
-
-    // Verificar si otra categoría ya tiene ese nombre
-    const existingCategory = await Category.findOne({
-      categoryName: { $regex: new RegExp(categoryName, "i") },
-      _id: { $ne: id },
-    });
-    if (existingCategory) {
-      return res.status(400).send({
-        success: false,
-        error: "Ya existe una categoría con ese nombre",
+      const newCategory = new Category({
+        categoryName: categoryName.trim(),
+        description: description.trim(),
       });
-    }
 
-    const updatedCategory = await Category.findByIdAndUpdate(
-      id,
-      { categoryName: categoryName.trim(), description: description.trim() },
-      { new: true },
-    );
-
-    if (!updatedCategory) {
+      await newCategory.save();
+      return res.send({ success: true, data: newCategory });
+    } catch (error) {
       return res
-        .status(404)
-        .send({ success: false, error: "Categoría no encontrada" });
+        .status(500)
+        .send({ success: false, error: "Error al crear categoría" });
     }
+  },
+);
 
-    return res.send({ success: true, data: updatedCategory });
-  } catch (error) {
-    return res
-      .status(500)
-      .send({ success: false, error: "Error al actualizar categoría" });
-  }
-});
+fastify.put(
+  "/api/categories/:id",
+  { preHandler: requireAdmin },
+  async (req, res) => {
+    try {
+      const { id } = req.params as { id: string };
+      const { categoryName, description } = req.body as {
+        categoryName: string;
+        description: string;
+      };
 
-fastify.delete("/api/categories/:id", async (req, res) => {
-  try {
-    const { id } = req.params as { id: string };
+      if (!categoryName || !description) {
+        return res.status(400).send({
+          success: false,
+          error: "Nombre y descripción son requeridos",
+        });
+      }
 
-    const deletedCategory = await Category.findByIdAndDelete(id);
+      // Verificar si otra categoría ya tiene ese nombre
+      const existingCategory = await Category.findOne({
+        categoryName: { $regex: new RegExp(categoryName, "i") },
+        _id: { $ne: id },
+      });
+      if (existingCategory) {
+        return res.status(400).send({
+          success: false,
+          error: "Ya existe una categoría con ese nombre",
+        });
+      }
 
-    if (!deletedCategory) {
+      const updatedCategory = await Category.findByIdAndUpdate(
+        id,
+        { categoryName: categoryName.trim(), description: description.trim() },
+        { new: true },
+      );
+
+      if (!updatedCategory) {
+        return res
+          .status(404)
+          .send({ success: false, error: "Categoría no encontrada" });
+      }
+
+      return res.send({ success: true, data: updatedCategory });
+    } catch (error) {
       return res
-        .status(404)
-        .send({ success: false, error: "Categoría no encontrada" });
+        .status(500)
+        .send({ success: false, error: "Error al actualizar categoría" });
     }
+  },
+);
 
-    return res.send({
-      success: true,
-      message: "Categoría eliminada correctamente",
-    });
-  } catch (error) {
-    return res
-      .status(500)
-      .send({ success: false, error: "Error al eliminar categoría" });
-  }
-});
+fastify.delete(
+  "/api/categories/:id",
+  { preHandler: requireAdmin },
+  async (req, res) => {
+    try {
+      const { id } = req.params as { id: string };
+
+      const deletedCategory = await Category.findByIdAndDelete(id);
+
+      if (!deletedCategory) {
+        return res
+          .status(404)
+          .send({ success: false, error: "Categoría no encontrada" });
+      }
+
+      return res.send({
+        success: true,
+        message: "Categoría eliminada correctamente",
+      });
+    } catch (error) {
+      return res
+        .status(500)
+        .send({ success: false, error: "Error al eliminar categoría" });
+    }
+  },
+);
 
 // API Routes para mangas
 fastify.get("/api/mangas", async (req, res) => {
@@ -343,39 +442,43 @@ fastify.get("/api/mangas", async (req, res) => {
   }
 });
 
-fastify.get("/api/mangas/:id", async (req, res) => {
-  try {
-    const { id } = req.params as { id: string };
-    const manga = await Manga.findById(id);
+fastify.get(
+  "/api/mangas/:id",
+  { preHandler: requireAdmin },
+  async (req, res) => {
+    try {
+      const { id } = req.params as { id: string };
+      const manga = await Manga.findById(id);
 
-    if (!manga) {
+      if (!manga) {
+        return res
+          .status(404)
+          .send({ success: false, error: "Manga no encontrado" });
+      }
+
+      const chapterCount = await Chapter.countDocuments({ mangaId: manga._id });
+      const chapters = await Chapter.find({ mangaId: manga._id }).sort({
+        chapterNumber: 1,
+      });
+
+      return res.send({
+        success: true,
+        data: {
+          ...manga.toObject(),
+          chapterCount,
+          chapters,
+        },
+      });
+    } catch (error) {
+      console.error("Error al obtener manga:", error);
       return res
-        .status(404)
-        .send({ success: false, error: "Manga no encontrado" });
+        .status(500)
+        .send({ success: false, error: "Error al obtener manga" });
     }
+  },
+);
 
-    const chapterCount = await Chapter.countDocuments({ mangaId: manga._id });
-    const chapters = await Chapter.find({ mangaId: manga._id }).sort({
-      chapterNumber: 1,
-    });
-
-    return res.send({
-      success: true,
-      data: {
-        ...manga.toObject(),
-        chapterCount,
-        chapters,
-      },
-    });
-  } catch (error) {
-    console.error("Error al obtener manga:", error);
-    return res
-      .status(500)
-      .send({ success: false, error: "Error al obtener manga" });
-  }
-});
-
-fastify.post("/api/mangas", async (req, res) => {
+fastify.post("/api/mangas", { preHandler: requireAdmin }, async (req, res) => {
   try {
     const data = await req.file();
     let imageURL = "";
@@ -453,145 +556,154 @@ fastify.post("/api/mangas", async (req, res) => {
   }
 });
 
-fastify.put("/api/mangas/:id", async (req, res) => {
-  try {
-    const { id } = req.params as { id: string };
-    const data = await req.file();
-    let imageURL = "";
-    let mangaData: any = {};
+fastify.put(
+  "/api/mangas/:id",
+  { preHandler: requireAdmin },
+  async (req, res) => {
+    try {
+      const { id } = req.params as { id: string };
+      const data = await req.file();
+      let imageURL = "";
+      let mangaData: any = {};
 
-    if (data) {
-      // Si hay archivo de imagen
-      if (data.fieldname === "image") {
-        const buffer = await data.toBuffer();
-        const filename = `manga-${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(data.filename)}`;
-        const filepath = path.join(
-          __dirname,
-          "public",
-          "uploads",
-          "manga-covers",
-          filename,
-        );
-
-        // Eliminar imagen anterior si existe
-        const existingManga = await Manga.findById(id);
-        if (existingManga?.imageURL) {
-          const oldImagePath = path.join(
+      if (data) {
+        // Si hay archivo de imagen
+        if (data.fieldname === "image") {
+          const buffer = await data.toBuffer();
+          const filename = `manga-${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(data.filename)}`;
+          const filepath = path.join(
             __dirname,
             "public",
-            existingManga.imageURL,
+            "uploads",
+            "manga-covers",
+            filename,
           );
-          if (fs.existsSync(oldImagePath)) {
-            fs.unlinkSync(oldImagePath);
+
+          // Eliminar imagen anterior si existe
+          const existingManga = await Manga.findById(id);
+          if (existingManga?.imageURL) {
+            const oldImagePath = path.join(
+              __dirname,
+              "public",
+              existingManga.imageURL,
+            );
+            if (fs.existsSync(oldImagePath)) {
+              fs.unlinkSync(oldImagePath);
+            }
           }
+
+          fs.writeFileSync(filepath, buffer);
+          imageURL = `/uploads/manga-covers/${filename}`;
         }
 
-        fs.writeFileSync(filepath, buffer);
-        imageURL = `/uploads/manga-covers/${filename}`;
-      }
-
-      // Procesar otros campos del formulario
-      const fields = data.fields;
-      if (fields) {
-        for (const [key, field] of Object.entries(fields)) {
-          if (field && typeof field === "object" && "value" in field) {
-            mangaData[key] = field.value;
+        // Procesar otros campos del formulario
+        const fields = data.fields;
+        if (fields) {
+          for (const [key, field] of Object.entries(fields)) {
+            if (field && typeof field === "object" && "value" in field) {
+              mangaData[key] = field.value;
+            }
           }
         }
+      } else {
+        // Si no hay archivo, obtener datos del body
+        mangaData = req.body as any;
       }
-    } else {
-      // Si no hay archivo, obtener datos del body
-      mangaData = req.body as any;
-    }
 
-    const { title, description, genre, author, categories, status } = mangaData;
+      const { title, description, genre, author, categories, status } =
+        mangaData;
 
-    if (!title || !description || !genre) {
-      return res.status(400).send({
-        success: false,
-        error: "Título, descripción y categoría son requeridos",
-      });
-    }
-
-    // Verificar si otro manga ya tiene ese título
-    const existingManga = await Manga.findOne({
-      title: { $regex: new RegExp(title, "i") },
-      _id: { $ne: id },
-    });
-    if (existingManga) {
-      return res.status(400).send({
-        success: false,
-        error: "Ya existe un manga con ese título",
-      });
-    }
-
-    const updateData: any = {
-      title: title.trim(),
-      description: description.trim(),
-      genre: genre.trim(),
-      author: author?.trim() || "",
-      categories: [genre.trim()], // Usar la categoría seleccionada
-      status: status || "ongoing",
-    };
-
-    if (imageURL) {
-      updateData.imageURL = imageURL;
-    }
-
-    const updatedManga = await Manga.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
-
-    if (!updatedManga) {
-      return res
-        .status(404)
-        .send({ success: false, error: "Manga no encontrado" });
-    }
-
-    return res.send({ success: true, data: updatedManga });
-  } catch (error) {
-    console.error("Error al actualizar manga:", error);
-    return res
-      .status(500)
-      .send({ success: false, error: "Error al actualizar manga" });
-  }
-});
-
-fastify.delete("/api/mangas/:id", async (req, res) => {
-  try {
-    const { id } = req.params as { id: string };
-
-    const manga = await Manga.findById(id);
-    if (!manga) {
-      return res
-        .status(404)
-        .send({ success: false, error: "Manga no encontrado" });
-    }
-
-    // Eliminar capítulos asociados
-    await Chapter.deleteMany({ mangaId: id });
-
-    // Eliminar imagen de portada si existe
-    if (manga.imageURL) {
-      const imagePath = path.join(__dirname, "public", manga.imageURL);
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
+      if (!title || !description || !genre) {
+        return res.status(400).send({
+          success: false,
+          error: "Título, descripción y categoría son requeridos",
+        });
       }
+
+      // Verificar si otro manga ya tiene ese título
+      const existingManga = await Manga.findOne({
+        title: { $regex: new RegExp(title, "i") },
+        _id: { $ne: id },
+      });
+      if (existingManga) {
+        return res.status(400).send({
+          success: false,
+          error: "Ya existe un manga con ese título",
+        });
+      }
+
+      const updateData: any = {
+        title: title.trim(),
+        description: description.trim(),
+        genre: genre.trim(),
+        author: author?.trim() || "",
+        categories: [genre.trim()], // Usar la categoría seleccionada
+        status: status || "ongoing",
+      };
+
+      if (imageURL) {
+        updateData.imageURL = imageURL;
+      }
+
+      const updatedManga = await Manga.findByIdAndUpdate(id, updateData, {
+        new: true,
+      });
+
+      if (!updatedManga) {
+        return res
+          .status(404)
+          .send({ success: false, error: "Manga no encontrado" });
+      }
+
+      return res.send({ success: true, data: updatedManga });
+    } catch (error) {
+      console.error("Error al actualizar manga:", error);
+      return res
+        .status(500)
+        .send({ success: false, error: "Error al actualizar manga" });
     }
+  },
+);
 
-    await Manga.findByIdAndDelete(id);
+fastify.delete(
+  "/api/mangas/:id",
+  { preHandler: requireAdmin },
+  async (req, res) => {
+    try {
+      const { id } = req.params as { id: string };
 
-    return res.send({
-      success: true,
-      message: "Manga eliminado correctamente",
-    });
-  } catch (error) {
-    console.error("Error al eliminar manga:", error);
-    return res
-      .status(500)
-      .send({ success: false, error: "Error al eliminar manga" });
-  }
-});
+      const manga = await Manga.findById(id);
+      if (!manga) {
+        return res
+          .status(404)
+          .send({ success: false, error: "Manga no encontrado" });
+      }
+
+      // Eliminar capítulos asociados
+      await Chapter.deleteMany({ mangaId: id });
+
+      // Eliminar imagen de portada si existe
+      if (manga.imageURL) {
+        const imagePath = path.join(__dirname, "public", manga.imageURL);
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+        }
+      }
+
+      await Manga.findByIdAndDelete(id);
+
+      return res.send({
+        success: true,
+        message: "Manga eliminado correctamente",
+      });
+    } catch (error) {
+      console.error("Error al eliminar manga:", error);
+      return res
+        .status(500)
+        .send({ success: false, error: "Error al eliminar manga" });
+    }
+  },
+);
 
 // API Routes para capítulos
 fastify.get("/api/mangas/:mangaId/chapters", async (req, res) => {
@@ -1017,7 +1129,6 @@ fastify.post("/api/auth/login", async (request, reply) => {
       return reply.status(401).send({ error: "Credenciales inválidas" });
     }
 
-    // ✅ Guardar datos en la sesión
     (request.session as any).user = {
       _id: user._id,
       username: user.username,
@@ -1026,7 +1137,6 @@ fastify.post("/api/auth/login", async (request, reply) => {
       gallecoins: user.galleCoins,
     };
 
-    // ✅ Guardar el ID de sesión como "token"
     const sessionToken = request.session.sessionId;
 
     await User.updateOne(
@@ -1098,52 +1208,61 @@ fastify.post("/api/auth/logout", async (request, reply) => {
 });
 
 //API DE PRUEBA DE SESSION
-fastify.get("/api/auth/me", (request, reply) => {
+fastify.get("/api/auth/me", { preHandler: requireAuth }, (request, reply) => {
   reply.send({
     hasSession: !!request.session,
     sessionUser: (request.session as any)?.user || null,
   });
 });
 
-fastify.get("/api/auth/refresh", async (request, reply) => {
-  try {
-    const sessionUser = (request.session as any)?.user;
+fastify.get(
+  "/api/auth/refresh",
+  { preHandler: requireAuth },
+  async (request, reply) => {
+    try {
+      const sessionUser = (request.session as any)?.user;
 
-    if (!sessionUser || !sessionUser._id) {
-      return reply.status(401).send({ error: "No hay sesión activa" });
+      if (!sessionUser || !sessionUser._id) {
+        // En vez de 401, devuelve 200 con info de no sesión
+        return reply.send({
+          success: false,
+          message: "No hay sesión activa",
+          user: null,
+        });
+      }
+
+      const updatedUser = await User.findById(sessionUser._id).lean();
+
+      if (!updatedUser) {
+        return reply.status(404).send({ error: "Usuario no encontrado" });
+      }
+
+      (request.session as any).user = {
+        _id: updatedUser._id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        gallecoins: updatedUser.galleCoins,
+      };
+
+      await request.session.save();
+
+      return reply.send({
+        success: true,
+        message: "Sesión actualizada",
+        user: (request.session as any)?.user || null,
+      });
+    } catch (error) {
+      console.error("Error al refrescar la sesión:", error);
+      return reply.status(500).send({ error: "Error interno del servidor" });
     }
-
-    const updatedUser = await User.findById(sessionUser._id).lean();
-
-    if (!updatedUser) {
-      return reply.status(404).send({ error: "Usuario no encontrado" });
-    }
-
-    // Actualiza solo los campos que necesitas en la sesión
-    (request.session as any).user = {
-      _id: updatedUser._id,
-      username: updatedUser.username,
-      gallecoins: updatedUser.galleCoins,
-    };
-
-    await request.session.save();
-
-    return reply.send({
-      success: true,
-      message: "Sesión actualizada",
-      user: (request.session as any)?.user || null,
-    });
-  } catch (error) {
-    console.error("Error al refrescar la sesión:", error);
-    return reply.status(500).send({ error: "Error interno del servidor" });
-  }
-});
+  },
+);
 
 const start = async () => {
   try {
     await connect(MONGO_URI);
     await fastify.listen({ port: 3000, host: "0.0.0.0" });
-    console.log("Servidor corriendo en http://localhost:3000");
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

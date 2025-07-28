@@ -68,8 +68,8 @@ const UserSchema = new Schema<IUser>(
     },
     sessionToken: {
       type: String,
-      unique: true,
       sparse: true,
+      default: null,
     },
   },
   {

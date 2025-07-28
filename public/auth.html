@@ -14,23 +14,23 @@
         />
         <style>
             .glass-morphism {
-                background: rgba(15, 23, 42, 0.8);
+                background: rgba(37, 5, 24, 0.8); /* tono oscuro rosado */
                 backdrop-filter: blur(20px);
-                border: 1px solid rgba(100, 116, 139, 0.3);
+                border: 1px solid rgba(195, 65, 118, 0.3); /* borde rosa */
             }
 
             .dark-gradient-bg {
                 background: linear-gradient(
                     135deg,
-                    #0f172a 0%,
-                    #1e293b 50%,
-                    #334155 100%
+                    #250518 0%,
+                    /* muy oscuro rosado */ #5c0e3e 50%,
+                    /* medio */ #811951 100% /* más claro */
                 );
             }
 
             .input-glow:focus {
-                box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
-                border-color: #3b82f6;
+                box-shadow: 0 0 20px rgba(219, 39, 119, 0.6); /* rosa neón */
+                border-color: #db2777;
             }
 
             .btn-hover {
@@ -39,7 +39,7 @@
 
             .btn-hover:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+                box-shadow: 0 10px 25px rgba(219, 39, 119, 0.5);
             }
 
             .floating-animation {
@@ -74,23 +74,23 @@
             }
 
             .dark-card {
-                background: rgba(30, 41, 59, 0.9);
-                border: 1px solid rgba(71, 85, 105, 0.4);
+                background: rgba(92, 14, 62, 0.9); /* rosado medio */
+                border: 1px solid rgba(195, 65, 118, 0.4);
             }
 
             .dark-input {
-                background: rgba(15, 23, 42, 0.6);
-                border: 1px solid rgba(71, 85, 105, 0.5);
-                color: #e2e8f0;
+                background: rgba(37, 5, 24, 0.6);
+                border: 1px solid rgba(195, 65, 118, 0.5);
+                color: #fce7f3; /* rosa muy claro para texto */
             }
 
             .dark-input::placeholder {
-                color: #94a3b8;
+                color: #f9a8d4; /* rosa pastel */
             }
 
             .dark-input:focus {
-                background: rgba(15, 23, 42, 0.8);
-                border-color: #3b82f6;
+                background: rgba(37, 5, 24, 0.8);
+                border-color: #db2777;
                 outline: none;
             }
         </style>
@@ -98,14 +98,14 @@
     <body class="min-h-screen dark-gradient-bg relative overflow-hidden">
         <!-- Decorative elements -->
         <div
-            class="absolute top-10 left-10 w-20 h-20 bg-blue-500 rounded-full opacity-10 floating-animation"
+            class="absolute top-10 left-10 w-20 h-20 bg-pink-600 rounded-full opacity-10 floating-animation"
         ></div>
         <div
-            class="absolute top-1/2 right-10 w-16 h-16 bg-purple-500 rounded-full opacity-10 floating-animation"
+            class="absolute top-1/2 right-10 w-16 h-16 bg-pink-500 rounded-full opacity-10 floating-animation"
             style="animation-delay: 2s"
         ></div>
         <div
-            class="absolute bottom-20 left-1/4 w-12 h-12 bg-cyan-500 rounded-full opacity-10 floating-animation"
+            class="absolute bottom-20 left-1/4 w-12 h-12 bg-pink-400 rounded-full opacity-10 floating-animation"
             style="animation-delay: 4s"
         ></div>
 
@@ -114,9 +114,9 @@
             <div class="max-w-7xl mx-auto flex items-center justify-between">
                 <a
                     href="/"
-                    class="text-3xl font-bold text-white hover:text-blue-400 transition duration-300 flex items-center"
+                    class="text-3xl font-bold text-white hover:text-pink-400 transition duration-300 flex items-center"
                 >
-                    <i class="fas fa-book-open mr-3 text-blue-400"></i>
+                    <i class="fas fa-book-open mr-3 text-pink-400"></i>
                     GalleToon
                 </a>
                 <!-- Botón de volver al sitio eliminado -->
@@ -134,14 +134,14 @@
                 >
                     <div class="text-center mb-8">
                         <div
-                            class="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-700 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"
+                            class="w-20 h-20 bg-gradient-to-r from-pink-700 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"
                         >
                             <i class="fas fa-user text-white text-2xl"></i>
                         </div>
                         <h2 class="text-3xl font-bold text-white mb-2">
                             ¡Bienvenido de Vuelta!
                         </h2>
-                        <p class="text-gray-300">
+                        <p class="text-pink-300">
                             Inicia sesión para continuar tu aventura
                         </p>
                     </div>
@@ -151,7 +151,7 @@
                             <div
                                 class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
                             >
-                                <i class="fas fa-envelope text-gray-400"></i>
+                                <i class="fas fa-envelope text-pink-300"></i>
                             </div>
                             <input
                                 type="email"
@@ -166,7 +166,7 @@
                             <div
                                 class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
                             >
-                                <i class="fas fa-lock text-gray-400"></i>
+                                <i class="fas fa-lock text-pink-300"></i>
                             </div>
                             <input
                                 type="password"
@@ -178,16 +178,16 @@
                         </div>
 
                         <div class="flex items-center justify-between text-sm">
-                            <label class="flex items-center text-gray-300">
+                            <label class="flex items-center text-pink-300">
                                 <input
                                     type="checkbox"
-                                    class="mr-2 rounded bg-slate-700 border-slate-600 text-blue-500 focus:ring-blue-500"
+                                    class="mr-2 rounded bg-pink-800 border-pink-700 text-pink-500 focus:ring-pink-500"
                                 />
                                 Recordarme
                             </label>
                             <a
                                 href="#"
-                                class="text-blue-400 hover:text-blue-300 transition duration-300"
+                                class="text-pink-400 hover:text-pink-300 transition duration-300"
                             >
                                 ¿Olvidaste tu contraseña?
                             </a>
@@ -195,19 +195,19 @@
 
                         <button
                             type="submit"
-                            class="w-full bg-gradient-to-r from-blue-600 to-purple-700 text-white font-semibold py-4 rounded-xl btn-hover focus:outline-none focus:ring-4 focus:ring-blue-500/30"
+                            class="w-full bg-gradient-to-r from-pink-700 to-pink-500 text-white font-semibold py-4 rounded-xl btn-hover focus:outline-none focus:ring-4 focus:ring-pink-500/30"
                         >
                             <i class="fas fa-sign-in-alt mr-2"></i>
                             Iniciar Sesión
                         </button>
 
                         <div class="text-center">
-                            <p class="text-gray-300">
+                            <p class="text-pink-300">
                                 ¿No tienes cuenta?
                                 <button
                                     type="button"
                                     id="link-to-register"
-                                    class="text-cyan-400 hover:text-cyan-300 font-semibold transition duration-300 underline"
+                                    class="text-pink-400 hover:text-pink-300 font-semibold transition duration-300 underline"
                                 >
                                     Regístrate aquí
                                 </button>
@@ -223,14 +223,14 @@
                 >
                     <div class="text-center mb-8">
                         <div
-                            class="w-20 h-20 bg-gradient-to-r from-emerald-600 to-cyan-700 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"
+                            class="w-20 h-20 bg-gradient-to-r from-pink-700 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"
                         >
                             <i class="fas fa-user-plus text-white text-2xl"></i>
                         </div>
                         <h2 class="text-3xl font-bold text-white mb-2">
                             Crear Cuenta
                         </h2>
-                        <p class="text-gray-300">
+                        <p class="text-pink-300">
                             Únete a nuestra comunidad de manga
                         </p>
                     </div>
@@ -240,7 +240,7 @@
                             <div
                                 class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
                             >
-                                <i class="fas fa-user text-gray-400"></i>
+                                <i class="fas fa-user text-pink-300"></i>
                             </div>
                             <input
                                 type="text"
@@ -255,7 +255,7 @@
                             <div
                                 class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
                             >
-                                <i class="fas fa-envelope text-gray-400"></i>
+                                <i class="fas fa-envelope text-pink-300"></i>
                             </div>
                             <input
                                 type="email"
@@ -270,7 +270,7 @@
                             <div
                                 class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
                             >
-                                <i class="fas fa-lock text-gray-400"></i>
+                                <i class="fas fa-lock text-pink-300"></i>
                             </div>
                             <input
                                 type="password"
@@ -285,7 +285,7 @@
                             <div
                                 class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
                             >
-                                <i class="fas fa-lock text-gray-400"></i>
+                                <i class="fas fa-lock text-pink-300"></i>
                             </div>
                             <input
                                 type="password"
@@ -297,29 +297,29 @@
                         </div>
 
                         <div
-                            class="text-xs text-gray-400 bg-slate-800/40 p-3 rounded-lg border border-slate-600/30"
+                            class="text-xs text-pink-300 bg-pink-900/40 p-3 rounded-lg border border-pink-700/30"
                         >
                             <i
-                                class="fas fa-info-circle mr-2 text-blue-400"
+                                class="fas fa-info-circle mr-2 text-pink-400"
                             ></i>
                             La contraseña debe tener al menos 8 caracteres
                         </div>
 
                         <button
                             type="submit"
-                            class="w-full bg-gradient-to-r from-emerald-600 to-cyan-700 text-white font-semibold py-4 rounded-xl btn-hover focus:outline-none focus:ring-4 focus:ring-emerald-500/30"
+                            class="w-full bg-gradient-to-r from-pink-700 to-pink-500 text-white font-semibold py-4 rounded-xl btn-hover focus:outline-none focus:ring-4 focus:ring-pink-500/30"
                         >
                             <i class="fas fa-user-plus mr-2"></i>
                             Crear Cuenta
                         </button>
 
                         <div class="text-center">
-                            <p class="text-gray-300">
+                            <p class="text-pink-300">
                                 ¿Ya tienes cuenta?
                                 <button
                                     type="button"
                                     id="link-to-login"
-                                    class="text-cyan-400 hover:text-cyan-300 font-semibold transition duration-300 underline"
+                                    class="text-pink-400 hover:text-pink-300 font-semibold transition duration-300 underline"
                                 >
                                     Inicia sesión
                                 </button>
@@ -340,7 +340,7 @@
         <button
             type="button"
             id="floating-back-home"
-            class="fixed top-6 right-6 z-50 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-full shadow-lg flex items-center gap-2 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-400/40"
+            class="fixed top-6 right-6 z-50 bg-pink-600 hover:bg-pink-700 text-white px-5 py-3 rounded-full shadow-lg flex items-center gap-2 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-pink-400/40"
             aria-label="Volver al inicio"
         >
             <i class="fas fa-arrow-left"></i>

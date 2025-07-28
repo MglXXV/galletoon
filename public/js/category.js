@@ -1,111 +1,91 @@
 (() => {
-  // Datos de ejemplo de mangas
-  const mangas = [
-    {
-      id: 'dragon-ball',
-      titulo: 'Dragon Ball Z',
-      categoria: 'Acción',
-      descripcion: 'Goku y sus amigos protegen la Tierra de amenazas alienígenas',
-      imagen: 'https://tse1.mm.bing.net/th/id/OIP.qv89cUB2sU6r26vAbYv_vwHaLu?r=0&rs=1&pid=ImgDetMain&o=7&rm=3',
+  const Categories = {
+    htmlElements: {
+      categoriesContainer: null,
     },
-    {
-      id: 'one-piece',
-      titulo: 'One Piece',
-      categoria: 'Aventura',
-      descripcion: 'Luffy busca el tesoro más grande del mundo',
-      imagen: 'https://www.anmosugoi.com/wp-content/uploads/2022/07/One-Piece-manga-vol-103-1200x1883.jpg',
-    },
-    {
-      id: 'naruto',
-      titulo: 'Naruto',
-      categoria: 'Aventura',
-      descripcion: 'Un ninja joven busca convertirse en Hokage',
-      imagen: 'https://ramenparados.com/wp-content/uploads/2015/09/portada_naruto-n-70_masashi-kishimoto_2015082513321.jpg',
-    },
-    {
-      id: 'your-lie-in-april',
-      titulo: 'Your Lie in April',
-      categoria: 'Drama',
-      descripcion: 'Un drama musical y emocional inolvidable',
-      imagen: 'https://m.media-amazon.com/images/I/81QwQf8QKGL.jpg',
-    },
-    {
-      id: 'kimi-ni-todoke',
-      titulo: 'Kimi ni Todoke',
-      categoria: 'Romance',
-      descripcion: 'Una historia de amor y crecimiento personal',
-      imagen: 'https://m.media-amazon.com/images/I/81wQwQf8QKGL._AC_UF1000,1000_QL80_.jpg',
-    },
-    {
-      id: 'junji-ito',
-      titulo: 'Junji Ito Collection',
-      categoria: 'Terror',
-      descripcion: 'Historias de horror y suspenso psicológico',
-      imagen: 'https://m.media-amazon.com/images/I/81QwQf8QKGL.jpg',
-    },
-    {
-      id: 'haikyuu',
-      titulo: 'Haikyuu!!',
-      categoria: 'Deportes',
-      descripcion: 'Voleibol, trabajo en equipo y superación personal',
-      imagen: 'https://m.media-amazon.com/images/I/81QwQf8QKGL.jpg',
-    },
-    {
-      id: 'jujutsu-kaisen',
-      titulo: 'Jujutsu Kaisen',
-      categoria: 'Acción',
-      descripcion: 'El mundo está en peligro',
-      imagen: 'https://tse1.mm.bing.net/th/id/OIP.rl3gr4K8IjD51mde7mtN6QHaLh?r=0&rs=1&pid=ImgDetMain&o=7&rm=3',
-    },
-    {
-      id: 'shingeki',
-      titulo: 'Shingeki No Kyojin',
-      categoria: 'Acción',
-      descripcion: 'La paz de la tierra está en peligro',
-      imagen: 'https://www.anmosugoi.com/wp-content/uploads/2020/12/Shingeki-no-Kyojin-nueva-imagen-visual.jpg',
-    },
-  ];
 
-  const categorias = [
-    { nombre: 'Acción', color: 'bg-indigo-600', id: 'accion' },
-    { nombre: 'Aventura', color: 'bg-pink-600', id: 'aventura' },
-    { nombre: 'Drama', color: 'bg-yellow-500', id: 'drama' },
-    { nombre: 'Romance', color: 'bg-red-500', id: 'romance' },
-    { nombre: 'Deportes', color: 'bg-green-600', id: 'deportes' },
-    { nombre: 'Terror', color: 'bg-gray-800', id: 'terror' },
-  ];
+    init() {
+      this.htmlElements.categoriesContainer = document.getElementById(
+        "categories-container",
+      );
+      if (!this.htmlElements.categoriesContainer) {
+        console.error(
+          "No se encontró el contenedor de categorías (#categories-container).",
+        );
+        return;
+      }
 
-  function renderMangas(filtroCategoria) {
-    const contenedor = document.querySelector('.grid.grid-cols-2');
-    if (!contenedor) return;
-    contenedor.innerHTML = '';
-    const filtrados = filtroCategoria && filtroCategoria !== 'Todos'
-      ? mangas.filter(m => m.categoria.toLowerCase() === filtroCategoria.toLowerCase())
-      : mangas;
-    filtrados.forEach(manga => {
-      contenedor.innerHTML += `
-        <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
-          <a href="/manga/id-${manga.id}" class="nav-link">
-            <img src="${manga.imagen}" alt="${manga.titulo}" class="w-full h-48 sm:h-56 md:h-64 object-cover">
-            <div class="p-4">
-              <h3 class="font-bold text-md truncate">${manga.titulo}</h3>
-              <p class="text-gray-600 text-sm mt-1">${manga.descripcion}</p>
-            </div>
-          </a>
-        </div>
-      `;
-    });
-  }
+      const container = this.htmlElements.categoriesContainer;
+      container.style.display = "flex";
+      container.style.justifyContent = "center";
+      container.style.flexWrap = "wrap";
+      container.style.gap = "0.5rem";
 
-  document.addEventListener('DOMContentLoaded', () => {
-    // Botones de categoría
-    const botones = document.querySelectorAll('main .flex.flex-wrap button');
-    botones.forEach(btn => {
-      btn.addEventListener('click', () => {
-        renderMangas(btn.textContent.trim());
+      this.fetchCategories();
+    },
+
+    async fetchCategories() {
+      try {
+        const response = await fetch("/api/categories");
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          this.renderCategories(data.data);
+        } else {
+          this.showError("Error al obtener las categorías");
+        }
+      } catch (error) {
+        console.error("Error fetchCategories:", error);
+        this.showError("Error de conexión al obtener categorías");
+      }
+    },
+
+    renderCategories(categories) {
+      // Limpiar contenedor
+      this.htmlElements.categoriesContainer.innerHTML = "";
+
+      if (!categories.length) {
+        this.htmlElements.categoriesContainer.textContent =
+          "No hay categorías disponibles.";
+        return;
+      }
+
+      // Crear botones en fila
+      categories.forEach((category) => {
+        const btn = document.createElement("button");
+        btn.textContent = category.categoryName;
+        btn.className = "category-btn";
+        btn.style.margin = "0 0.5rem 0.5rem 0";
+        btn.style.padding = "0.5rem 1rem";
+        btn.style.borderRadius = "9999px";
+        btn.style.backgroundColor = "#db2777"; // rosa
+        btn.style.color = "#fff";
+        btn.style.fontWeight = "600";
+        btn.style.cursor = "pointer";
+        btn.style.border = "none";
+        btn.style.transition = "background-color 0.3s ease";
+        btn.onmouseenter = () => (btn.style.backgroundColor = "#be185d");
+        btn.onmouseleave = () => (btn.style.backgroundColor = "#db2777");
+
+        // Puedes agregar aquí evento click si quieres filtrar mangas por categoría
+
+        this.htmlElements.categoriesContainer.appendChild(btn);
       });
-    });
-    // Mostrar todos al inicio
-    renderMangas();
-  });
-})(); 
+    },
+
+    showError(message) {
+      if (this.htmlElements.categoriesContainer) {
+        this.htmlElements.categoriesContainer.textContent = message;
+        this.htmlElements.categoriesContainer.style.color = "#f87171"; // rojo claro
+      }
+    },
+  };
+
+  window.Categories = Categories;
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => Categories.init());
+  } else {
+    Categories.init();
+  }
+})();

@@ -62,6 +62,9 @@
       formCategoria: document.getElementById("form-categoria"),
       modalCategoriaTitle: document.getElementById("modal-categoria-title"),
       btnGuardarCategoria: document.getElementById("btn-guardar-categoria"),
+
+      //Cerrar sesion
+      btnCerrarSesion: document.getElementById("btn-logout"),
     },
 
     init() {
@@ -74,6 +77,7 @@
       this.configurarNavegacion();
       this.configurarPreviewImagen();
       this.configurarPreviewPDF();
+      this.logoutEvent();
     },
 
     bindEvents() {
@@ -193,6 +197,37 @@
           const formData = new FormData(e.target);
           this.guardarCategoria(formData);
         });
+      }
+    },
+
+    logoutEvent() {
+      this.htmlElements.btnCerrarSesion.addEventListener("click", () => {
+        this.handleLogout();
+      });
+    },
+
+    async handleLogout() {
+      try {
+        const response = await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+          body: JSON.stringify({}),
+        });
+
+        if (response.ok) {
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 1500);
+        } else {
+          throw new Error("Error al cerrar sesión");
+        }
+      } catch (error) {
+        // No mostrar error en consola para evitar ruido
+        console.error("Error durante logout:", error);
       }
     },
 

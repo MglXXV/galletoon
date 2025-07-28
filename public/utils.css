@@ -1,8 +1,8 @@
 /* Custom Styles */
 :root {
-    --ColorPrincipal: #F23054;
-    --ColorSecundario: #F26699;
-    --ColorTerciario: #8C3E3E;
-    --ColorCuarto: #F2CE1B;
-    --font: 'Lilita One', sans-serif;
-  }
+    --ColorPrincipal: #f23054;
+    --ColorSecundario: #f26699;
+    --ColorTerciario: #8c3e3e;
+    --ColorCuarto: #f2ce1b;
+    --font: "Poppins", sans-serif;
+}

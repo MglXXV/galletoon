@@ -12,7 +12,7 @@ const buyGallecoinsSchema = new Schema<BuyGallecoins>(
     idUser: { type: Number, required: true },
     idGallecoins: { type: Number, required: true },
     amount: { type: Number, required: true },
-    date: { type: Date, required: true },
+    date: { type: Date, required: true, default: Date.now },
   },
   { collection: "BuyGallecoins" },
 );

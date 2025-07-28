@@ -25,10 +25,10 @@
       this.addGlobalStyles();
       this.setupScrollEffects();
       this.refreshSessionUser();
+      this.logoutEvent();
     },
 
     initializeElements() {
-      // Elementos de navegación
       this.htmlElements.loginLink = document.querySelector(
         'a[href="/api/auth/login"]',
       );
@@ -40,7 +40,6 @@
       );
       this.htmlElements.header = document.querySelector("header");
 
-      // Crear contenedor de notificaciones si no existe
       if (!document.getElementById("notifications-container")) {
         const notificationsContainer = document.createElement("div");
         notificationsContainer.id = "notifications-container";
@@ -63,43 +62,60 @@
         if (response.ok) {
           const data = await response.json();
 
-          if (data.hasSession && data.sessionUser.username) {
+          if (
+            data.hasSession &&
+            data.sessionUser &&
+            data.sessionUser.username
+          ) {
             this.user.isAuthenticated = true;
             this.user.userData = data.sessionUser;
+
+            if (this.user.userData.role === "admin") {
+              window.location.href = "/api/admin";
+              return;
+            }
+
             const profileUsernameEl =
               document.getElementById("profile-username");
-            if (profileUsernameEl) {
+            if (profileUsernameEl && this.user.userData.username) {
               profileUsernameEl.textContent = this.user.userData.username;
             }
 
             const profileEmailEl = document.getElementById("profile-email");
-            if (profileEmailEl) {
-              profileEmailEl.textContent = this.user.userData.email || "";
+            if (profileEmailEl && this.user.userData.email) {
+              profileEmailEl.textContent = this.user.userData.email;
             }
 
             const profileGallecoinsEl =
               document.getElementById("profile-gallecoins");
-            if (profileGallecoinsEl) {
+            if (
+              profileGallecoinsEl &&
+              this.user.userData.gallecoins !== undefined
+            ) {
               profileGallecoinsEl.textContent = `${this.user.userData.gallecoins} Gallecoins`;
             }
 
             console.log("Usuario autenticado:", data.sessionUser.username);
             this.updateNavigationForAuthenticatedUser();
-            this.showNotification(
-              `¡Bienvenido de vuelta, ${this.user.userData.username}!`,
-              "success",
-            );
+            if (!sessionStorage.getItem("welcomeShown")) {
+              this.showNotification(
+                `¡Bienvenido de vuelta, ${this.user.userData.username}!`,
+                "success",
+              );
+              sessionStorage.setItem("welcomeShown", "true");
+            }
           } else {
             this.user.isAuthenticated = false;
             this.updateNavigationForGuestUser();
           }
         } else {
-          console.log("Usuario no autenticado");
+          // Respuesta no OK significa no autenticado
           this.user.isAuthenticated = false;
           this.updateNavigationForGuestUser();
         }
       } catch (error) {
-        console.error("Error al verificar autenticación:", error);
+        // No mostramos error en consola para evitar ruido si no hay sesión
+        // console.error("Error al verificar autenticación:", error);
         this.user.isAuthenticated = false;
         this.updateNavigationForGuestUser();
       }
@@ -116,27 +132,26 @@
           const data = await response.json();
           console.log("Sesión actualizada:", data.user);
         } else {
-          console.error("No se pudo actualizar la sesión.");
+          // No mostramos error para evitar ruido si no se puede refrescar
+          // console.error("No se pudo actualizar la sesión.");
         }
       } catch (err) {
-        console.error("Error al refrescar la sesión:", err);
+        // No mostramos error para evitar ruido si no se puede refrescar
+        // console.error("Error al refrescar la sesión:", err);
       }
     },
 
     updateNavigationForAuthenticatedUser() {
       if (this.htmlElements.loginLink) {
-        // Cambiar el texto y el href del enlace
         this.htmlElements.loginLink.textContent = `${this.user.userData.username}`;
-        this.htmlElements.loginLink.href = "/profile.html";
+        this.htmlElements.loginLink.href = "/api/profile";
         this.htmlElements.loginLink.classList.add("authenticated-user");
 
-        // Añadir evento click para navegar al perfil
         this.htmlElements.loginLink.addEventListener("click", (e) => {
           e.preventDefault();
           this.navigateToProfile();
         });
 
-        // Añadir menú desplegable de usuario
         this.createUserDropdownMenu();
       }
     },
@@ -147,7 +162,6 @@
         this.htmlElements.loginLink.href = "/api/auth/login";
         this.htmlElements.loginLink.classList.remove("authenticated-user");
 
-        // Limpiar eventos previos
         this.htmlElements.loginLink.replaceWith(
           this.htmlElements.loginLink.cloneNode(true),
         );
@@ -156,7 +170,6 @@
         );
       }
 
-      // Remover menú desplegable si existe
       const existingDropdown = document.getElementById("user-dropdown");
       if (existingDropdown) {
         existingDropdown.remove();
@@ -164,7 +177,6 @@
     },
 
     createUserDropdownMenu() {
-      // Crear menú desplegable para usuario autenticado
       const dropdownContainer = document.createElement("div");
       dropdownContainer.className = "relative inline-block";
       dropdownContainer.id = "user-dropdown";
@@ -177,7 +189,7 @@
           <p class="text-sm font-medium text-gray-800">${this.user.userData.username}</p>
           <p class="text-xs text-gray-500">${this.user.userData.role || "Usuario"}</p>
         </div>
-        <a href="/profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-700 nav-link">
+        <a href="/api/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-700 nav-link">
           <i class="fas fa-user mr-2"></i>Mi Perfil
         </a>
         <a href="/api/gallecoins" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-700 nav-link">
@@ -193,28 +205,26 @@
         </div>
       `;
 
-      // Insertar el menú después del enlace de login
       this.htmlElements.loginLink.parentNode.insertBefore(
         dropdownContainer,
         this.htmlElements.loginLink.nextSibling,
       );
       dropdownContainer.appendChild(dropdownMenu);
 
-      // Agregar funcionalidad de toggle
       this.htmlElements.loginLink.addEventListener("click", (e) => {
         e.preventDefault();
         dropdownMenu.classList.toggle("hidden");
       });
 
-      // Cerrar dropdown al hacer click fuera
       document.addEventListener("click", (e) => {
         if (!dropdownContainer.contains(e.target)) {
           dropdownMenu.classList.add("hidden");
         }
       });
+    },
 
-      // Funcionalidad del botón de logout
-      const logoutBtn = dropdownMenu.querySelector("#logout-btn");
+    logoutEvent() {
+      const logoutBtn = document.querySelector("#logout-btn");
       if (logoutBtn) {
         logoutBtn.addEventListener("click", () => {
           this.handleLogout();
@@ -224,20 +234,20 @@
 
     navigateToProfile() {
       setTimeout(() => {
-        window.location.href = "/profile.html";
+        window.location.href = "/api/profile";
       }, 500);
     },
 
     async handleLogout() {
       try {
-        this.showNotification("Cerrando sesión...", "info");
-
         const response = await fetch("/api/auth/logout", {
           method: "POST",
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: "Bearer " + this.user.userData.sessionToken,
           },
+          body: JSON.stringify({}),
         });
 
         if (response.ok) {
@@ -248,13 +258,13 @@
 
           setTimeout(() => {
             window.location.href = "/";
-            window.location.reload();
           }, 1500);
         } else {
           throw new Error("Error al cerrar sesión");
         }
       } catch (error) {
-        console.error("Error durante logout:", error);
+        // No mostrar error en consola para evitar ruido
+        // console.error("Error durante logout:", error);
         this.showNotification("Error al cerrar sesión", "error");
       }
     },
@@ -290,13 +300,11 @@
       console.log("Realizando búsqueda:", query);
 
       try {
-        // Simular búsqueda (aquí iría la lógica real de búsqueda)
         this.showNotification(`Buscando: "${query}"...`, "info");
 
-        // Aquí agregarías la lógica real de búsqueda
-        // const results = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        // Aquí iría la lógica real de búsqueda
       } catch (error) {
-        console.error("Error en búsqueda:", error);
+        // console.error("Error en búsqueda:", error);
         this.showNotification("Error al realizar la búsqueda", "error");
       }
     },
@@ -329,7 +337,6 @@
     },
 
     setupNavigationEffects() {
-      // Efectos para los enlaces de navegación
       this.htmlElements.navLinks.forEach((link) => {
         link.addEventListener("mouseenter", () => {
           link.style.transform = "translateY(-2px)";
@@ -341,11 +348,9 @@
         });
       });
 
-      // Efecto parallax para el header
       if (this.htmlElements.header) {
         window.addEventListener("scroll", () => {
           const scrolled = window.pageYOffset;
-          const rate = scrolled * -0.5;
 
           if (scrolled > 100) {
             this.htmlElements.header.style.backgroundColor =
@@ -360,7 +365,6 @@
     },
 
     setupScrollEffects() {
-      // Animaciones al hacer scroll
       const observerOptions = {
         threshold: 0.1,
         rootMargin: "0px 0px -50px 0px",
@@ -375,7 +379,6 @@
         });
       }, observerOptions);
 
-      // Observar las tarjetas de manga
       this.htmlElements.mangaCards.forEach((card, index) => {
         card.style.opacity = "0";
         card.style.transform = "translateY(30px)";
@@ -390,44 +393,40 @@
         style.id = "galletoon-styles";
         style.textContent = `
           .authenticated-user {
-            background: linear-gradient(135deg, #10b981, #059669);
+            background: linear-gradient(135deg, #f472b6, #fb7185); /* rosa vibrante */
             padding: 8px 16px;
-            border-radius: 20px;
+            border-radius: 9999px; /* pill shape */
             color: white !important;
-            font-weight: 500;
-            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(251, 113, 133, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             transition: all 0.3s ease;
           }
-
           .authenticated-user:hover {
-            background: linear-gradient(135deg, #059669, #047857);
+            background: linear-gradient(135deg, #f43f5e, #be185d); /* más profundo */
             transform: translateY(-2px);
-            box-shadow: 0 8px 15px -3px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 8px 20px rgba(244, 63, 94, 0.5);
           }
-
           .nav-link {
             transition: all 0.3s ease;
             position: relative;
           }
-
           .nav-link:hover {
             color: #fbbf24;
             text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
           }
-
           .manga-card-hover {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           }
-
           .search-focus {
             box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.3);
             border-color: #fbbf24;
           }
-
           .notification-enter {
             animation: slideInNotification 0.5s ease-out;
           }
-
           @keyframes slideInNotification {
             from {
               transform: translateX(100%);
@@ -438,7 +437,6 @@
               opacity: 1;
             }
           }
-
           .scroll-shadow {
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
           }
@@ -486,7 +484,6 @@
       }, 4000);
     },
 
-    // Método utilitario para verificar si el usuario puede acceder a ciertas funciones
     requireAuth(callback) {
       if (this.user.isAuthenticated) {
         callback();
@@ -501,7 +498,6 @@
       }
     },
 
-    // Método para manejar favoritos (requiere autenticación)
     toggleFavorite(mangaId) {
       this.requireAuth(async () => {
         try {
@@ -524,17 +520,15 @@
             );
           }
         } catch (error) {
-          console.error("Error al manejar favorito:", error);
+          // console.error("Error al manejar favorito:", error);
           this.showNotification("Error al actualizar favoritos", "error");
         }
       });
     },
   };
 
-  // Exponer GalleToon globalmente
   window.GalleToon = GalleToon;
 
-  // Inicializar cuando el DOM esté listo
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
       GalleToon.init();
@@ -543,15 +537,12 @@
     GalleToon.init();
   }
 
-  // Manejar cambios de visibilidad de la página
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden && GalleToon.user.isAuthenticated) {
-      // Verificar el estado de autenticación cuando la página vuelve a ser visible
       GalleToon.checkAuthenticationStatus();
     }
   });
 
-  // Manejar navegación del historial
   window.addEventListener("popstate", () => {
     if (window.location.pathname === "/") {
       GalleToon.checkAuthenticationStatus();

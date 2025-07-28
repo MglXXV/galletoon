@@ -1,88 +1,275 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GalleToon</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  </head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>GalleToon</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
+        />
+        <!-- Fuente bonita desde Google Fonts -->
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        />
+        <style>
+            :root {
+                --font: "Poppins", sans-serif;
+            }
+            body {
+                font-family: var(--font);
+                background: linear-gradient(
+                    135deg,
+                    #250518 0%,
+                    #5c0e3e 50%,
+                    #811951 100%
+                );
+                color: #fce7f3;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+            header {
+                background-color: #db2777; /* rosa vivo */
+                box-shadow: 0 4px 6px rgba(219, 39, 119, 0.6);
+                position: sticky;
+                top: 0;
+                z-index: 50;
+            }
+            header a.nav-link {
+                color: white;
+                transition: color 0.3s ease;
+            }
+            header a.nav-link:hover {
+                color: #fcd34d; /* amarillo */
+            }
+            input[type="text"] {
+                font-weight: 500;
+                border-radius: 0.5rem;
+                padding-left: 2.5rem;
+                padding-right: 1rem;
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+                box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.1);
+                border: none;
+                outline: none;
+                color: #250518;
+                font-family: var(--font);
+                transition:
+                    box-shadow 0.3s ease,
+                    border-color 0.3s ease;
+            }
+            input[type="text"]:focus {
+                box-shadow: 0 0 8px 2px #db2777;
+                border: 1px solid #db2777;
+                background-color: #fce7f3;
+                color: #250518;
+            }
+            .search-icon {
+                position: absolute;
+                left: 0.75rem;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #a855f7;
+                pointer-events: none;
+                width: 1rem;
+                height: 1rem;
+            }
 
-  <style>
-    body{
-      font-family: var(--font);
-    }
-  </style>
+            main {
+                flex-grow: 1;
+                max-width: 1280px;
+                margin: 2rem auto;
+                width: 90%;
+            }
+            section.hero {
+                position: relative;
+                height: 16rem;
+                border-radius: 1rem;
+                overflow: hidden;
+                box-shadow: 0 8px 20px rgb(219 39 119 / 0.5);
+            }
+            section.hero img,
+            section.hero .overlay {
+                position: absolute;
+                inset: 0;
+                object-fit: cover;
+                width: 100%;
+                height: 100%;
+            }
+            section.hero .overlay {
+                background: rgba(37, 5, 24, 0.6);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 3rem;
+                font-weight: 700;
+                color: #fce7f3;
+                text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
+                user-select: none;
+            }
+            section.mangas {
+                margin-top: 3rem;
+            }
+            section.mangas h2 {
+                font-size: 1.75rem;
+                font-weight: 700;
+                margin-bottom: 1.5rem;
+                color: #f9a8d4;
+                text-shadow: 0 0 5px #db2777;
+            }
+            .manga-card {
+                background: rgba(37, 5, 24, 0.85);
+                border-radius: 1rem;
+                overflow: hidden;
+                box-shadow: 0 6px 18px rgb(219 39 119 / 0.7);
+                transition:
+                    transform 0.3s ease,
+                    box-shadow 0.3s ease;
+                cursor: pointer;
+                display: flex;
+                flex-direction: column;
+            }
+            .manga-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 12px 32px rgb(219 39 119 / 0.9);
+            }
+            .manga-card img {
+                width: 100%;
+                height: 14rem;
+                object-fit: cover;
+                border-bottom: 3px solid #db2777;
+                flex-shrink: 0;
+            }
+            .manga-card .info {
+                padding: 1rem;
+                color: #fce7f3;
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            .manga-card .info h3 {
+                font-weight: 700;
+                font-size: 1.1rem;
+                margin-bottom: 0.25rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .manga-card .info p {
+                font-size: 0.9rem;
+                color: #f9a8d4;
+                line-height: 1.2;
+            }
+            footer {
+                background-color: #250518;
+                color: #f9a8d4;
+                text-align: center;
+                padding: 1rem 0;
+                box-shadow: 0 -4px 8px rgb(219 39 119 / 0.5);
+                font-weight: 500;
+                font-size: 0.9rem;
+            }
+            /* Responsive grid */
+            .grid-mangas {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 1.5rem;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Header -->
+        <header>
+            <div
+                class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between"
+            >
+                <!-- Logo -->
+                <a
+                    href="/"
+                    class="nav-link flex items-center space-x-2 text-white text-2xl font-bold"
+                >
+                    <span>🎴</span>
+                    <span>GALLETOON</span>
+                </a>
 
-  <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="bg-pink-700 text-white shadow-md sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <a href="/" class="text-2xl font-bold nav-link hover:text-yellow-300 transition">GALLETOON</a>
+                <!-- Buscador -->
+                <div class="flex-[2] mx-6 relative">
+                    <input
+                        type="text"
+                        placeholder="Buscar..."
+                        aria-label="Buscar mangas"
+                    />
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="search-icon"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103 10.5a7.5 7.5 0 0013.65 6.15z"
+                        />
+                    </svg>
+                </div>
 
-        <div class="flex-1 mx-20">
-          <input
-            type="text"
-            placeholder="Buscar..."
-            class="w-full px-4 py-2 rounded-md shadow-inner focus:outline-none focus:ring focus:ring-yellow-300 text-black"
-          />
-        </div>
+                <!-- Navegación -->
+                <nav class="flex items-center space-x-6 text-sm">
+                    <a
+                        href="/api/categorias"
+                        class="nav-link flex items-center space-x-1 hover:text-yellow-300 transition"
+                    >
+                        <i class="fas fa-th-list"></i>
+                        <span>Categorías</span>
+                    </a>
 
-        <nav class=space-x-4 text-sm md:block">
-          <a href="/api/categorias" class=nav-link>Categorías</a>
-          <a href="/api/gallecoins" class=nav-link>GalleCoins</a>
-          <a href="/api/auth/login" class=nav-link>Iniciar Sesión</a>
-        </nav>
-    </header>
+                    <a
+                        href="/api/gallecoins"
+                        class="nav-link flex items-center space-x-1 hover:text-yellow-300 transition"
+                    >
+                        <i class="fas fa-coins"></i>
+                        <span>GalleCoins</span>
+                    </a>
 
-    <main  class="flex-1 max-w-7xl mx-auto w-full p-4">
-      <div class="w-full">
-        <section class="relative h-64 md:h-80 w-full bg-cover bg-center" style="background-image: url('https://wallpaperaccess.com/full/4131921.jpg');">
-            <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                <h1 class="text-white text-4xl md:text-6xl font-bold">GALLETOON</h1>
+                    <div class="flex items-center space-x-1">
+                        <i class="fas fa-user-circle text-pink-300"></i>
+                        <a
+                            href="/api/auth/login"
+                            id="login-link"
+                            class="nav-link hover:text-yellow-300 transition"
+                            >Iniciar Sesión</a
+                        >
+                    </div>
+                </nav>
             </div>
-        </section>
+        </header>
 
-        <section class="container mx-auto px-4 py-8">
-            <h2 class="text-2xl font-bold mb-6">Nuevos Mangas</h2>
+        <!-- Contenido principal -->
+        <main>
+            <section class="hero">
+                <img
+                    src="https://wallpaperaccess.com/full/4131921.jpg"
+                    alt="Imagen destacada GalleToon"
+                />
+                <div class="overlay">GALLETOON</div>
+            </section>
+        </main>
 
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2025 GalleToon. Todos los derechos reservados.</p>
+        </footer>
 
-                <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
-                    <a href="/manga/id-del-manga" class="nav-link">
-                        <img src="https://tse4.mm.bing.net/th/id/OIP.n6EjsiXTX3kCy_ZV_jlMSQHaKY?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Portada del Manga" class="w-full h-48 sm:h-56 md:h-64 object-cover">
-                        <div class="p-4">
-                            <h3 class="font-bold text-md truncate">Banana Fish</h3>
-                            <p class="text-gray-600 text-sm mt-1">El mundo esta en peligro</p>
-                        </div>
-                    </a>
-                </div>
-                <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
-                    <a href="/manga/id-del-manga" class="nav-link">
-                        <img src="https://tse1.mm.bing.net/th/id/OIP.rl3gr4K8IjD51mde7mtN6QHaLh?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Portada del Manga" class="w-full h-48 sm:h-56 md:h-64 object-cover">
-                        <div class="p-4">
-                            <h3 class="font-bold text-md truncate">Jujutsu Kaisen</h3>
-                            <p class="text-gray-600 text-sm mt-1">El mundo esta en peligro</p>
-                        </div>
-                    </a>
-                </div>
-                 <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
-                    <a href="/manga/id-del-manga" class="nav-link">
-                        <img src="https://www.anmosugoi.com/wp-content/uploads/2020/12/Shingeki-no-Kyojin-nueva-imagen-visual.jpg" alt="Portada del Manga" class="w-full h-48 sm:h-56 md:h-64 object-cover">
-                        <div class="p-4">
-                            <h3 class="font-bold text-md truncate">Shingeki No Kyojin</h3>
-                            <p class="text-gray-600 text-sm mt-1">La paz de la tierra esta en peligro</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </section>
-    </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white text-center py-4 mt-auto">
-      <p>&copy; 2025 GalleToon. Todos los derechos reservados.</p>
-    </footer>
-    <script src="/js/index.js"></script>
-  </body>
+        <script src="/js/index.js"></script>
+    </body>
 </html>
