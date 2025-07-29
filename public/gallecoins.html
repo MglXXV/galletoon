@@ -182,6 +182,20 @@
             .buy-btn:hover {
                 background-color: #9f1745;
             }
+
+            @keyframes fade-in-down {
+                from {
+                    opacity: 0;
+                    transform: translate(-50%, -10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, 0);
+                }
+            }
+            .animate-fade-in-down {
+                animation: fade-in-down 0.3s ease-out;
+            }
         </style>
     </head>
     <body>
@@ -237,5 +251,6 @@
                 </div>
             </div>
         </main>
+        <script src="/js/gallecoins.js"></script>
     </body>
 </html>

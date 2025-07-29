@@ -13,6 +13,9 @@ import Chapter from "./mongoSchema/manga/chapterSchema.ts";
 import User from "./mongoSchema/user/userSchema.ts";
 import multer from "multer";
 import fs from "fs";
+import { PDFDocument } from "pdf-lib";
+import { execSync } from "child_process";
+import Gallecoins from "./mongoSchema/user/gallecoinsSchema.ts";
 
 //STRIPE URL
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
@@ -29,11 +32,12 @@ const __dirname = dirname(__filename);
 fastify.register(fastifyCookie);
 
 fastify.register(fastifySession, {
-  secret: "m9V7rY2PxLq8DfHs3ZwaKbCnEjTu1GQv",
+  secret: process.env.SESSION_KEY as string,
   cookie: {
     secure: false,
     httpOnly: true,
-    maxAge: 3600 * 1000,
+    maxAge: 86400000,
+    sameSite: "lax",
   },
   saveUninitialized: false,
 });
@@ -46,32 +50,56 @@ fastify.register(fastifyStatic, {
 // Middleware para verificar autenticación: USER
 const requireAuth = async (request: any, reply: any) => {
   try {
-    const sessionUser = (request.session as any)?.user;
+    const sessionToken = request.session?.sessionId;
 
-    if (!sessionUser || !sessionUser._id) {
-      return reply.redirect("/");
+    // Opción alternativa: permitir token en header Authorization
+    const bearerHeader = request.headers.authorization;
+    const tokenFromHeader = bearerHeader?.startsWith("Bearer ")
+      ? bearerHeader.slice(7)
+      : null;
+
+    const tokenToVerify = sessionToken || tokenFromHeader;
+
+    if (!tokenToVerify) {
+      return reply.status(401).send({
+        success: false,
+        error: "No autorizado - Token no proporcionado",
+        redirectTo: "/api/auth/login",
+      });
     }
 
-    // Verificar que la sesión sigue siendo válida en la base de datos
-    const user = await User.findById(sessionUser._id);
-    if (!user || !user.activeSession) {
-      // Destruir sesión local si no es válida
+    // Verificar sesión en base de datos
+    const user = await User.findOne({
+      sessionToken: tokenToVerify,
+      activeSession: true,
+    });
+
+    if (!user) {
       if (request.session) {
         await request.session.destroy();
       }
       return reply.status(401).send({
         success: false,
-        error: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.",
+        error: "Sesión inválida o expirada",
         redirectTo: "/api/auth/login",
       });
     }
 
-    // Actualizar información de usuario en la sesión si es necesario
-    if (sessionUser.gallecoins !== user.galleCoins) {
-      (request.session as any).user.gallecoins = user.galleCoins;
-    }
+    // Actualizar información de usuario en la sesión
+    (request.session as any).user = {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      gallecoins: user.galleCoins,
+      activeSession: user.activeSession,
+    };
 
-    // Continuar con la siguiente función
+    // Opcional: Actualizar última actividad
+    await User.updateOne(
+      { _id: user._id },
+      { $set: { lastActivityAt: new Date() } },
+    );
   } catch (error) {
     console.error("Error en middleware de autenticación:", error);
     return reply.status(500).send({
@@ -199,49 +227,75 @@ const chapterUpload = multer({
 
 // Función para contar páginas de PDF usando pdfinfo (más simple y confiable)
 async function countPDFPages(filePath: string): Promise<number> {
+  // Validación inicial del archivo
+  if (!fs.existsSync(filePath)) {
+    console.error("Archivo PDF no encontrado:", filePath);
+    return 0;
+  }
+
+  const fileStats = fs.statSync(filePath);
+  if (fileStats.size === 0) {
+    console.error("Archivo PDF vacío:", filePath);
+    return 0;
+  }
+
+  // Método 1: Usando pdf-lib (puro JavaScript)
   try {
-    // Verificar que el archivo existe
-    if (!fs.existsSync(filePath)) {
-      console.error("Archivo PDF no encontrado:", filePath);
-      return 0;
-    }
-
-    // Leer el archivo
     const buffer = fs.readFileSync(filePath);
+    const pdfDoc = await PDFDocument.load(buffer);
+    const pageCount = pdfDoc.getPageCount();
 
-    // Verificar que el buffer no esté vacío
-    if (!buffer || buffer.length === 0) {
-      console.error("Archivo PDF vacío:", filePath);
-      return 0;
+    if (pageCount > 0) {
+      console.log(`[pdf-lib] Páginas detectadas: ${pageCount}`);
+      return pageCount;
+    }
+  } catch (error) {
+    console.error("Error con pdf-lib:", error);
+    // Continuamos con el siguiente método
+  }
+
+  // Método 2: Usando pdfinfo (requiere poppler-utils)
+  try {
+    if (process.platform !== "win32") {
+      const pdfInfo = execSync(`pdfinfo "${filePath}"`).toString();
+      const pagesMatch = pdfInfo.match(/Pages:\s+(\d+)/i);
+
+      if (pagesMatch && pagesMatch[1]) {
+        const pageCount = parseInt(pagesMatch[1], 10);
+        console.log(`[pdfinfo] Páginas detectadas: ${pageCount}`);
+        return pageCount;
+      }
+    }
+  } catch (error) {
+    console.error("Error con pdfinfo:", error);
+    // Continuamos con el siguiente método
+  }
+
+  // Método 3: Análisis binario (último recurso)
+  try {
+    const data = fs.readFileSync(filePath);
+    const count = (data.toString().match(/\/Type\s*\/Page[^s]/g) || []).length;
+
+    if (count > 0) {
+      console.log(`[análisis binario] Páginas detectadas: ${count}`);
+      return count;
     }
 
-    // Verificar que sea un PDF válido
-    const header = buffer.slice(0, 5).toString();
-    if (!header.startsWith("%PDF-")) {
+    // Verificación de estructura básica de PDF
+    const header = data.slice(0, 5).toString();
+    const footer = data.slice(-6).toString();
+
+    if (!header.startsWith("%PDF-") || !footer.includes("%%EOF")) {
       console.error("Archivo no es un PDF válido:", filePath);
       return 0;
     }
 
-    // Importar pdf-parse dinámicamente
-    const pdfParseModule = await import("pdf-parse");
-    const pdfParse = pdfParseModule.default;
-
-    // Parsear el PDF
-    const data = await pdfParse(buffer);
-
-    // Verificar que se detectaron páginas
-    if (!data || typeof data.numpages !== "number" || data.numpages <= 0) {
-      console.error("No se pudieron detectar páginas en el PDF:", filePath);
-      return 1; // Fallback a 1 página si es un PDF válido
-    }
-
-    console.log(
-      `PDF ${path.basename(filePath)}: ${data.numpages} páginas detectadas`,
-    );
-    return data.numpages;
+    // Si llegamos aquí, es un PDF pero no pudimos contar las páginas
+    console.warn("PDF válido pero no se pudo determinar el número de páginas");
+    return 0;
   } catch (error) {
-    console.error("Error al contar páginas del PDF:", error);
-    return 1; // Fallback a 1 página si ocurre un error
+    console.error("Error en análisis binario:", error);
+    return 0;
   }
 }
 
@@ -269,7 +323,18 @@ fastify.get("/api/gallecoins", async (req, res) => {
   return res.sendFile("gallecoins.html");
 });
 
-fastify.get("/api/profile", { preHandler: requireAuth }, async (req, res) => {
+fastify.get("/api/gallecoins/get", async (req, res) => {
+  try {
+    const coins = await Gallecoins.find().lean();
+    res.send({ success: true, data: coins });
+  } catch (err) {
+    res
+      .status(500)
+      .send({ success: false, message: "Error al obtener monedas" });
+  }
+});
+
+fastify.get("/api/profile", async (req, res) => {
   return res.sendFile("profile.html");
 });
 
@@ -291,6 +356,28 @@ fastify.get("/api/categories", async (req, res) => {
     return res
       .status(500)
       .send({ success: false, error: "Error al obtener categorías" });
+  }
+});
+
+fastify.get("/api/mangas/byCategory/:categories", async (req, res) => {
+  try {
+    const { categories } = req.params as { categories: string };
+
+    const mangas = await Manga.find({ categories: categories });
+
+    if (!mangas || mangas.length === 0) {
+      return res.status(404).send({
+        success: false,
+        message: "No se encontraron mangas para esta categoría.",
+      });
+    }
+
+    return res.send({ success: true, data: mangas });
+  } catch (error) {
+    console.error("Error al obtener mangas por categoría:", error);
+    return res
+      .status(500)
+      .send({ success: false, error: "Error interno del servidor" });
   }
 });
 
@@ -515,7 +602,7 @@ fastify.post("/api/mangas", { preHandler: requireAdmin }, async (req, res) => {
       mangaData = req.body as any;
     }
 
-    const { title, description, genre, author, categories } = mangaData;
+    const { title, description, genre, author, categories, status } = mangaData;
 
     if (!title || !description || !genre) {
       return res.status(400).send({
@@ -542,7 +629,7 @@ fastify.post("/api/mangas", { preHandler: requireAdmin }, async (req, res) => {
       genre: genre.trim(),
       author: author?.trim() || "",
       categories: [genre.trim()], // Usar la categoría seleccionada
-      status: "ongoing",
+      status: status?.trim(),
       chapters: 0,
     });
 
@@ -723,13 +810,28 @@ fastify.get("/api/mangas/:mangaId/chapters", async (req, res) => {
 fastify.post("/api/mangas/:mangaId/chapters", async (req, res) => {
   try {
     const { mangaId } = req.params as { mangaId: string };
-    const data = await req.file();
+    const data = await req.file(); // soporta multipart
     let pdfPath = "";
     let pageCount = 0;
     let chapterData: any = {};
 
+    // Función para validar y contar páginas del PDF
+    const processPdfFile = async (filePath: string) => {
+      if (!fs.existsSync(filePath)) {
+        throw new Error("El archivo PDF no existe");
+      }
+
+      const count = await countPDFPages(filePath);
+      if (count === 0) {
+        fs.unlinkSync(filePath);
+        throw new Error("El archivo PDF no es válido o está dañado");
+      }
+      return count;
+    };
+
+    // Procesamiento de datos (multipart o JSON)
     if (data) {
-      // Si hay archivo PDF
+      // Procesar archivo PDF si viene en multipart
       if (data.fieldname === "pdf") {
         try {
           const buffer = await data.toBuffer();
@@ -748,31 +850,23 @@ fastify.post("/api/mangas/:mangaId/chapters", async (req, res) => {
             fs.mkdirSync(uploadDir, { recursive: true });
           }
 
-          fs.writeFileSync(filepath, buffer);
+          await fs.promises.writeFile(filepath, buffer);
           pdfPath = `/uploads/chapters/${filename}`;
-
-          // Contar páginas del PDF
-          pageCount = await countPDFPages(filepath);
-
-          if (pageCount === 0) {
-            // Si no se pudieron contar las páginas, eliminar el archivo
-            fs.unlinkSync(filepath);
-            return res.status(400).send({
-              success: false,
-              error: "El archivo PDF no es válido o está dañado",
-            });
-          }
+          pageCount = await processPdfFile(filepath);
         } catch (fileError) {
           console.error("Error procesando archivo PDF:", fileError);
           return res.status(400).send({
             success: false,
-            error: "Error al procesar el archivo PDF",
+            error:
+              fileError instanceof Error
+                ? fileError.message
+                : "Error al procesar el archivo PDF",
           });
         }
       }
 
-      // Procesar otros campos del formulario
-      const fields = data.fields;
+      // Procesar campos adicionales del multipart
+      const fields = (data as any).fields;
       if (fields) {
         for (const [key, field] of Object.entries(fields)) {
           if (field && typeof field === "object" && "value" in field) {
@@ -781,89 +875,116 @@ fastify.post("/api/mangas/:mangaId/chapters", async (req, res) => {
         }
       }
     } else {
-      // Si no hay archivo, obtener datos del body
-      chapterData = req.body as any;
+      // Procesar como JSON normal
+      chapterData = req.body;
     }
 
-    const { chapterNumber, chapterTitle, description, price } = chapterData;
+    // Manejar pdfPath si se proporciona manualmente (en multipart o JSON)
+    if (!pdfPath && chapterData.pdfPath) {
+      const manualPath = chapterData.pdfPath.startsWith("/")
+        ? chapterData.pdfPath
+        : `/${chapterData.pdfPath}`;
 
-    if (!chapterNumber || !chapterTitle || price === undefined || !pdfPath) {
+      const absolutePath = path.join(__dirname, "public", manualPath);
+
+      try {
+        pageCount = await processPdfFile(absolutePath);
+        pdfPath = manualPath;
+      } catch (error) {
+        console.warn("Error con PDF proporcionado:", error);
+        return res.status(400).send({
+          success: false,
+          error: "La ruta del PDF proporcionada no es válida",
+        });
+      }
+    }
+
+    // Validar campos requeridos
+    const { chapterNumber, chapterTitle, description, price } = chapterData;
+    const requiredFields = [
+      { field: chapterNumber, name: "chapterNumber" },
+      { field: chapterTitle, name: "chapterTitle" },
+      { field: price, name: "price" },
+      { field: pdfPath, name: "PDF" },
+    ];
+
+    const missingFields = requiredFields.filter((f) => !f.field);
+    if (missingFields.length > 0) {
       return res.status(400).send({
         success: false,
-        error: "Número de capítulo, título, precio y PDF son requeridos",
+        error: `Campos requeridos faltantes: ${missingFields.map((f) => f.name).join(", ")}`,
+        missingFields: missingFields.map((f) => f.name),
       });
     }
 
-    // Verificar que el manga existe
+    // Validar manga existente
     const manga = await Manga.findById(mangaId);
     if (!manga) {
-      return res
-        .status(404)
-        .send({ success: false, error: "Manga no encontrado" });
+      return res.status(404).send({
+        success: false,
+        error: "Manga no encontrado",
+      });
     }
 
-    // Verificar si ya existe un capítulo con ese número
+    // Validar capítulo duplicado
     const existingChapter = await Chapter.findOne({
       mangaId,
-      chapterNumber: parseInt(chapterNumber),
+      chapterNumber: parseInt(chapterNumber as string),
     });
     if (existingChapter) {
       return res.status(400).send({
         success: false,
         error: "Ya existe un capítulo con ese número",
+        existingChapterId: existingChapter._id,
       });
     }
 
+    // Crear nuevo capítulo
     const newChapter = new Chapter({
       mangaId,
-      chapterNumber: parseInt(chapterNumber),
+      chapterNumber: parseInt(chapterNumber as string),
       chapterTitle: chapterTitle.trim(),
       description: description?.trim() || "",
-      price: Math.max(0, parseInt(price)),
-      pages: pdfPath ? [pdfPath] : [],
+      price: Math.max(0, parseFloat(price as string)),
+      chapterURL: pdfPath,
+      pagesCount: pageCount,
       isPublished: true,
       publishDate: new Date(),
     });
 
     await newChapter.save();
 
-    // Actualizar el contador de capítulos en el manga
+    // Actualizar contador de capítulos en el manga
     const chapterCount = await Chapter.countDocuments({ mangaId });
     await Manga.findByIdAndUpdate(mangaId, { chapters: chapterCount });
 
-    return res.send({
+    return res.status(201).send({
       success: true,
       data: {
         ...newChapter.toObject(),
-        pageCount,
-        pdfPath,
+        // Asegurar que la URL sea accesible
+        fullChapterUrl: `${req.protocol}://${req.hostname}${pdfPath}`,
       },
     });
   } catch (error) {
     console.error("Error al crear capítulo:", error);
-    return res
-      .status(500)
-      .send({ success: false, error: "Error al crear capítulo" });
+    return res.status(500).send({
+      success: false,
+      error: "Error interno al crear capítulo",
+      message: error instanceof Error ? error.message : String(error),
+    });
   }
 });
 
 fastify.put("/api/chapters/:id", async (req, res) => {
   try {
-    const { id } = req.params as { id: string };
-    const data = await req.file();
+    const { mangaId } = req.params as { mangaId: string };
+    const data = await req.file(); // soporta multipart
     let pdfPath = "";
-    let pageCount = 0;
+    let pagesCount = 0;
     let chapterData: any = {};
 
-    const chapter = await Chapter.findById(id);
-    if (!chapter) {
-      return res
-        .status(404)
-        .send({ success: false, error: "Capítulo no encontrado" });
-    }
-
     if (data) {
-      // Si hay archivo PDF nuevo
       if (data.fieldname === "pdf") {
         try {
           const buffer = await data.toBuffer();
@@ -876,27 +997,22 @@ fastify.put("/api/chapters/:id", async (req, res) => {
             filename,
           );
 
+          const uploadDir = path.dirname(filepath);
+          if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+          }
+
           fs.writeFileSync(filepath, buffer);
           pdfPath = `/uploads/chapters/${filename}`;
 
-          // Contar páginas del PDF
-          pageCount = await countPDFPages(filepath);
+          pagesCount = await countPDFPages(filepath);
 
-          if (pageCount === 0) {
-            // Si no se pudieron contar las páginas, eliminar el archivo
+          if (pagesCount === 0) {
             fs.unlinkSync(filepath);
             return res.status(400).send({
               success: false,
               error: "El archivo PDF no es válido o está dañado",
             });
-          }
-
-          // Solo eliminar PDF anterior si el nuevo es válido
-          if (chapter.pages && chapter.pages.length > 0) {
-            const oldPdfPath = path.join(__dirname, "public", chapter.pages[0]);
-            if (fs.existsSync(oldPdfPath)) {
-              fs.unlinkSync(oldPdfPath);
-            }
           }
         } catch (fileError) {
           console.error("Error procesando archivo PDF:", fileError);
@@ -907,35 +1023,66 @@ fastify.put("/api/chapters/:id", async (req, res) => {
         }
       }
 
-      // Procesar otros campos del formulario
-      const fields = data.fields;
+      // Obtener campos adicionales desde multipart
+      const fields = (data as any).fields;
       if (fields) {
         for (const [key, field] of Object.entries(fields)) {
           if (field && typeof field === "object" && "value" in field) {
             chapterData[key] = field.value;
           }
         }
+        // Si no se subió archivo nuevo pero se pasa ruta manual de PDF
+        if (!pdfPath && fields.pdfPath?.value) {
+          const manualPath = fields.pdfPath.value;
+          const absolute = path.join(__dirname, "public", manualPath);
+          if (fs.existsSync(absolute)) {
+            pdfPath = manualPath;
+            pagesCount = await countPDFPages(absolute);
+          }
+        }
       }
     } else {
-      // Si no hay archivo, obtener datos del body
-      chapterData = req.body as any;
+      // No multipart, datos vienen como JSON normal
+      chapterData = req.body;
+      if (chapterData.pdfPath) {
+        const manualPath = chapterData.pdfPath;
+        const absolute = path.join(__dirname, "public", manualPath);
+        if (fs.existsSync(absolute)) {
+          pdfPath = manualPath;
+          pagesCount = await countPDFPages(absolute);
+        } else {
+          console.warn("Ruta de PDF proporcionada no existe:", absolute);
+        }
+      }
     }
 
-    const { chapterNumber, chapterTitle, description, price, isPublished } =
-      chapterData;
+    const { chapterNumber, chapterTitle, description, price } = chapterData;
 
-    if (!chapterNumber || !chapterTitle || price === undefined) {
+    if (
+      !chapterNumber ||
+      !chapterTitle ||
+      price === undefined ||
+      !pdfPath ||
+      pdfPath.trim() === ""
+    ) {
       return res.status(400).send({
         success: false,
-        error: "Número de capítulo, título y precio son requeridos",
+        error: "Número de capítulo, título, precio y PDF son requeridos",
       });
     }
 
-    // Verificar si otro capítulo del mismo manga ya tiene ese número
+    // Verificar que manga existe
+    const manga = await Manga.findById(mangaId);
+    if (!manga) {
+      return res
+        .status(404)
+        .send({ success: false, error: "Manga no encontrado" });
+    }
+
+    // Verificar que capítulo no existe con ese número
     const existingChapter = await Chapter.findOne({
-      mangaId: chapter.mangaId,
+      mangaId,
       chapterNumber: parseInt(chapterNumber),
-      _id: { $ne: id },
     });
     if (existingChapter) {
       return res.status(400).send({
@@ -944,41 +1091,36 @@ fastify.put("/api/chapters/:id", async (req, res) => {
       });
     }
 
-    const updateData: any = {
+    // Crear capítulo con chapterURL como arreglo y pageCount garantizado
+    const newChapter = new Chapter({
+      mangaId,
       chapterNumber: parseInt(chapterNumber),
       chapterTitle: chapterTitle.trim(),
       description: description?.trim() || "",
       price: Math.max(0, parseInt(price)),
-      isPublished: isPublished !== undefined ? isPublished : true,
-    };
-
-    if (pdfPath) {
-      updateData.pages = [pdfPath];
-    }
-
-    const updatedChapter = await Chapter.findByIdAndUpdate(id, updateData, {
-      new: true,
+      chapterURL: [pdfPath],
+      pagesCount: pagesCount,
+      isPublished: true,
+      publishDate: new Date(),
     });
 
-    if (!updatedChapter) {
-      return res.status(404).send({
-        success: false,
-        error: "Capítulo no encontrado después de actualizar",
-      });
-    }
+    await newChapter.save();
+
+    // Actualizar conteo de capítulos en manga
+    const chapterCount = await Chapter.countDocuments({ mangaId });
+    await Manga.findByIdAndUpdate(mangaId, { chapters: chapterCount });
 
     return res.send({
       success: true,
-      data: {
-        ...updatedChapter.toObject(),
-        pageCount: pdfPath ? pageCount : chapter.pages?.length || 0,
-      },
+      data: newChapter.toObject(),
     });
   } catch (error) {
-    console.error("Error al actualizar capítulo:", error);
-    return res
-      .status(500)
-      .send({ success: false, error: "Error al actualizar capítulo" });
+    console.error("Error al crear capítulo:", error);
+    return res.status(500).send({
+      success: false,
+      error: "Error al crear capítulo",
+      message: error instanceof Error ? error.message : String(error),
+    });
   }
 });
 
@@ -994,8 +1136,8 @@ fastify.delete("/api/chapters/:id", async (req, res) => {
     }
 
     // Eliminar archivo PDF si existe
-    if (chapter.pages && chapter.pages.length > 0) {
-      const pdfPath = path.join(__dirname, "public", chapter.pages[0]);
+    if (chapter.chapterURL && chapter.pagesCount > 0) {
+      const pdfPath = path.join(__dirname, "public", chapter.chapterURL[0]);
       if (fs.existsSync(pdfPath)) {
         fs.unlinkSync(pdfPath);
       }
@@ -1113,13 +1255,13 @@ fastify.post("/api/auth/login", async (request, reply) => {
   };
 
   if (!email || !password) {
-    return reply
-      .status(400)
-      .send({ error: "Email y contraseña son requeridos" });
+    return reply.status(400).send({
+      error: "Email y contraseña son requeridos",
+    });
   }
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
     if (!user) {
       return reply.status(401).send({ error: "Credenciales inválidas" });
     }
@@ -1129,16 +1271,10 @@ fastify.post("/api/auth/login", async (request, reply) => {
       return reply.status(401).send({ error: "Credenciales inválidas" });
     }
 
-    (request.session as any).user = {
-      _id: user._id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-      gallecoins: user.galleCoins,
-    };
+    // Generar token de sesión
+    const sessionToken = crypto.randomUUID();
 
-    const sessionToken = request.session.sessionId;
-
+    // Actualizar usuario en base de datos
     await User.updateOne(
       { _id: user._id },
       {
@@ -1150,7 +1286,31 @@ fastify.post("/api/auth/login", async (request, reply) => {
       },
     );
 
-    return reply.send({ message: "Login exitoso", sessionToken });
+    // Establecer sesión en Fastify
+    (request.session as any).user = {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      gallecoins: user.galleCoins,
+      activeSession: true,
+      sessionToken: sessionToken,
+    };
+
+    // Establecer el token en la sesión
+    await request.session.save();
+
+    return reply.send({
+      success: true,
+      message: "Login exitoso",
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        sessionToken: sessionToken,
+      },
+    });
   } catch (error) {
     console.error("Error en login:", error);
     return reply.status(500).send({ error: "Error interno del servidor" });
@@ -1159,33 +1319,19 @@ fastify.post("/api/auth/login", async (request, reply) => {
 
 fastify.post("/api/auth/logout", async (request, reply) => {
   try {
-    const sessionUser = (request.session as any)?.user;
-    const sessionToken = request.session?.sessionId;
+    const sessionToken = (request.session as any)?.user.sessionToken;
 
-    // Opción 2: permite enviar token en header Authorization: Bearer <token>
-    const bearerHeader = request.headers.authorization;
-    const tokenFromHeader = bearerHeader?.startsWith("Bearer ")
-      ? bearerHeader.slice(7)
-      : null;
+    const tokenToInvalidate = sessionToken;
 
-    // Si no hay sesión ni token en header, no autorizado
-    if (!sessionUser && !tokenFromHeader) {
-      return reply
-        .status(401)
-        .send({ error: "No hay sesión activa ni token proporcionado" });
+    if (!tokenToInvalidate) {
+      return reply.status(400).send({
+        error: "No hay sesión activa para cerrar",
+      });
     }
 
-    // Usa sessionToken de sesión o el token recibido en header
-    const tokenToMatch = sessionToken || tokenFromHeader;
-
-    // Destruye sesión si existe
-    if (request.session) {
-      await request.session.destroy();
-    }
-
-    // Busca en DB y actualiza sesión a inactiva para el token que coincide
+    // Invalidar sesión en base de datos
     const result = await User.updateOne(
-      { sessionToken: tokenToMatch },
+      { sessionToken: tokenToInvalidate },
       {
         $set: {
           activeSession: false,
@@ -1194,13 +1340,21 @@ fastify.post("/api/auth/logout", async (request, reply) => {
       },
     );
 
-    if (result.modifiedCount === 0) {
-      return reply
-        .status(404)
-        .send({ error: "Token de sesión no encontrado en base de datos" });
+    // Destruir sesión local
+    if (request.session) {
+      await request.session.destroy();
     }
 
-    return reply.send({ message: "Logout exitoso" });
+    if (result.modifiedCount === 0) {
+      return reply.status(404).send({
+        error: "Sesión no encontrada",
+      });
+    }
+
+    return reply.send({
+      success: true,
+      message: "Logout exitoso",
+    });
   } catch (error) {
     console.error("Error en logout:", error);
     return reply.status(500).send({ error: "Error al cerrar sesión" });
@@ -1208,56 +1362,117 @@ fastify.post("/api/auth/logout", async (request, reply) => {
 });
 
 //API DE PRUEBA DE SESSION
-fastify.get("/api/auth/me", { preHandler: requireAuth }, (request, reply) => {
-  reply.send({
-    hasSession: !!request.session,
-    sessionUser: (request.session as any)?.user || null,
-  });
-});
+fastify.get("/api/auth/me", async (request, reply) => {
+  try {
+    // Obtener el token de sesión de manera segura
+    const sessionUser = (request.session as any)?.user;
+    const sessionToken = sessionUser?.sessionToken;
 
-fastify.get(
-  "/api/auth/refresh",
-  { preHandler: requireAuth },
-  async (request, reply) => {
-    try {
-      const sessionUser = (request.session as any)?.user;
+    // Obtener token del header Authorization
+    const bearerHeader = request.headers.authorization;
+    const tokenFromHeader = bearerHeader?.startsWith("Bearer ")
+      ? bearerHeader.slice(7)
+      : null;
 
-      if (!sessionUser || !sessionUser._id) {
-        // En vez de 401, devuelve 200 con info de no sesión
-        return reply.send({
-          success: false,
-          message: "No hay sesión activa",
-          user: null,
-        });
+    const tokenToCheck = sessionToken || tokenFromHeader;
+
+    if (!tokenToCheck) {
+      return reply.send({
+        isAuthenticated: false,
+        user: null,
+        sessionToken: null,
+      });
+    }
+
+    // Buscar usuario en la base de datos de manera segura
+    const user = await User.findOne({
+      sessionToken: tokenToCheck,
+      activeSession: true,
+    })
+      .select("-password -__v")
+      .lean();
+
+    if (!user) {
+      // Si no encontramos usuario, limpiamos la sesión por seguridad
+      if (request.session) {
+        await request.session.destroy();
       }
-
-      const updatedUser = await User.findById(sessionUser._id).lean();
-
-      if (!updatedUser) {
-        return reply.status(404).send({ error: "Usuario no encontrado" });
-      }
-
-      (request.session as any).user = {
-        _id: updatedUser._id,
-        username: updatedUser.username,
-        email: updatedUser.email,
-        role: updatedUser.role,
-        gallecoins: updatedUser.galleCoins,
-      };
-
-      await request.session.save();
 
       return reply.send({
-        success: true,
-        message: "Sesión actualizada",
-        user: (request.session as any)?.user || null,
+        isAuthenticated: false,
+        user: null,
+        sessionToken: null,
       });
-    } catch (error) {
-      console.error("Error al refrescar la sesión:", error);
-      return reply.status(500).send({ error: "Error interno del servidor" });
     }
-  },
-);
+
+    // Preparar respuesta exitosa
+    const userResponse = {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      gallecoins: user.galleCoins,
+      sessionToken: user.sessionToken,
+    };
+
+    return reply.send({
+      isAuthenticated: true,
+      user: userResponse,
+      sessionToken: user.sessionToken,
+    });
+  } catch (error) {
+    console.error("Error en /api/auth/me:", error);
+
+    // Respuesta de error detallada pero segura
+    return reply.status(500).send({
+      success: false,
+      error: "Error interno al verificar sesión",
+      message: error instanceof Error ? error.message : "Error desconocido",
+    });
+  }
+});
+
+fastify.get("/api/auth/refresh", async (request, reply) => {
+  try {
+    const sessionToken = (request.session as any).user.sessionToken;
+
+    if (!sessionToken) {
+      return reply.send({
+        success: false,
+        message: "No hay token proporcionado",
+        user: null,
+      });
+    }
+
+    const user = await User.findOne({
+      sessionToken,
+      activeSession: true,
+    }).lean();
+
+    if (!user) {
+      return reply.send({
+        success: false,
+        message: "Sesión no activa o token inválido",
+        user: null,
+      });
+    }
+
+    return reply.send({
+      success: true,
+      message: "Sesión válida",
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        gallecoins: user.galleCoins,
+      },
+    });
+  } catch (error) {
+    console.error("Error al refrescar sesión:", error);
+    return reply.status(500).send({ error: "Error interno del servidor" });
+  }
+});
 
 const start = async () => {
   try {

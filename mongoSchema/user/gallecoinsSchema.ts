@@ -2,12 +2,17 @@ import { Schema, model } from "mongoose";
 
 interface Gallecoins {
   amount: number;
+  price: number;
   description: string;
 }
 
 const GallecoinsSchema = new Schema<Gallecoins>(
   {
     amount: {
+      type: Number,
+      required: true,
+    },
+    price: {
       type: Number,
       required: true,
     },

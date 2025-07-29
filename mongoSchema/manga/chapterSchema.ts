@@ -5,7 +5,8 @@ interface Chapter {
   chapterNumber: number;
   chapterTitle: string;
   description?: string;
-  pages: string[];
+  chapterURL: string;
+  pagesCount: number;
   price: number;
   isPublished: boolean;
   publishDate?: Date;
@@ -19,7 +20,8 @@ const chapterSchema = new Schema<Chapter>(
     chapterNumber: { type: Number, required: true },
     chapterTitle: { type: String, required: true },
     description: { type: String, default: "" },
-    pages: [{ type: String }],
+    chapterURL: { type: String },
+    pagesCount: { type: Number, required: true },
     price: { type: Number, required: true, min: 0 },
     isPublished: { type: Boolean, default: false },
     publishDate: { type: Date },

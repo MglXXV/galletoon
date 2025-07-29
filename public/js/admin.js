@@ -783,6 +783,8 @@
               ? "Manga actualizado correctamente"
               : "Manga creado correctamente",
           );
+
+          console.log(result);
           this.cerrarModalManga();
           this.cargarMangasModerno(); // Recargar lista
         } else {
@@ -1009,13 +1011,13 @@
             <td class="px-6 py-4 font-lilita text-gray-800">
               ${capitulo.chapterTitle}
               ${
-                capitulo.pages && capitulo.pages.length > 0
+                capitulo.chapterURL && capitulo.chapterURL.length > 0
                   ? `<br><small class="text-xs text-gray-500"><i class="fas fa-file-pdf mr-1"></i>PDF disponible</small>`
                   : '<br><small class="text-xs text-red-500"><i class="fas fa-exclamation-triangle mr-1"></i>Sin PDF</small>'
               }
             </td>
             <td class="px-6 py-4 font-lilita text-gray-600">
-              ${capitulo.pageCount || capitulo.pages?.length || 0}
+              ${capitulo.pagesCount ?? capitulo.pagesCount ?? 0}
               <small class="text-xs block">páginas</small>
             </td>
             <td class="px-6 py-4 font-lilita text-green-600">${capitulo.price} <small class="text-xs block">GalleCoins</small></td>
