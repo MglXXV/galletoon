@@ -33,6 +33,7 @@
       container.style.gap = "0.5rem";
 
       this.fetchCategories();
+      this.setupSearchFunctionality();
     },
 
     async fetchCategories() {
@@ -97,6 +98,63 @@
       if (this.htmlElements.categoriesContainer) {
         this.htmlElements.categoriesContainer.textContent = message;
         this.htmlElements.categoriesContainer.style.color = "#f87171"; // rojo claro
+      }
+    },
+
+    setupSearchFunctionality() {
+      if (!this.htmlElements.searchInput) return;
+      let searchTimeout;
+
+      this.htmlElements.searchInput.addEventListener("input", (e) => {
+        clearTimeout(searchTimeout);
+        const query = e.target.value.trim();
+
+        if (query.length > 0) {
+          // Espera 500 ms para no spamear la API
+          searchTimeout = setTimeout(() => {
+            this.performSearch(query);
+          }, 500);
+        } else {
+          // Si borro todo, recargo el listado original
+          this.fetchAndRenderMangas();
+        }
+      });
+
+      this.htmlElements.searchInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const query = e.target.value.trim();
+          if (query.length > 0) {
+            this.performSearch(query);
+          } else {
+            this.fetchAndRenderMangas();
+          }
+        }
+      });
+    },
+
+    async performSearch(query) {
+      this.showNotification(`Buscando: "${query}"…`, "info");
+      try {
+        const res = await fetch(
+          `/api/mangas/search?q=${encodeURIComponent(query)}`,
+          { method: "GET", credentials: "include" },
+        );
+        const data = await res.json();
+
+        if (
+          !data.success ||
+          !Array.isArray(data.mangas) ||
+          data.mangas.length === 0
+        ) {
+          // No hay resultados: recargo todo
+          this.fetchAndRenderMangas();
+        } else {
+          this.renderSearchResults(data.mangas);
+        }
+      } catch (err) {
+        console.error("Error en búsqueda:", err);
+        this.showNotification("Error al realizar la búsqueda", "error");
       }
     },
 

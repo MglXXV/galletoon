@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Compra Cancelada</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                background-color: #fff5f5;
+                color: #c53030;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                margin: 0;
+            }
+            .card {
+                background: white;
+                padding: 2rem 3rem;
+                border-radius: 12px;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+                text-align: center;
+            }
+            .card h1 {
+                margin-bottom: 1rem;
+            }
+            .card a {
+                display: inline-block;
+                margin-top: 1rem;
+                padding: 0.5rem 1.2rem;
+                background-color: #e53e3e;
+                color: white;
+                border-radius: 8px;
+                text-decoration: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <h1>❌ Compra cancelada</h1>
+            <p>No se completó el pago. Puedes intentarlo de nuevo más tarde.</p>
+            <a href="/api/gallecoins">Volver a los paquetes</a>
+        </div>
+    </body>
+</html>

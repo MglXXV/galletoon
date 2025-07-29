@@ -1,16 +1,16 @@
 import { Schema, model } from "mongoose";
 
 interface BuyGallecoins {
-  idUser: number;
-  idGallecoins: number;
+  idUser: Schema.Types.ObjectId;
+  idGallecoins: Schema.Types.ObjectId;
   amount: number;
   date: Date;
 }
 
 const buyGallecoinsSchema = new Schema<BuyGallecoins>(
   {
-    idUser: { type: Number, required: true },
-    idGallecoins: { type: Number, required: true },
+    idUser: { type: Schema.Types.ObjectId, required: true },
+    idGallecoins: { type: Schema.Types.ObjectId, required: true },
     amount: { type: Number, required: true },
     date: { type: Date, required: true, default: Date.now },
   },

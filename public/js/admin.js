@@ -65,6 +65,28 @@
 
       //Cerrar sesion
       btnCerrarSesion: document.getElementById("btn-logout"),
+
+      totalUsuarios: document.getElementById("total-usuarios"),
+      totalMangas: document.getElementById("total-mangas"),
+      transaccionesHoy: document.getElementById("transacciones-hoy"),
+      ingresosHoy: document.getElementById("ingresos-hoy"),
+      ingresosSemana: document.getElementById("ingresos-semana"),
+      ingresosMes: document.getElementById("ingresos-mes"),
+      actividadReciente: document.getElementById("actividad-reciente"),
+
+      btnUsuariosView: document.getElementById("btn-usuarios-view"),
+      usuariosView: document.getElementById("usuarios-view"),
+      loadingUsuarios: document.getElementById("loading-usuarios"),
+      noUsuarios: document.getElementById("no-usuarios"),
+      listaUsuarios: document.getElementById("lista-usuarios"),
+      modalUsuarioContent: document.getElementById("modal-usuario-content"),
+      modalUsuarioTitle: document.getElementById("modal-usuario-title"),
+
+      btnTransaccionesView: document.getElementById("btn-transacciones-view"),
+      transaccionesView: document.getElementById("transacciones-view"),
+      loadingTransacciones: document.getElementById("loading-transacciones"),
+      noTransacciones: document.getElementById("no-transacciones"),
+      listaTransacciones: document.getElementById("lista-transacciones"),
     },
 
     init() {
@@ -78,6 +100,8 @@
       this.configurarPreviewImagen();
       this.configurarPreviewPDF();
       this.logoutEvent();
+      this.cargarEstadisticas();
+      this.cargarUsuarios();
     },
 
     bindEvents() {
@@ -198,12 +222,179 @@
           this.guardarCategoria(formData);
         });
       }
+
+      // Eventos en bindEvents()
+      if (this.htmlElements.btnUsuariosView) {
+        this.htmlElements.btnUsuariosView.addEventListener("click", () => {
+          this.mostrarVista("usuarios");
+          this.cargarUsuarios();
+        });
+      }
+
+      if (this.htmlElements.btnTransaccionesView) {
+        this.htmlElements.btnTransaccionesView.addEventListener("click", () => {
+          this.mostrarVista("transacciones");
+          this.cargarTransacciones();
+        });
+      }
     },
 
     logoutEvent() {
       this.htmlElements.btnCerrarSesion.addEventListener("click", () => {
         this.handleLogout();
       });
+    },
+
+    async cargarTransacciones() {
+      const load = this.htmlElements.loadingTransacciones;
+      const list = this.htmlElements.listaTransacciones;
+      const none = this.htmlElements.noTransacciones;
+      if (load) load.classList.remove("hidden");
+      if (list) list.classList.add("hidden");
+      if (none) none.classList.add("hidden");
+      try {
+        const res = await fetch("/api/transactions");
+        const json = await res.json();
+        if (json.success) this.mostrarTransacciones(json.data);
+        else throw new Error(json.error);
+      } catch (err) {
+        console.error("Error al cargar transacciones:", err);
+        this.mostrarError("No se pudieron cargar las transacciones");
+      }
+      if (load) load.classList.add("hidden");
+    },
+
+    // Función para renderizar transacciones
+    mostrarTransacciones(trans) {
+      const list = this.htmlElements.listaTransacciones;
+      const none = this.htmlElements.noTransacciones;
+      if (!list) return;
+      if (trans.length === 0) {
+        list.classList.add("hidden");
+        if (none) none.classList.remove("hidden");
+        return;
+      }
+      list.innerHTML = trans
+        .map(
+          (tx) => `
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 text-center">${new Date(tx.created * 1000).toLocaleString()}</td>
+          <td class="px-6 py-4 text-center">${tx.customer_email || tx.customer}</td>
+          <td class="px-6 py-4 text-center">$${(tx.amount / 100).toFixed(2)} ${tx.currency.toUpperCase()}</td>
+          <td class="px-6 py-4 text-center">
+            <span class="px-2 py-1 text-xs rounded-full ${tx.status === "succeeded" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}">
+              ${tx.status}
+            </span>
+          </td>
+        </tr>
+      `,
+        )
+        .join("");
+      list.classList.remove("hidden");
+    },
+
+    async cargarEstadisticas() {
+      // placeholders de carga
+      if (this.htmlElements.totalUsuarios)
+        this.htmlElements.totalUsuarios.textContent = "…";
+      if (this.htmlElements.totalMangas)
+        this.htmlElements.totalMangas.textContent = "…";
+      if (this.htmlElements.transaccionesHoy)
+        this.htmlElements.transaccionesHoy.textContent = "…";
+      if (this.htmlElements.ingresosHoy)
+        this.htmlElements.ingresosHoy.textContent = "…";
+      if (this.htmlElements.ingresosSemana)
+        this.htmlElements.ingresosSemana.textContent = "…";
+      if (this.htmlElements.ingresosMes)
+        this.htmlElements.ingresosMes.textContent = "…";
+
+      try {
+        const res = await fetch("/api/admin/stats", { credentials: "include" });
+        const json = await res.json();
+        if (!json.success) throw new Error(json.error || "Error desconocido");
+
+        const s = json.data;
+        if (this.htmlElements.totalUsuarios)
+          this.htmlElements.totalUsuarios.textContent = s.totalUsers;
+        if (this.htmlElements.totalMangas)
+          this.htmlElements.totalMangas.textContent = s.totalMangas;
+        if (this.htmlElements.transaccionesHoy)
+          this.htmlElements.transaccionesHoy.textContent = s.transactionsToday;
+        if (this.htmlElements.ingresosHoy)
+          this.htmlElements.ingresosHoy.textContent = `$${s.revenueToday}`;
+        if (this.htmlElements.ingresosSemana)
+          this.htmlElements.ingresosSemana.textContent = `$${s.revenueWeek}`;
+        if (this.htmlElements.ingresosMes)
+          this.htmlElements.ingresosMes.textContent = `$${s.revenueMonth}`;
+        if (this.htmlElements.actividadReciente) {
+          this.htmlElements.actividadReciente.innerHTML = `
+               <div class="flex justify-between p-4 bg-gray-50 rounded-lg mb-2">
+                 <span class="font-lilita text-gray-700">Transacciones Hoy</span>
+                 <span class="font-lilita font-bold">${s.transactionsToday}</span>
+               </div>
+               <div class="flex justify-between p-4 bg-gray-50 rounded-lg">
+                 <span class="font-lilita text-gray-700">Ingresos Hoy</span>
+                 <span class="font-lilita font-bold">$${s.revenueToday}</span>
+               </div>
+             `;
+        }
+      } catch (err) {
+        console.error("No se pudieron cargar las estadísticas:", err);
+        // opcional: mostrar un mensaje de error en UI
+      }
+    },
+
+    async cargarUsuarios() {
+      const load = this.htmlElements.loadingUsuarios;
+      const list = this.htmlElements.listaUsuarios;
+      const none = this.htmlElements.noUsuarios;
+      if (load) load.classList.remove("hidden");
+      if (list) list.classList.add("hidden");
+      if (none) none.classList.add("hidden");
+
+      try {
+        const res = await fetch("/api/users");
+        const json = await res.json();
+        if (json.success) {
+          this.mostrarUsuarios(json.data);
+        } else throw new Error(json.error);
+      } catch (err) {
+        console.error("Error al cargar usuarios:", err);
+        this.mostrarError("No se pudieron cargar los usuarios");
+      }
+      if (load) load.classList.add("hidden");
+    },
+
+    // Renderiza tabla de usuarios con indicador de sesión
+    mostrarUsuarios(users) {
+      const list = this.htmlElements.listaUsuarios;
+      const none = this.htmlElements.noUsuarios;
+      if (!list) return;
+      if (users.length === 0) {
+        list.classList.add("hidden");
+        if (none) none.classList.remove("hidden");
+        return;
+      }
+      // Encabezados (añadido Estado)
+      // Dentro del HTML ya está el <thead> con 'Estado'
+
+      // Construir filas
+      list.innerHTML = users
+        .map(
+          (u) => `
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 font-lilita">${u.username}</td>
+          <td class="px-6 py-4">${u.email}</td>
+          <td class="px-6 py-4">${u.role}</td>
+          <td class="px-6 py-4 text-center">
+            <span class="inline-block w-3 h-3 rounded-full mr-2 ${u.activeSession ? "bg-green-500" : "bg-yellow-500"}"></span>
+            ${u.activeSession ? "Activo" : "Inactivo"}
+          </td>
+        </tr>
+      `,
+        )
+        .join("");
+      list.classList.remove("hidden");
     },
 
     async handleLogout() {

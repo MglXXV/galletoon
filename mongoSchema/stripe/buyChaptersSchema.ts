@@ -1,22 +1,22 @@
 import { Schema, model } from "mongoose";
 
 interface BuyChapters {
-  idManga: number;
-  idChapter: number;
+  idManga: Schema.Types.ObjectId;
+  idChapter: Schema.Types.ObjectId;
   amountCoins: number;
   date: Date;
 }
 
 const buyChaptersSchema = new Schema<BuyChapters>(
   {
-    idManga: { type: Number, required: true },
-    idChapter: { type: Number, required: true },
+    idManga: { type: Schema.Types.ObjectId, required: true },
+    idChapter: { type: Schema.Types.ObjectId, required: true },
     amountCoins: { type: Number, required: true },
     date: { type: Date, required: true, default: Date.now },
   },
-  { collection: "BuyChapters" },
+  { collection: "BuyChapter" },
 );
 
-const BuyChaptersModel = model<BuyChapters>("BuyChapters", buyChaptersSchema);
+const BuyChaptersModel = model<BuyChapters>("BuyChapter", buyChaptersSchema);
 
 export default BuyChaptersModel;

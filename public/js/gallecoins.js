@@ -80,7 +80,7 @@
           ${
             isLoggedIn
               ? `
-              <button class="buy-btn" data-amount="${pkg.amount}">
+              <button class="buy-btn" data-amount="${pkg.amount}" data-price="${pkg.price}" data-package-id="${pkg._id}">
                 Comprar ahora
               </button>
             `
@@ -105,45 +105,104 @@
         const btn = card.querySelector(".buy-btn");
 
         if (isLoggedIn) {
-          btn.addEventListener("click", () => {
-            alert(`¡Compraste ${pkg.amount} GalleCoins por $${pkg.price}!`);
-            // Aquí va el flujo real de compra con Stripe
+          btn.addEventListener("click", async () => {
+            const amount = parseInt(btn.dataset.amount);
+            const price = parseFloat(btn.dataset.price);
+            const packageId = btn.dataset.packageId;
+
+            if (isNaN(amount) || isNaN(price) || !packageId) {
+              this.showAlert("Datos del paquete inválidos.", "error");
+              return;
+            }
+
+            try {
+              btn.disabled = true;
+              btn.textContent = "Procesando...";
+              btn.classList.add("opacity-60", "cursor-wait");
+
+              const res = await fetch("/api/gallecoins/checkout", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ amount, price, packageId }),
+              });
+
+              const data = await res.json();
+
+              if (res.ok && data.success && data.url) {
+                window.location.href = data.url;
+              } else {
+                this.showAlert(
+                  data.error || "Error al iniciar compra",
+                  "error",
+                );
+              }
+            } catch (err) {
+              console.error(err);
+              this.showAlert("Error de red. Intenta de nuevo.", "error");
+            } finally {
+              btn.disabled = false;
+              btn.textContent = "Comprar ahora";
+              btn.classList.remove("opacity-60", "cursor-wait");
+            }
           });
         } else {
           btn.addEventListener("click", () => {
-            const alertBox = document.createElement("div");
-            alertBox.className = `
-              fixed top-6 right-6 z-50 max-w-xs w-[280px]
-              bg-pink-100 border border-pink-300 text-pink-800
-              px-4 py-2 rounded-lg shadow-lg flex items-start gap-2 animate-slide-in
-              text-sm
-            `;
-            alertBox.innerHTML = `
-              <svg class="w-5 h-5 mt-0.5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M13 16h-1v-4h-1m1-4h.01M12 9v2m0 4h.01M12 3c5 0 9 4 9 9s-4 9-9 9-9-4-9-9 4-9 9-9z" />
-              </svg>
-              <div>
-                <p class="font-semibold">Inicia sesión</p>
-                <p class="text-xs text-pink-600">Necesitas estar autenticado para comprar.</p>
-              </div>
-            `;
-
-            document.body.appendChild(alertBox);
-
-            setTimeout(() => {
-              alertBox.classList.add("opacity-0", "translate-x-4");
-              setTimeout(() => alertBox.remove(), 500);
-            }, 3000);
-
-            setTimeout(() => {
-              window.location.href = "/api/auth/login";
-            }, 2500);
+            this.showAlert(
+              "Necesitas estar autenticado para comprar.",
+              "info",
+              "/api/auth/login",
+            );
           });
         }
 
         container.appendChild(card);
       });
+    },
+
+    showAlert(message, type = "info", redirectUrl = null) {
+      const alertBox = document.createElement("div");
+      let bgColor, borderColor, textColor;
+
+      if (type === "success") {
+        bgColor = "bg-green-100";
+        borderColor = "border-green-300";
+        textColor = "text-green-800";
+      } else if (type === "error") {
+        bgColor = "bg-red-100";
+        borderColor = "border-red-300";
+        textColor = "text-red-800";
+      } else {
+        bgColor = "bg-pink-100";
+        borderColor = "border-pink-300";
+        textColor = "text-pink-800";
+      }
+
+      alertBox.className = `
+        fixed top-6 right-6 z-50 max-w-xs w-[280px]
+        ${bgColor} ${borderColor} ${textColor}
+        px-4 py-2 rounded-lg shadow-lg flex items-start gap-2 animate-slide-in
+        text-sm
+      `;
+
+      alertBox.innerHTML = `
+        <div>
+          <p class="font-semibold">${message}</p>
+        </div>
+      `;
+
+      document.body.appendChild(alertBox);
+
+      setTimeout(() => {
+        alertBox.classList.add("opacity-0", "translate-x-4");
+        setTimeout(() => {
+          alertBox.remove();
+          if (redirectUrl) {
+            window.location.href = redirectUrl;
+          }
+        }, 500);
+      }, 3000);
     },
   };
 

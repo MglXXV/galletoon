@@ -524,10 +524,76 @@
                 >
                     Gestión de Usuarios
                 </h2>
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <p class="text-center text-gray-500 font-lilita">
-                        Sección de usuarios en construcción...
-                    </p>
+
+                    <!-- Tabla de Usuarios -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div
+                            class="p-6 bg-gradient-to-r from-principal to-secundario"
+                        >
+                            <h3
+                                class="text-xl font-lilita text-white flex items-center"
+                            >
+                                <i class="fas fa-users mr-3"></i>
+                                Usuarios Registrados
+                            </h3>
+                        </div>
+
+                        <!-- Loading -->
+                        <div id="loading-usuarios" class="p-8 text-center">
+                            <div
+                                class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-principal"
+                            ></div>
+                            <p class="text-gray-500 font-lilita mt-2">
+                                Cargando usuarios...
+                            </p>
+                        </div>
+
+                        <!-- Lista Dinámica -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-4 text-left font-lilita text-gray-700"
+                                        >
+                                            Usuario
+                                        </th>
+                                        <th
+                                            class="px-6 py-4 text-left font-lilita text-gray-700"
+                                        >
+                                            Email
+                                        </th>
+                                        <th
+                                            class="px-6 py-4 text-left font-lilita text-gray-700"
+                                        >
+                                            Rol
+                                        </th>
+                                        <th
+                                            class="px-6 py-4 text-center font-lilita text-gray-700"
+                                        >
+                                            Acciones
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody
+                                    id="lista-usuarios"
+                                    class="divide-y divide-gray-200 hidden"
+                                >
+                                    <!-- se llena dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Sin usuarios -->
+                        <div id="no-usuarios" class="hidden p-8 text-center">
+                            <i
+                                class="fas fa-user-slash text-6xl text-gray-300 mb-4"
+                            ></i>
+                            <p class="text-gray-500 font-lilita">
+                                No hay usuarios registrados.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -538,10 +604,47 @@
                 >
                     Gestión de Transacciones
                 </h2>
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <p class="text-center text-gray-500 font-lilita">
-                        Sección de transacciones en construcción...
-                    </p>
+                <div class="mb-8 flex justify-between items-center">
+                  <h2 class="text-3xl font-lilita text-principal">Gestión de Transacciones</h2>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                  <!-- Encabezado -->
+                  <div class="p-6 bg-gradient-to-r from-green-500 to-green-600">
+                    <h3 class="text-xl font-lilita text-white flex items-center">
+                      <i class="fas fa-credit-card mr-3"></i>
+                      Transacciones Stripe
+                    </h3>
+                  </div>
+
+                  <!-- Loading -->
+                  <div id="loading-transacciones" class="p-8 text-center">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+                    <p class="text-gray-500 font-lilita mt-2">Cargando transacciones...</p>
+                  </div>
+
+                  <!-- Tabla de transacciones -->
+                  <div class="overflow-x-auto">
+                    <table class="w-full">
+                      <thead class="bg-gray-50">
+                        <tr>
+                          <th class="px-6 py-4 font-lilita text-gray-700">Fecha</th>
+                          <th class="px-6 py-4 font-lilita text-gray-700">Cliente</th>
+                          <th class="px-6 py-4 font-lilita text-gray-700">Monto</th>
+                          <th class="px-6 py-4 font-lilita text-gray-700">Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody id="lista-transacciones" class="divide-y divide-gray-200 hidden">
+                        <!-- se rellenará dinámicamente -->
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Sin transacciones -->
+                  <div id="no-transacciones" class="hidden p-8 text-center">
+                    <i class="fas fa-exclamation-circle text-6xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500 font-lilita">No hay transacciones para mostrar.</p>
+                  </div>
                 </div>
             </div>
 

@@ -18,12 +18,23 @@
       isAuthenticated: false,
       userData: null,
       sessionToken: null,
+      library: [],
     },
 
     init() {
       console.log("Inicializando GalleToon...");
       this.initializeElements();
-      this.checkAuthenticationStatus();
+      this.checkAuthenticationStatus()
+        .then(() => this.refreshSessionLibrary())
+        .then(() => {
+          if (["/", "/index.html"].includes(window.location.pathname)) {
+            this.fetchAndRenderMangas();
+          }
+          // Si estamos en profile, renderizamos la biblioteca
+          if (document.getElementById("favorite-mangas")) {
+            this.renderLibrary();
+          }
+        });
       this.setupSearchFunctionality();
       this.setupMangaCardInteractions();
       this.setupNavigationEffects();
@@ -34,6 +45,7 @@
       if (["/", "/index.html"].includes(window.location.pathname)) {
         this.fetchAndRenderMangas();
       }
+      this.setupSearchFunctionality();
     },
 
     initializeElements() {
@@ -116,6 +128,197 @@
         this.user.isAuthenticated = false;
         this.updateNavigationForGuestUser();
       }
+    },
+
+    async refreshSessionLibrary() {
+      if (!this.user.isAuthenticated) return;
+      try {
+        // Traer la librería de capítulos comprados
+        const res = await fetch("/api/library", { credentials: "include" });
+        const json = await res.json();
+        this.user.library = json.success ? json.data : [];
+      } catch (err) {
+        console.error("Error cargando librería:", err);
+        this.user.library = [];
+      }
+
+      this.updateProfileElements();
+      this.renderLibrary();
+    },
+
+    setupSearchFunctionality() {
+      if (!this.htmlElements.searchInput) return;
+      let searchTimeout;
+
+      this.htmlElements.searchInput.addEventListener("input", (e) => {
+        clearTimeout(searchTimeout);
+        const query = e.target.value.trim();
+
+        if (query.length > 0) {
+          // Espera 500 ms para no spamear la API
+          searchTimeout = setTimeout(() => {
+            this.performSearch(query);
+          }, 500);
+        } else {
+          // Si borro todo, recargo el listado original
+          this.fetchAndRenderMangas();
+        }
+      });
+
+      this.htmlElements.searchInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const query = e.target.value.trim();
+          if (query.length > 0) {
+            this.performSearch(query);
+          } else {
+            this.fetchAndRenderMangas();
+          }
+        }
+      });
+    },
+
+    renderLibrary() {
+      const container = document.getElementById("favorite-mangas");
+      if (!container) return;
+
+      if (!this.user.library.length) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-12 text-gray-400">
+            <i class="fas fa-book-open text-4xl mb-4"></i>
+            <p class="text-lg">Aún no has comprado ningún capítulo.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = "";
+
+      const grouped = {};
+      this.user.library.forEach((chap) => {
+        const key = chap.mangaId || chap.mangaTitle || "Sin nombre";
+        if (!grouped[key]) grouped[key] = { manga: chap, chapters: [] };
+        grouped[key].chapters.push(chap);
+      });
+
+      Object.entries(grouped).forEach(([mangaId, { manga, chapters }]) => {
+        const section = document.createElement("div");
+        section.className =
+          "mb-10 p-4 bg-white rounded-2xl shadow-xl border border-pink-200";
+
+        const header = document.createElement("div");
+        header.className = "flex items-center gap-5 mb-6";
+
+        const cover = document.createElement("img");
+        cover.src = manga.mangaCover || "/default-manga.jpg";
+        cover.alt = manga.mangaTitle;
+        cover.className =
+          "w-24 h-32 rounded-xl shadow-md object-cover border border-pink-400";
+
+        const titleWrap = document.createElement("div");
+        titleWrap.innerHTML = `
+          <h3 class="text-3xl font-extrabold text-pink-800">${manga.mangaTitle}</h3>
+          <p class="text-sm text-gray-500 mt-1">${chapters.length} capítulo${chapters.length > 1 ? "s" : ""}</p>
+        `;
+
+        header.appendChild(cover);
+        header.appendChild(titleWrap);
+
+        const grid = document.createElement("div");
+        grid.className =
+          "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6";
+
+        chapters.forEach((chap) => {
+          const card = document.createElement("div");
+          card.className = `
+            chapter-card bg-gradient-to-br from-pink-50 to-white border border-pink-100
+            rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300
+            overflow-hidden flex flex-col justify-between
+          `;
+
+          card.innerHTML = `
+            <div class="p-4">
+              <div class="flex items-center justify-between mb-2">
+                <div class="text-pink-600 text-xl font-bold flex items-center gap-1">
+                  <i class="fas fa-book-open"></i>
+                  ${chap.chapterNumber ? `#${chap.chapterNumber}` : "Capítulo"}
+                </div>
+                <span class="text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full font-semibold">Leído</span>
+              </div>
+              <div class="text-gray-700 mb-3 text-sm line-clamp-2">
+                ${chap.chapterTitle || "Capítulo desbloqueado"}
+              </div>
+              <button
+                data-url="${chap.chapterURL}"
+                class="read-btn w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white py-2 px-4 rounded-lg font-semibold text-sm transition-all"
+              >
+                <i class="fas fa-eye mr-1"></i> Leer ahora
+              </button>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+        section.appendChild(header);
+        section.appendChild(grid);
+        container.appendChild(section);
+
+        grid.querySelectorAll(".read-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const url = btn.dataset.url;
+            const chap = chapters.find((c) => c.chapterURL === url);
+            const existing = document.getElementById("chapter-viewer");
+            if (existing) existing.remove();
+            this.openChapterViewer(url, chap);
+          });
+        });
+      });
+    },
+
+    openChapterViewer(url, chap = {}) {
+      if (!url) {
+        this.showNotification("No se pudo abrir el capítulo", "error");
+        return;
+      }
+
+      // Eliminar visor anterior si existe
+      const existing = document.getElementById("chapter-viewer");
+      if (existing) existing.remove();
+
+      const viewer = document.createElement("div");
+      viewer.id = "chapter-viewer";
+      viewer.className = `
+        fixed inset-0 z-[9999] bg-black bg-opacity-90 backdrop-blur-sm
+        flex items-center justify-center px-0 py-0
+      `;
+
+      viewer.innerHTML = `
+        <div class="relative w-full h-full">
+          <div class="absolute top-0 left-0 w-full z-50 flex justify-between items-center px-6 py-4 bg-gradient-to-r from-pink-600 to-pink-400 text-white shadow-lg">
+            <div>
+              <h2 class="text-xl font-bold">${chap.mangaTitle || "Lectura de capítulo"}</h2>
+              <p class="text-sm">${chap.chapterNumber ? `Capítulo ${chap.chapterNumber}: ` : ""}${chap.chapterTitle || ""}</p>
+            </div>
+            <button
+              id="close-viewer"
+              class="text-white text-3xl hover:text-pink-200 transition-all"
+              aria-label="Cerrar"
+            >&times;</button>
+          </div>
+          <iframe
+            src="${url}"
+            class="absolute top-0 left-0 w-full h-full"
+            frameborder="0"
+            allowfullscreen
+          ></iframe>
+        </div>
+      `;
+
+      document.body.appendChild(viewer);
+
+      document.getElementById("close-viewer").addEventListener("click", () => {
+        viewer.remove();
+      });
     },
 
     updateProfileElements() {
@@ -278,21 +481,27 @@
           dropdownMenu.classList.add("hidden");
         }
       });
-
-      // Re-inicializar el evento de logout
-      this.logoutEvent();
     },
 
     logoutEvent() {
-      const logoutBtn = document.getElementById("logout-btn");
-      if (!logoutBtn)
-        return console.warn("❌ No se encontró el botón de logout");
-
-      logoutBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        console.log("🚪 Logout clickeado");
-        this.handleLogout();
-      });
+      // Esperar a que el DOM esté listo y el botón exista
+      const attachLogout = () => {
+        const logoutBtn = document.getElementById("logout-btn");
+        if (logoutBtn) {
+          // Eliminar listeners previos
+          const newLogoutBtn = logoutBtn.cloneNode(true);
+          logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
+          newLogoutBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.handleLogout();
+          });
+        } else {
+          // Intentar de nuevo si el menú se renderiza después
+          setTimeout(attachLogout, 200);
+        }
+      };
+      attachLogout();
     },
 
     navigateToProfile() {
@@ -547,7 +756,7 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
           }
           .manga-card-container {
-            background: #ffe4ec;
+            background:#db2777;
             border-radius: 1rem;
             box-shadow: 0 8px 20px rgba(251, 113, 133, 0.25);
             padding: 1rem;
@@ -582,20 +791,20 @@
           .manga-card-title {
             font-weight: 800;
             font-size: 1.375rem;
-            color: #be185d;
+            color: #c3f7f1;
             margin-bottom: 0.25rem;
             line-height: 1.2;
           }
 
           .manga-card-description {
-            color: #9d174d;
+            color: #c3f7f1;
             font-size: 0.9rem;
             line-height: 1.3;
           }
 
           .manga-card-meta {
             font-size: 0.75rem;
-            color: #831843;
+            color: #c3f7f1;
             font-weight: 600;
             text-transform: uppercase;
             display: flex;
@@ -614,6 +823,12 @@
               flex-direction: row;
             }
           }
+          #chapter-viewer iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+          }
+
         `;
         document.head.appendChild(style);
       }
@@ -772,77 +987,30 @@
         return;
       }
 
+      // Aplicar grid
+      container.className = "grid-mangas mt-6 grid gap-4";
       container.innerHTML = "";
-      let openDropdown = null;
 
-      mangas.forEach((manga, index) => {
+      mangas.forEach((manga) => {
         const mangaCard = document.createElement("div");
-        mangaCard.className = "manga-card-container";
-
+        mangaCard.className = "manga-card";
         mangaCard.innerHTML = `
-          <div class="flex w-full gap-6 items-center flex-col md:flex-row">
-            <img src="${manga.imageURL || manga.image || "/default-manga.jpg"}"
-                 alt="${manga.title}"
-                 class="w-28 h-40 object-cover rounded-lg shadow-md flex-shrink-0"
-                 onerror="this.src='/default-manga.jpg'">
-            <div class="manga-card-info">
-              <div>
-                <h3 class="manga-card-title">${manga.title}</h3>
-                <p class="manga-card-description">${manga.description || "Sin descripción disponible."}</p>
-              </div>
-              <div class="manga-card-meta">
-                <span>${manga.genre || manga.category || "Género desconocido"}</span>
-                <span class="manga-card-status">${manga.status || "Estado desconocido"}</span>
-              </div>
+          <img src="${manga.imageURL || manga.image || "/default-manga.jpg"}" alt="${manga.title}" onerror="this.src='/default-manga.jpg'">
+          <div class="info">
+            <h3>${manga.title}</h3>
+            <div class="text-xs text-pink-300 mb-1">${manga.author ? `Autor: ${manga.author}` : ""}</div>
+            <p>${manga.description || "Sin descripción disponible."}</p>
+            <div class="flex justify-between items-center mt-2">
+              <span class="text-xs text-pink-200">${manga.genre || manga.category || "Género desconocido"}</span>
+              <span class="text-xs bg-pink-200 text-pink-800 rounded-full px-2 py-1">${manga.status || "Estado desconocido"}</span>
             </div>
           </div>
         `;
-
-        // Contenedor dropdown para capítulos
-        const dropdown = document.createElement("div");
-        dropdown.className =
-          "hidden mt-4 w-full bg-gradient-to-br from-pink-50 to-purple-50 border border-pink-200 rounded-xl shadow-lg p-6 max-h-80 overflow-y-auto text-gray-800";
-        mangaCard.appendChild(dropdown);
-
-        // Event listener para mostrar/ocultar capítulos
-        mangaCard.addEventListener("click", async (e) => {
-          // Evitar que se active si se hace clic en un botón
-          if (e.target.closest("button")) return;
-
-          // Cerrar otros dropdowns
-          if (openDropdown && openDropdown !== dropdown) {
-            openDropdown.classList.add("hidden");
-          }
-
-          if (!dropdown.classList.contains("hidden")) {
-            dropdown.classList.add("hidden");
-            openDropdown = null;
-            return;
-          }
-
-          // Mostrar loading
-          dropdown.innerHTML = `
-            <div class="flex flex-col items-center justify-center py-8">
-              <div class="animate-spin rounded-full h-8 w-8 border-3 border-pink-500 border-t-transparent mb-4"></div>
-              <p class="text-pink-700 font-medium">Cargando capítulos...</p>
-            </div>
-          `;
-          dropdown.classList.remove("hidden");
-          openDropdown = dropdown;
-
-          // Cargar y mostrar capítulos
-          const chapters = await this.fetchChapters(manga._id || manga.id);
-          this.renderChapters(dropdown, chapters);
+        mangaCard.addEventListener("click", () => {
+          App.showChaptersDialog(manga);
         });
-
         container.appendChild(mangaCard);
       });
-
-      // Configurar efectos después del renderizado
-      setTimeout(() => {
-        this.setupScrollEffects();
-        this.setupCardHoverEffects();
-      }, 100);
     },
 
     setupCardHoverEffects() {
@@ -859,268 +1027,109 @@
       });
     },
 
-    renderChapters(dropdown, chapters) {
-      if (!chapters || chapters.length === 0) {
-        dropdown.innerHTML = `
-                <div class="flex flex-col items-center justify-center py-8">
-                  <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mb-4">
-                    <svg class="w-8 h-8 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253z"></path>
-                    </svg>
-                  </div>
-                  <p class="text-pink-600 font-semibold text-lg">No hay capítulos disponibles</p>
-                  <p class="text-pink-500 text-sm mt-1">Vuelve pronto para ver nuevo contenido</p>
-                </div>
-              `;
-        return;
-      }
-
-      dropdown.innerHTML = "";
-
-      // Header de capítulos
-      const headerElement = document.createElement("div");
-      headerElement.className = "mb-6 text-center";
-      headerElement.innerHTML = `
-              <h4 class="text-xl font-bold text-pink-800 mb-2">📖 Capítulos Disponibles</h4>
+    renderChapters(container, chapters, ownedIds = []) {
+      container.innerHTML = `
+            <div class="mb-4 text-center">
+              <h4 class="text-xl font-bold text-pink-800">📖 Capítulos Disponibles</h4>
               <div class="w-20 h-1 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full mx-auto"></div>
+            </div>
+          `;
+      chapters.forEach((ch) => {
+        const id = (ch._id || ch.id).toString();
+        const isOwned = ownedIds.includes(id);
+        let btnHtml;
+        if (!this.user.isAuthenticated) {
+          btnHtml = `
+                <button class="locked-btn px-4 py-2 bg-gray-500 text-white rounded-lg flex items-center">
+                  <i class="fas fa-lock mr-2"></i>Inicia sesión
+                </button>
+              `;
+        } else if (isOwned) {
+          btnHtml = `
+                <button disabled class="px-4 py-2 bg-green-600 text-white rounded-lg">
+                  Leído
+                </button>
+              `;
+        } else {
+          btnHtml = `
+                <button data-id="${id}" class="buy-btn px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg flex items-center transition">
+                  <i class="fas fa-coins mr-2"></i>${ch.price} GC – Comprar
+                </button>
+              `;
+        }
+        const row = document.createElement("div");
+        row.className =
+          "flex justify-between items-center mb-3 p-4 bg-white rounded-lg shadow-lg";
+        row.innerHTML = `
+              <div>
+                <h5 class="font-bold text-pink-700">Episodio ${ch.chapterNumber}</h5>
+                <p class="text-sm text-gray-600">${ch.chapterTitle}</p>
+              </div>
+              <div>${btnHtml}</div>
             `;
-      dropdown.appendChild(headerElement);
-
-      // Renderizar cada capítulo
-      chapters.forEach((chapter, index) => {
-        const chapterElement = document.createElement("div");
-        chapterElement.className = `
-                group relative mb-4 p-4 bg-white rounded-xl shadow-sm border border-pink-100
-                hover:shadow-md hover:border-pink-200 transition-all duration-300 cursor-pointer
-                hover:transform hover:scale-[1.02] hover:bg-gradient-to-r hover:from-white hover:to-pink-50
-              `;
-
-        const accentColors = [
-          "from-pink-400 to-rose-400",
-          "from-purple-400 to-pink-400",
-          "from-rose-400 to-orange-400",
-          "from-indigo-400 to-purple-400",
-          "from-teal-400 to-blue-400",
-          "from-emerald-400 to-teal-400",
-        ];
-        const accentColor = accentColors[index % accentColors.length];
-
-        chapterElement.innerHTML = `
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-4 flex-1">
-                    <div class="relative">
-                      <div class="w-16 h-16 bg-gradient-to-br ${accentColor} rounded-xl shadow-lg flex items-center justify-center transform group-hover:rotate-3 transition-transform duration-300">
-                        <span class="text-white font-bold text-lg">${chapter.chapterNumber || chapter.number || index + 1}</span>
-                      </div>
-                      <div class="absolute -top-1 -right-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center shadow-md">
-                        <span class="text-yellow-800 text-xs font-bold">📑</span>
-                      </div>
-                    </div>
-
-                    <div class="flex-1 min-w-0">
-                      <div class="flex items-center gap-2 mb-1">
-                        <h5 class="text-lg font-bold text-gray-800 group-hover:text-pink-700 transition-colors">
-                          Episodio ${chapter.chapterNumber || chapter.number || index + 1}
-                        </h5>
-                        ${chapter.isNew ? '<span class="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse">NUEVO</span>' : ""}
-                      </div>
-
-                      <p class="text-pink-600 font-medium mb-2 group-hover:text-pink-700 transition-colors">
-                        ${chapter.chapterTitle || chapter.title || "Capítulo sin título"}
-                      </p>
-
-                      <div class="flex items-center gap-4 text-sm text-gray-500">
-                        ${
-                          chapter.publishDate || chapter.createdAt
-                            ? `
-                          <div class="flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                            <span>${new Date(chapter.publishDate || chapter.createdAt).toLocaleDateString("es-ES", { day: "numeric", month: "short" })}</span>
-                          </div>
-                        `
-                            : ""
-                        }
-
-                        ${
-                          chapter.readTime
-                            ? `
-                          <div class="flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <span>${chapter.readTime} min</span>
-                          </div>
-                        `
-                            : ""
-                        }
-
-                        ${
-                          chapter.pagesCount || chapter.pages
-                            ? `
-                          <div class="flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            <span>${
-                              Array.isArray(chapter.pagesCount || chapter.pages)
-                                ? (chapter.pagesCount || chapter.pages).length
-                                : chapter.pagesCount || chapter.pages || 0
-                            } páginas</span>
-                          </div>
-                        `
-                            : ""
-                        }
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="flex flex-col items-end gap-3 ml-4">
-                    ${
-                      this.user.isAuthenticated
-                        ? `
-                      <div class="text-right">
-                        <div class="flex items-center gap-1 justify-end mb-1">
-                          <span class="text-yellow-500 text-lg">🪙</span>
-                          <span class="text-lg font-bold text-pink-700">${chapter.price ?? 0}</span>
-                        </div>
-                        <span class="text-xs text-gray-500">Gallecoins</span>
-                      </div>
-
-                      <button class="buy-btn relative px-6 py-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 group" data-id="${chapter._id || chapter.id}">
-                        <span class="flex items-center gap-2">
-                          <svg class="w-4 h-4 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8m-8 0h8"></path>
-                          </svg>
-                          ${chapter.price === 0 ? "Leer Gratis" : "Comprar"}
-                        </span>
-                        <div class="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-20 bg-gradient-to-r from-white to-transparent transition-opacity duration-300"></div>
-                      </button>
-                    `
-                        : `
-                      <div class="text-right">
-                        <div class="flex items-center gap-1 justify-end mb-1">
-                          <span class="text-yellow-500 text-lg">🪙</span>
-                          <span class="text-lg font-bold text-gray-400">${chapter.price ?? 0}</span>
-                        </div>
-                        <span class="text-xs text-gray-500">Gallecoins</span>
-                      </div>
-
-                      <button class="locked-btn relative px-6 py-2 bg-gray-400 text-white font-semibold rounded-lg shadow-md cursor-not-allowed group" title="Inicia sesión para leer este capítulo">
-                        <span class="flex items-center gap-2">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v3h8z"></path>
-                          </svg>
-                          Bloqueado
-                        </span>
-                      </button>
-                    `
-                    }
-                  </div>
-                </div>
-
-                ${
-                  chapter.readProgress
-                    ? `
-                  <div class="mt-3 pt-3 border-t border-pink-100">
-                    <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
-                      <span>Progreso de lectura</span>
-                      <span>${chapter.readProgress}%</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
-                      <div class="bg-gradient-to-r from-pink-400 to-purple-400 h-2 rounded-full transition-all duration-500" style="width: ${chapter.readProgress}%"></div>
-                    </div>
-                  </div>
-                `
-                    : ""
-                }
-              `;
-
-        dropdown.appendChild(chapterElement);
+        container.appendChild(row);
       });
 
-      // Configurar botones de compra (solo si el usuario está autenticado)
-      if (this.user.isAuthenticated) {
-        dropdown.querySelectorAll(".buy-btn").forEach((btn) => {
-          btn.addEventListener("click", (e) => {
-            e.stopPropagation();
-
-            // Efecto visual de clic
-            btn.style.transform = "scale(0.95)";
-            setTimeout(() => {
-              btn.style.transform = "scale(1.05)";
-              setTimeout(() => {
-                btn.style.transform = "";
-              }, 100);
-            }, 100);
-
-            this.requireAuth(() => {
-              // This will always be true here, but good for consistency
-              const chapterId = btn.getAttribute("data-id");
-              this.purchaseChapter(chapterId);
-            });
-          });
+      // listeners de compra
+      container.querySelectorAll(".buy-btn").forEach((b) => {
+        b.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.purchaseChapter(b.dataset.id);
         });
-      } else {
-        // Configurar botones bloqueados
-        dropdown.querySelectorAll(".locked-btn").forEach((btn) => {
-          btn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            this.showNotification(
-              "Por favor, inicia sesión para acceder a los capítulos.",
-              "info",
-            );
-            setTimeout(() => {
-              window.location.href = "/api/auth/login";
-            }, 1500); // Redirect to login page after a short delay
-          });
+      });
+      // listeners de candado → login
+      container.querySelectorAll(".locked-btn").forEach((b) => {
+        b.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.showNotification(
+            "Debes iniciar sesión para comprar capítulos",
+            "info",
+          );
+          setTimeout(() => (window.location.href = "/api/auth/login"), 800);
         });
-      }
+      });
     },
 
     async purchaseChapter(chapterId) {
+      this.showNotification("Procesando compra…", "info");
       try {
-        this.showNotification("Procesando compra...", "info");
-
-        const response = await fetch("/api/chapters/purchase", {
+        const res = await fetch("/api/chapters/checkout", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(this.user.sessionToken && {
-              Authorization: `Bearer ${this.user.sessionToken}`,
-            }),
-          },
           credentials: "include",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ chapterId }),
         });
+        const data = await res.json();
+        if (!data.success)
+          throw new Error(data.error || "Error al comprar capítulo");
 
-        if (response.ok) {
-          const data = await response.json();
-          this.showNotification("¡Capítulo comprado exitosamente!", "success");
-
-          // Actualizar gallecoins del usuario
-          if (data.newBalance !== undefined) {
-            this.user.userData.gallecoins = data.newBalance;
-            this.updateProfileElements();
-          }
-
-          // Redirigir al capítulo o actualizar UI
-          if (data.chapterUrl) {
-            setTimeout(() => {
-              window.location.href = data.chapterUrl;
-            }, 1500);
-          }
-        } else {
-          const errorData = await response.json();
-          throw new Error(errorData.message || "Error al comprar capítulo");
+        // 1) Actualizar saldo en UI
+        if (typeof data.newBalance === "number") {
+          this.user.userData.gallecoins = data.newBalance;
+          this.updateProfileElements();
         }
-      } catch (error) {
-        console.error("Error al comprar capítulo:", error);
-        this.showNotification(
-          error.message || "Error al procesar la compra",
-          "error",
+
+        // 2) Añadir el capítulo comprado a la librería local
+        this.user.library.push(chapterId);
+
+        // 3) Mostrar éxito
+        this.showNotification("¡Compra exitosa!", "success");
+
+        this.renderLibrary();
+        const btn = document.querySelector(
+          `button.buy-btn[data-id="${chapterId}"]`,
         );
+        if (btn) {
+          btn.disabled = true;
+          btn.classList.remove("bg-pink-600", "hover:bg-pink-700");
+          btn.classList.add("bg-green-600");
+          btn.innerHTML = `<i class="fas fa-check mr-2"></i>Comprado`;
+        }
+
+        // — QUITADO: redirección a PDF —
+      } catch (err) {
+        console.error("Error al comprar capítulo:", err);
+        this.showNotification(err.message || "Error de red", "error");
       }
     },
 
@@ -1205,6 +1214,37 @@
         this.showNotification("Error al cargar capítulos", "error");
         return [];
       }
+    },
+
+    async showChaptersDialog(manga) {
+      this.refreshSessionLibrary();
+      const dialog = document.getElementById("chapter-dialog");
+      const dialogTitle = document.getElementById("dialog-title");
+      const dialogBody = document.createElement("div");
+      dialogBody.className = "mt-2";
+
+      dialogTitle.textContent = manga.title;
+      dialogTitle.after(dialogBody);
+      dialog.classList.remove("hidden");
+      dialogBody.innerHTML = `<div class="text-center text-pink-600">Cargando capítulos…</div>`;
+
+      try {
+        // 1.1) carga capítulos
+        const chapters = await this.fetchChapters(manga._id || manga.id);
+        // 1.2) obtiene array de capítulos ya comprados (ids)
+        const owned = this.user.library;
+        // 1.3) renderiza
+        this.renderChapters(dialogBody, chapters, owned);
+      } catch (err) {
+        console.error(err);
+        dialogBody.innerHTML = `<p class="text-center text-red-600">Error de red al cargar capítulos</p>`;
+      }
+
+      // cerrar diálogo
+      document.getElementById("close-dialog").onclick = () => {
+        dialog.classList.add("hidden");
+        dialogBody.remove();
+      };
     },
   };
 
