@@ -4,7 +4,7 @@ GalleToon es una aplicación web moderna de lectura de mangas basada en monedas 
 
 ## 🏗️ Arquitectura del Proyecto
 
-El proyecto utiliza **TypeScript Vanilla** con una **arquitectura modular avanzada** para una estructura limpia, mantenible y escalable.
+El proyecto utiliza **TypeScript** con **Fastify** como servidor backend y una **arquitectura modular** para una estructura limpia, mantenible y escalable.
 
 ### Estructura del Proyecto
 
@@ -29,107 +29,87 @@ galletoon/
 │       ├── buyChaptersSchema.ts # Compras de capítulos
 │       └── buyGallecoinsSchema.ts # Compras de GalleCoins
 ├── public/                     # Archivos estáticos
-│   ├── index.html              # Página principal (SPA)
-│   ├── auth.html               # Página de autenticación (SPA)
-│   ├── admin.html              # Panel de administración (SPA)
-│   ├── gallecoins.html         # Sistema de GalleCoins (SPA)
+│   ├── index.html              # Página principal
+│   ├── auth.html               # Página de autenticación
+│   ├── admin.html              # Panel de administración
+│   ├── gallecoins.html         # Sistema de GalleCoins
 │   ├── profile.html            # Página de perfil
-│   ├── category.html           # Página principal de categorías
-│   ├── categories/             # Páginas de categorías individuales
-│   │   ├── category-action.html
-│   │   ├── category-adventure.html
-│   │   ├── category-drama.html
-│   │   ├── category-romance.html
-│   │   ├── category-horror.html
-│   │   └── category-sport.html
+│   ├── category.html           # Página de categorías
+│   ├── success.html            # Página de éxito de pago
+│   ├── cancel.html             # Página de cancelación de pago
 │   ├── js/                     # Scripts JavaScript
-│   │   ├── admin.js
-│   │   ├── auth.js
-│   │   └── category.js
+│   │   ├── index.js            # Script principal
+│   │   ├── admin.js            # Script de administración
+│   │   ├── auth.js             # Script de autenticación
+│   │   ├── category.js         # Script de categorías
+│   │   └── gallecoins.js       # Script de GalleCoins
 │   └── utils.css               # Estilos globales
 └── data/                       # Datos de MongoDB (Docker)
 ```
 
-## 🧩 Sistema de Módulos TypeScript Avanzado
-
-### Arquitectura Modular Implementada
-
-El proyecto utiliza un **sistema de módulos singleton** con las siguientes características:
-
-| Módulo | Propósito | Características |
-|--------|-----------|-----------------|
-| **ConfigModule** | Configuración global | Variables de entorno, configuración de la app |
-| **StateModule** | Estado global | Gestión de estado con suscripciones |
-| **AuthModule** | Autenticación | Login, registro, gestión de usuarios |
-| **MangaModule** | Gestión de mangas | CRUD de mangas y capítulos |
-| **GallecoinsModule** | Sistema de monedas | Balance, transacciones, compras |
-| **NavigationModule** | Navegación | Rutas, historial, navegación SPA |
-| **UtilsModule** | Utilidades | Formateo, debounce, throttle |
-| **ApiModule** | Cliente HTTP | Requests, manejo de errores |
-
-### Ventajas de la Nueva Arquitectura
-
-✅ **Patrón Singleton** - Instancia única por módulo
-✅ **Separación de responsabilidades** - Cada módulo tiene función específica
-✅ **Sistema de eventos** - StateModule con suscripciones
-✅ **TypeScript completo** - Tipado estático en toda la aplicación
-✅ **Manejo de errores** - Try-catch en operaciones críticas
-✅ **Inicialización automática** - Se inicializa al cargar el DOM
-✅ **Limpieza de recursos** - Método destroy para cleanup
-
 ## 🚀 Características Principales
 
-### 1. Single Page Application (SPA)
-- Navegación sin recarga de página
-- Carga dinámica de contenido
-- Soporte para historial del navegador
-- Estados de carga visuales
-
-### 2. Sistema de Autenticación
+### 1. Sistema de Autenticación
 - Login y registro de usuarios
 - Validación de formularios
-- Gestión de sesiones
+- Gestión de sesiones con JWT
 - Protección de rutas
+- Middleware de autenticación para usuarios y administradores
 
-### 3. Panel de Administración
+### 2. Panel de Administración
 - Gestión completa de mangas (CRUD)
 - Gestión de capítulos por manga
 - Interfaz intuitiva con modales
 - Validación de datos
+- Subida de archivos PDF
+- Conversión automática de PDF a imágenes
 
-### 4. Sistema de GalleCoins
+### 3. Sistema de GalleCoins
 - Balance de monedas virtuales
 - Historial de transacciones
 - Compra de paquetes de monedas
 - Estadísticas de uso
+- Integración con Stripe para pagos
 
-### 5. Lector de Manga
+### 4. Lector de Manga
 - Visualización de capítulos
 - Sistema de paginación
 - Interfaz responsive
 - Integración con GalleCoins
+- Conversión de PDF a imágenes
 
-### 6. Base de Datos MongoDB
+### 5. Base de Datos MongoDB
 - Esquemas bien definidos
 - Relaciones entre entidades
 - Integración con Stripe para pagos
 - Persistencia de datos
+- Sesiones de usuario
+
+### 6. Sistema de Pagos
+- Integración completa con Stripe
+- Procesamiento de pagos seguros
+- Páginas de éxito y cancelación
+- Historial de transacciones
 
 ## 🛠️ Tecnologías Utilizadas
-
-### Frontend
-- **TypeScript** - Lenguaje principal con tipado estático
-- **HTML5** - Estructura semántica
-- **Tailwind CSS** - Framework de estilos utility-first
-- **Font Awesome** - Iconografía
-- **ES6+ Modules** - Sistema de módulos nativo
 
 ### Backend
 - **Node.js** - Runtime de JavaScript
 - **Fastify** - Framework web rápido y eficiente
 - **TypeScript** - Tipado estático en el servidor
 - **MongoDB** - Base de datos NoSQL
-- **Stripe** - Integración de pagos (preparado)
+- **Mongoose** - ODM para MongoDB
+- **Stripe** - Integración de pagos
+- **JWT** - Autenticación con tokens
+- **bcrypt** - Encriptación de contraseñas
+- **multer** - Manejo de archivos
+- **pdf-lib** - Procesamiento de PDFs
+
+### Frontend
+- **HTML5** - Estructura semántica
+- **CSS3** - Estilos modernos
+- **JavaScript ES6+** - Funcionalidad del cliente
+- **Font Awesome** - Iconografía
 
 ### Herramientas de Desarrollo
 - **pnpm** - Gestor de paquetes rápido
@@ -139,24 +119,35 @@ El proyecto utiliza un **sistema de módulos singleton** con las siguientes cara
 
 ## 📋 Rutas Configuradas
 
-| Ruta | Página | Descripción |
+### Rutas del Servidor
+| Ruta | Método | Descripción |
 |------|--------|-------------|
-| `/` | Principal | Página de inicio con navegación SPA |
-| `/auth` | Autenticación | Login y registro independiente |
-| `/admin` | Administración | Panel de gestión de mangas |
-| `/gallecoins` | GalleCoins | Sistema de monedas virtuales |
-| `/home` | Inicio | Página principal del sitio |
-| `/login` | Login | Formulario de inicio de sesión |
-| `/register` | Registro | Formulario de registro |
-| `/profile` | Perfil | Página de perfil de usuario |
-| `/manga` | Lector | Lector de manga |
-| `/categorias` | Categorías | Lista de categorías |
-| `/categorias/category-action` | Categoría Acción | Mangas de acción |
-| `/categorias/category-adventure` | Categoría Aventura | Mangas de aventura |
-| `/categorias/category-drama` | Categoría Drama | Mangas de drama |
-| `/categorias/category-romance` | Categoría Romance | Mangas de romance |
-| `/categorias/category-horror` | Categoría Terror | Mangas de terror |
-| `/categorias/category-sport` | Categoría Deportes | Mangas de deportes |
+| `/` | GET | Página principal |
+| `/auth` | GET | Página de autenticación |
+| `/admin` | GET | Panel de administración |
+| `/gallecoins` | GET | Sistema de GalleCoins |
+| `/profile` | GET | Página de perfil |
+| `/category` | GET | Página de categorías |
+| `/success` | GET | Página de éxito de pago |
+| `/cancel` | GET | Página de cancelación |
+
+### APIs del Servidor
+| Ruta | Método | Descripción |
+|------|--------|-------------|
+| `/api/auth/login` | POST | Login de usuario |
+| `/api/auth/register` | POST | Registro de usuario |
+| `/api/auth/logout` | POST | Cerrar sesión |
+| `/api/manga` | GET | Listar mangas |
+| `/api/manga/:id` | GET | Obtener manga específico |
+| `/api/manga` | POST | Crear manga (admin) |
+| `/api/manga/:id` | PUT | Actualizar manga (admin) |
+| `/api/manga/:id` | DELETE | Eliminar manga (admin) |
+| `/api/chapters` | GET | Listar capítulos |
+| `/api/chapters/:mangaId` | GET | Capítulos de un manga |
+| `/api/chapters` | POST | Crear capítulo (admin) |
+| `/api/gallecoins/balance` | GET | Obtener balance |
+| `/api/gallecoins/history` | GET | Historial de transacciones |
+| `/api/stripe/create-payment-intent` | POST | Crear intención de pago |
 
 ## 🚀 Instalación y Uso
 
@@ -198,40 +189,18 @@ STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
 # Server Configuration
 PORT=3000
 NODE_ENV=development
+SESSION_KEY=your_session_secret_key_here
 ```
 
-### Estructura de Comandos
+### Comandos Disponibles
 ```bash
 pnpm dev          # Iniciar servidor de desarrollo con hot reload
-pnpm build        # Construir TypeScript para producción
-pnpm start        # Iniciar servidor de producción
 ```
 
 ### Acceso a la Aplicación
 - **Desarrollo**: http://localhost:3000
 - **Mongo Express**: http://localhost:8081
 - **Producción**: Configurar según el entorno
-
-## 🧩 Uso de Módulos
-
-### Importar la Aplicación
-```typescript
-import { app } from './modules/app';
-
-// Usar módulos específicos
-const mangaList = await app.manga.getMangaList();
-const userBalance = await app.gallecoins.getBalance();
-app.navigation.navigateTo('/manga/123');
-```
-
-### Acceso Directo a Módulos
-```typescript
-import { AuthModule, MangaModule, GallecoinsModule } from './modules/app';
-
-const auth = AuthModule.getInstance();
-const manga = MangaModule.getInstance();
-const gallecoins = GallecoinsModule.getInstance();
-```
 
 ## 🐳 Docker
 
@@ -254,37 +223,37 @@ docker-compose down
 docker-compose restart
 ```
 
-## 🔧 Desarrollo
+## 🔧 Funcionalidades del Servidor
 
-### Agregar Nuevo Módulo
-```typescript
-class CustomModule {
-  private static instance: CustomModule;
-  
-  static getInstance(): CustomModule {
-    if (!CustomModule.instance) {
-      CustomModule.instance = new CustomModule();
-    }
-    return CustomModule.instance;
-  }
-  
-  // Métodos del módulo
-}
-```
+### Autenticación y Autorización
+- Middleware `requireAuth` para rutas protegidas
+- Middleware `requireAdmin` para rutas de administración
+- Gestión de sesiones con cookies
+- Tokens JWT para autenticación
 
-### Implementar Métodos
-```typescript
-// En cualquier módulo
-async customMethod(): Promise<void> {
-  // TODO: Implementar lógica específica
-  throw new Error('Método no implementado');
-}
-```
+### Gestión de Archivos
+- Subida de archivos PDF
+- Conversión automática de PDF a imágenes
+- Almacenamiento de archivos en el servidor
+- Validación de tipos de archivo
+
+### Procesamiento de PDFs
+- Extracción de páginas de PDF
+- Conversión a formato de imagen
+- Optimización de imágenes
+- Manejo de errores en conversión
+
+### Integración con Stripe
+- Creación de intenciones de pago
+- Procesamiento de pagos seguros
+- Manejo de webhooks
+- Historial de transacciones
 
 ## 📚 Documentación
 
 - **README.md** - Este archivo con información general
-- **app.ts** - Documentación inline de la arquitectura modular
+- **server.ts** - Documentación inline del servidor
+- **mongoSchema/** - Esquemas de base de datos
 
 ## 🤝 Contribución
 
@@ -296,7 +265,7 @@ async customMethod(): Promise<void> {
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+Este proyecto está bajo la Licencia ISC. Ver el archivo `package.json` para más detalles.
 
 ## 👥 Autores
 
@@ -304,34 +273,60 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 
 ## 🙏 Agradecimientos
 
-- Tailwind CSS por el framework de estilos
-- Font Awesome por los iconos
 - Fastify por el servidor web
 - TypeScript por el sistema de tipos
 - MongoDB por la base de datos
+- Stripe por la integración de pagos
 - Docker por la containerización
+- Font Awesome por los iconos
 
 ## 🎯 Estado del Proyecto
 
 ### ✅ Completado
-- [x] Arquitectura modular TypeScript
+- [x] Servidor Fastify con TypeScript
 - [x] Configuración de MongoDB con Docker
-- [x] Sistema de autenticación básico
-- [x] Panel de administración
+- [x] Sistema de autenticación completo
+- [x] Panel de administración funcional
 - [x] Sistema de GalleCoins
+- [x] Integración con Stripe
+- [x] Gestión de archivos PDF
+- [x] Conversión de PDF a imágenes
 - [x] Interfaz de usuario moderna
-- [x] Navegación SPA
+- [x] Sistema de sesiones
 
 ### 🚧 En Desarrollo
-- [ ] Integración completa con Stripe
-- [ ] Sistema de pagos
-- [ ] Lector de manga avanzado
-- [ ] Sistema de notificaciones
 - [ ] Optimización de rendimiento
-
-### 📋 Pendiente
 - [ ] Tests unitarios
-- [ ] Documentación API
-- [ ] Despliegue en producción
+- [ ] Documentación API completa
 - [ ] Sistema de caché
 - [ ] Analytics y métricas
+
+### 📋 Pendiente
+- [ ] Despliegue en producción
+- [ ] Sistema de notificaciones
+- [ ] Lector de manga avanzado
+- [ ] Sistema de búsqueda
+- [ ] Filtros avanzados
+- [ ] Sistema de favoritos
+- [ ] Recomendaciones personalizadas
+
+## 🔍 Características Técnicas
+
+### Seguridad
+- Encriptación de contraseñas con bcrypt
+- Tokens JWT para autenticación
+- Validación de sesiones
+- Protección CSRF
+- Sanitización de datos
+
+### Rendimiento
+- Servidor Fastify optimizado
+- Conexiones de base de datos eficientes
+- Procesamiento asíncrono de archivos
+- Compresión de respuestas
+
+### Escalabilidad
+- Arquitectura modular
+- Separación de responsabilidades
+- Base de datos NoSQL escalable
+- Containerización con Docker
