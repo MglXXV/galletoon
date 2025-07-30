@@ -269,7 +269,8 @@ Este proyecto está bajo la Licencia ISC. Ver el archivo `package.json` para má
 
 ## 👥 Autores
 
-- **Johan** - *Desarrollo inicial* - [TuUsuario]
+- **Johan** - *Desarrollo Front End* - [Vellojiin]
+- **Michael Gay** - *Desarrollo Back End* - [MglXXV]
 
 ## 🙏 Agradecimientos
 
